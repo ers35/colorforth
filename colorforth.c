@@ -1,6 +1,5 @@
 // The author disclaims copyright to this source code.
 
-#include <assert.h>
 #include <ctype.h>
 #include <inttypes.h>
 #include <stdbool.h>
@@ -14,12 +13,43 @@ typedef int_fast32_t cell;
 static cell stack[8];
 // stack position
 static uint32_t sp;
+
+enum opcode
+{
+  OP_PRINT_TOS,
+  OP_DUP,
+  OP_OVER,
+  OP_SWAP,
+  OP_DROP,
+  OP_ADD,
+  OP_SUB,
+  OP_MUL,
+  OP_EQUAL,
+  OP_LESS,
+  OP_IF,
+  OP_BYE,
+  OP_WORDS,
+  OP_RETURN,
+  OP_TICK,
+  OP_EMIT,
+  OP_KEY,
+  OP_LOAD,
+  OP_STORE,
+  OP_CELL,
+  // call defined word
+  OP_CALL,
+  OP_TAIL_CALL,
+  OP_NUMBER,
+  OP_HERE,
+};
+
+// terminal input buffer
 static struct tib
 {
   char buf[8];
   uint32_t len;
 } tib;
-typedef void (*func)(void);
+struct code;
 struct entry;
 static struct entry
 {
@@ -27,20 +57,14 @@ static struct entry
   cell name_len;
   struct entry *prev;
   cell code_len;
-  // could put a "do this" func here instead of requiring a type below
   struct code
   {
-    enum { FUNC, NUMBER } type;
-    union
-    {
-      func func; // primitive
-      cell number;
-    } data;
+    enum opcode opcode;
+    cell this;
   } code[];
-} *dictionary = (void*)(char[4096]){};
+} *dictionary = (void*)(char[4096]){0};
 static struct entry *latest;
 static void *here;
-static struct code *pc = (void*)INT_FAST32_MAX;
 
 static void
 push(const cell n)
@@ -71,100 +95,6 @@ pop(void)
   return n;
 }
 
-static void
-dup(void)
-{
-  push(stack[sp]);
-}
-
-static void
-swap(void)
-{
-  const cell n1 = pop();
-  const cell n2 = pop();
-  push(n1);
-  push(n2);
-}
-
-static void
-return_from_subroutine(void)
-{
-  pc = (void*)INT_FAST32_MAX;
-}
-
-static void
-add(void)
-{
-  const cell n1 = pop();
-  const cell n2 = pop();
-  push(n1 + n2);
-}
-
-static void
-subtract(void)
-{
-  const cell n1 = pop();
-  const cell n2 = pop();
-  push(n1 - n2);
-}
-
-static void
-multiply(void)
-{
-  const cell n1 = pop();
-  const cell n2 = pop();
-  push(n1 * n2);
-}
-
-static void
-equals(void)
-{
-  const cell n1 = pop();
-  const cell n2 = pop();
-  push(n1 == n2);
-}
-
-static void
-less_than(void)
-{
-  const cell n1 = pop();
-  const cell n2 = pop();
-  push(n2 < n1);
-}
-
-static void
-if_(void)
-{
-  const cell n = pop();
-  if (!n)
-  {
-    pc += 1;
-  }
-}
-
-static void
-tail_call(void)
-{
-  pc = &latest->code[-1];
-}
-
-static void
-dump_words(void)
-{
-  for (struct entry *entry = latest; entry; entry = entry->prev)
-  {
-    printf("%.*s ", (int)entry->name_len, entry->name);
-  }
-  putchar('\n');
-}
-
-static void
-print_top_of_stack(void)
-{
-  printf("%"PRIiFAST32" ", pop());
-  fflush(stdout);
-}
-
 static struct entry*
 find_entry(void)
 {
@@ -178,39 +108,33 @@ find_entry(void)
   return NULL;
 }
 
-static void
-tick(void)
-{
-  //stack[grow_stack()] = (cell)find_entry(tib.buf, tib.len);
-}
-
 // 'name' must be null-terminated.
 static void
-define_primitive(const char name[], const func func)
+define_primitive(const char name[], const enum opcode opcode)
 {
   struct entry *entry = here;
   entry->name_len = strlen(name);
-  entry->prev = latest;
   memcpy(entry->name, name, entry->name_len);
+  entry->prev = latest;
+  entry->code[0].opcode = opcode;
+  entry->code[0].this = 0;
   entry->code_len = 1;
-  entry->code[0].type = FUNC;
-  entry->code[0].data.func = func;
   here = &entry->code[1];
   latest = entry;
-  assert(entry->prev < entry);
 }
+
+typedef void (*func)(void);
 
 static void
 define(void)
 {
   struct entry *entry = here;
   entry->name_len = tib.len;
-  entry->prev = latest;
   memcpy(entry->name, tib.buf, tib.len);
+  entry->prev = latest;
+  here = &entry->code[0];
   entry->code_len = 0;
-  here = &entry->code[1];
   latest = entry;
-  assert(entry->prev < entry);
 }
 
 // TODO: use strtoul instead
@@ -228,8 +152,6 @@ tib_to_number(cell *n_)
     }
     else
     {
-      //printf("%.*s?\n", tib.len, tib.buf);
-      printf("? ");
       return 0;
     }
   }
@@ -238,23 +160,253 @@ tib_to_number(cell *n_)
 }
 
 static void
+compile(void)
+{
+  struct entry *entry = find_entry();
+  struct code *code = &latest->code[latest->code_len];
+  if (entry)
+  {
+    if (entry == latest)
+    {
+      code->opcode = OP_TAIL_CALL;
+      code->this = 0;
+    }
+    // FIXME: why a special case
+    else if (strcmp(entry->name, "if") == 0)
+    {
+      code->opcode = OP_IF;
+      code->this = 0;
+    }
+    // FIXME: why a special case
+    else if (strcmp(entry->name, ";") == 0)
+    {
+      code->opcode = OP_RETURN;
+      code->this = 0;
+    }
+    else
+    {
+      code->opcode = OP_CALL;
+      code->this = (cell)entry;
+    }
+    latest->code_len += 1;
+  }
+  else
+  {
+    // try to interpret as an unsigned decimal number
+    cell n = 0;
+    if (tib_to_number(&n))
+    {
+      // compile number
+      code->opcode = OP_NUMBER;
+      code->this = n;
+      latest->code_len += 1;
+    }
+    else
+    {
+      printf("? ");
+    }
+  }
+  here = &latest->code[latest->code_len];
+}
+
+static void
+execute_(struct entry *entry)
+{
+  //~ printf("%s\t%li\n", entry->name, entry->code_len);
+  for (struct code *pc = &entry->code[0]; pc < &entry->code[entry->code_len]; ++pc)
+  {
+    switch (pc->opcode)
+    {
+      case OP_PRINT_TOS:
+      {
+        printf("%"PRIiFAST32" ", pop());
+        fflush(stdout);
+        break;
+      }
+      
+      case OP_DUP:
+      {
+        push(stack[sp]);
+        break;
+      }
+      
+      case OP_OVER:
+      {
+        const cell n1 = pop();
+        const cell n2 = pop();
+        push(n2);
+        push(n1);
+        push(n2);
+        break;
+      }
+      
+      case OP_SWAP:
+      {
+        const cell n1 = pop();
+        const cell n2 = pop();
+        push(n1);
+        push(n2);
+        break;
+      }
+      
+      case OP_DROP:
+      {
+        pop();
+        break;
+      }
+      
+      case OP_ADD:
+      {
+        const cell n1 = pop();
+        const cell n2 = pop();
+        push(n1 + n2);
+        break;
+      }
+      
+      case OP_SUB:
+      {
+        const cell n1 = pop();
+        const cell n2 = pop();
+        push(n1 - n2);
+        break;
+      }
+      
+      case OP_MUL:
+      {
+        const cell n1 = pop();
+        const cell n2 = pop();
+        push(n1 * n2);
+        break;
+      }
+      
+      case OP_EQUAL:
+      {
+        const cell n1 = pop();
+        const cell n2 = pop();
+        push(n1 == n2);
+        break;
+      }
+      
+      case OP_LESS:
+      {
+        const cell n1 = pop();
+        const cell n2 = pop();
+        push(n2 < n1);
+        break;
+      }
+      
+      case OP_IF:
+      {
+        const cell n = pop();
+        if (!n)
+        {
+          // doesn't work, because this is only causing if to return, not foo.
+          // fixed with an exception in compile
+          ++pc;
+        }
+        break;
+      }
+      
+      case OP_BYE:
+      {
+        exit(0);
+        break;
+      }
+      
+      case OP_WORDS:
+      {
+        for (struct entry *entry = latest; entry; entry = entry->prev)
+        {
+          printf("%.*s ", (int)entry->name_len, entry->name);
+        }
+        break;
+      }
+      
+      case OP_RETURN:
+      {
+        pc = &entry->code[entry->code_len];
+        break;
+      }
+      
+      case OP_TICK:
+      {
+        break;
+      }
+      
+      case OP_EMIT:
+      {
+        putchar((char)pop());
+        break;
+      }
+      
+      case OP_KEY:
+      {
+        push((char)getchar());
+        break;
+      }
+      
+      case OP_LOAD:
+      {
+        push(*(cell*)pop());
+        break;
+      }
+      
+      case OP_STORE:
+      {
+        cell *ptr = (cell*)pop();
+        const cell n = pop();
+        *ptr = n;
+        break;
+      }
+      
+      case OP_CELL:
+      {
+        push(sizeof(cell));
+        break;
+      }
+      
+      case OP_CALL:
+      {
+        struct entry *entry_ = (struct entry*)pc->this;
+        // recursion
+        execute_(entry_);
+        break;
+      }
+      
+      case OP_TAIL_CALL:
+      {
+        pc = &entry->code[-1];
+        break;
+      }
+      
+      case OP_NUMBER:
+      {
+        push(pc->this);
+        break;
+      }
+      
+      case OP_HERE:
+      {
+        push((cell)&here);
+        break;
+      }
+      
+      default:
+      {
+        puts("unknown opcode");
+        exit(1);
+      }
+    }
+  }
+}
+
+static void
 execute(void)
 {
   struct entry *entry = find_entry();
   if (entry)
   {
-    //printf("[%.*s]\n", (int)entry->name_len, entry->name);
-    for (pc = entry->code; pc < &entry->code[entry->code_len]; ++pc)
-    {
-      if (pc->type == FUNC)
-      {
-        pc->data.func();
-      }
-      else if (pc->type == NUMBER)
-      {
-        push(pc->data.number);
-      }
-    }
+    execute_(entry);
   }
   else
   {
@@ -264,42 +416,9 @@ execute(void)
     {
       push(n);
     }
-  }
-}
-
-static void
-compile(void)
-{
-  struct entry *entry = find_entry();
-  if (entry)
-  {
-    if (entry == latest)
-    {
-      // recursive tail call
-      latest->code[latest->code_len].type = FUNC;
-      latest->code[latest->code_len].data.func = tail_call;
-      latest->code_len += 1;
-    }
     else
     {
-      //printf("[%.*s]\n", (int)entry->name_len, entry->name);
-      // inline all of the entry's code
-      memcpy(&latest->code[latest->code_len], entry->code, entry->code_len * sizeof(entry->code[0]));
-      latest->code_len += entry->code_len;
-    }
-    here = &latest->code[latest->code_len];
-  }
-  else
-  {
-    // try to interpret as an unsigned decimal number
-    cell n = 0;
-    if (tib_to_number(&n))
-    {
-      // compile number
-      latest->code[latest->code_len].type = NUMBER;
-      latest->code[latest->code_len].data.number = n;
-      ++latest->code_len;
-      here = &latest->code[latest->code_len];
+      printf("? ");
     }
   }
 }
@@ -310,36 +429,42 @@ comment(void)
   
 }
 
-static void
-bye(void)
-{
-  exit(0);
-}
-
-static void
-emit(void)
-{
-  putchar((char)pop());
-}
-
 int
 main(int argc, char *argv[])
 {
   here = dictionary;
-  define_primitive(".", print_top_of_stack);
-  define_primitive("dup", dup);
-  define_primitive("swap", swap);
-  define_primitive("+", add);
-  define_primitive("-", subtract);
-  define_primitive("*", multiply);
-  define_primitive("=", equals);
-  define_primitive("<", less_than);
-  define_primitive("if", if_);
-  define_primitive("bye", bye);
-  define_primitive("words", dump_words);
-  define_primitive(";", return_from_subroutine);
-  define_primitive("'", tick);
-  define_primitive("emit", emit);
+  static const struct primitive_map
+  {
+    const char *name;
+    const enum opcode opcode;
+  } primitive_map[] = 
+  {
+    {".", OP_PRINT_TOS},
+    {"dup", OP_DUP},
+    {"over", OP_OVER},
+    {"swap", OP_SWAP},
+    {"drop", OP_DROP},
+    {"+", OP_ADD},
+    {"-", OP_SUB},
+    {"*", OP_MUL},
+    {"=", OP_EQUAL},
+    {"<", OP_LESS},
+    {"if", OP_IF},
+    {"bye", OP_BYE},
+    {"words", OP_WORDS},
+    {";", OP_RETURN},
+    {"'", OP_TICK},
+    {"emit", OP_EMIT},
+    {"key", OP_KEY},
+    {"@", OP_LOAD},
+    {"!", OP_STORE},
+    {"cell", OP_CELL},
+    {"here", OP_HERE},
+  };
+  for (unsigned int i = 0; i < sizeof(primitive_map) / sizeof(primitive_map[0]); ++i)
+  {
+    define_primitive(primitive_map[i].name, primitive_map[i].opcode);
+  }
   while (1)
   {
     func color = execute;
@@ -386,7 +511,6 @@ main(int argc, char *argv[])
           {
             // Have word.
             color();
-            //~ printf("[%.*s]\n", tib.len, tib.buf);
             reading_word = false;
           }
           break;
@@ -394,7 +518,7 @@ main(int argc, char *argv[])
         
         case EOF:
         {
-          bye();
+          exit(0);
           break;
         }
         
