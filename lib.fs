@@ -1,24 +1,30 @@
 (one (line (comment
 :\ ^key ^10 ^= ^if ^; ^\ ^;
-\ one line comment
+~\ one line comment
 
 :cr ^10 ^emit ^;
 :.s ^. ^. ^. ^. ^. ^. ^. ^. ^cr ^;
 
-:alloc ^here ^@ ^swap ^over ^+ ^here ^! ^;
-
 :dbg ^.s ^bye ^;
 
+:alloc ^here ^@ ^swap ^over ^+ ^here ^! ^;
+
 (string
-:"init ^here ^@ ^;
+~\ stored in memory as as length, characters...
+:"init ^here ^@ ^cell ^+ ^;
 :"loop ^dup ^key ^dup ^34 ^= ^if ^; ^swap ^! ^cell ^+ ^"loop ^;
-:"done ^drop ^drop ^here ^@ ^swap ^- ^dup ^alloc ^;
+:"done ^drop ^drop ^here ^@ ^swap ^- ^dup ^alloc ^swap ^over ^! ^;
 :" ^"init ^"loop ^"done ^;
 
-\ :." ^swap ^dup ^0 ^= ^if ^; ^swap ^dup ^@ ^emit ^cell ^swap ^+ ^swap ^cell ^swap ^- ^swap ^." ^;
 (calculate (end (pointer
-:."init ^swap ^over ^+ ^swap ^;
+~\ :."init ^swap ^over ^+ ^swap ^;
+:."init ^dup ^dup ^@ ^+ ^swap ^cell ^+ ^;
 :."loop ^over ^over ^= ^if ^; ^dup ^@ ^emit ^cell ^+ ^."loop ^;
 :." ^."init ^."loop ^cr ^;
 
-" hello world" ."
+:square ^dup ^* ^;
+~\ calculated at compile time
+:25square ~25 ~square ^;
+~25square ~.
+:msg ~" hello world" ^;
+~msg ~." ~bye

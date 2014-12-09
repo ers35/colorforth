@@ -8,12 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef int64_t cell;
-// circular stack
-static cell stack[8];
-// stack position
-static uint32_t sp;
-
 enum opcode
 {
   OP_PRINT_TOS,
@@ -43,17 +37,19 @@ enum opcode
   OP_HERE,
 };
 
+typedef size_t cell;
+
 // terminal input buffer
-static struct tib
+struct tib
 {
   char buf[8];
-  uint32_t len;
-} tib;
+  size_t len;
+};
 struct code;
 struct entry;
-static struct entry
+struct entry
 {
-  char name[sizeof(tib.buf)];
+  char name[8];
   cell name_len;
   struct entry *prev;
   cell code_len;
@@ -62,45 +58,55 @@ static struct entry
     enum opcode opcode;
     cell this;
   } code[];
-} *dictionary = (void*)(char[4096]){0};
-static struct entry *latest;
-static void *here;
+};
+
+struct state
+{
+  // circular stack
+  cell stack[8];
+  // stack position
+  int sp;
+  struct tib tib;
+  struct entry *dictionary;
+  struct entry *latest;
+  void *here;
+};
 
 static void
-push(const cell n)
+push(struct state *s, const cell n)
 {
-  if (sp == (sizeof(stack) / sizeof(stack[0])) - 1)
+  if (s->sp == (sizeof(s->stack) / sizeof(s->stack[0])) - 1)
   {
-    sp = 0;
+    s->sp = 0;
   }
   else
   {
-    sp += 1;
+    s->sp += 1;
   }
-  stack[sp] = n;
+  s->stack[s->sp] = n;
 }
 
 static cell
-pop(void)
+pop(struct state *s)
 {
-  const cell n = stack[sp];
-  if (sp == 0)
+  const cell n = s->stack[s->sp];
+  if (s->sp == 0)
   {
-    sp = (sizeof(stack) / sizeof(stack[0])) - 1;
+    s->sp = (sizeof(s->stack) / sizeof(s->stack[0])) - 1;
   }
   else
   {
-    sp -= 1;
+    s->sp -= 1;
   }
   return n;
 }
 
 static struct entry*
-find_entry(void)
+find_entry(struct state *s)
 {
-  for (struct entry *entry = latest; entry; entry = entry->prev)
+  for (struct entry *entry = s->latest; entry; entry = entry->prev)
   {
-    if (entry->name_len == tib.len && memcmp(entry->name, tib.buf, tib.len) == 0)
+    if (entry->name_len == s->tib.len && memcmp(entry->name, s->tib.buf, s->tib.len) == 0)
     {
       return entry;
     }
@@ -110,45 +116,43 @@ find_entry(void)
 
 // 'name' must be null-terminated.
 static void
-define_primitive(const char name[], const enum opcode opcode)
+define_primitive(struct state *s, const char name[], const enum opcode opcode)
 {
-  struct entry *entry = here;
+  struct entry *entry = (struct entry*)&s->latest->code[s->latest->code_len];
   entry->name_len = strlen(name);
   memcpy(entry->name, name, entry->name_len);
-  entry->prev = latest;
+  entry->prev = s->latest;
   entry->code[0].opcode = opcode;
   entry->code[0].this = 0;
   entry->code_len = 1;
-  here = &entry->code[1];
-  latest = entry;
+  s->latest = entry;
 }
 
-typedef void (*func)(void);
+typedef void (*func)(struct state *s);
 
 static void
-define(void)
+define(struct state *s)
 {
-  struct entry *entry = here;
-  entry->name_len = tib.len;
-  memcpy(entry->name, tib.buf, tib.len);
-  entry->prev = latest;
-  here = &entry->code[0];
+  struct entry *entry = (struct entry*)&s->latest->code[s->latest->code_len];
+  entry->name_len = s->tib.len;
+  memcpy(entry->name, s->tib.buf, s->tib.len);
+  entry->prev = s->latest;
   entry->code_len = 0;
-  latest = entry;
+  s->latest = entry;
 }
 
 // TODO: use strtoul instead
 // or, support signed with strtol
 static bool
-tib_to_number(cell *n_)
+tib_to_number(struct state *s, cell *n_)
 {
   cell n = 0;
-  for (uint32_t i = 0; i < tib.len; ++i)
+  for (size_t i = 0; i < s->tib.len; ++i)
   {
-    if (isdigit(tib.buf[i]))
+    if (isdigit(s->tib.buf[i]))
     {
       n *= 10;
-      n += tib.buf[i] - '0';
+      n += s->tib.buf[i] - '0';
     }
     else
     {
@@ -160,13 +164,13 @@ tib_to_number(cell *n_)
 }
 
 static void
-compile(void)
+compile(struct state *s)
 {
-  struct entry *entry = find_entry();
-  struct code *code = &latest->code[latest->code_len];
+  struct entry *entry = find_entry(s);
+  struct code *code = &s->latest->code[s->latest->code_len];
   if (entry)
   {
-    if (entry == latest)
+    if (entry == s->latest)
     {
       code->opcode = OP_TAIL_CALL;
       code->this = 0;
@@ -188,29 +192,28 @@ compile(void)
       code->opcode = OP_CALL;
       code->this = (cell)entry;
     }
-    latest->code_len += 1;
+    s->latest->code_len += 1;
   }
   else
   {
     // try to interpret as an unsigned decimal number
     cell n = 0;
-    if (tib_to_number(&n))
+    if (tib_to_number(s, &n))
     {
       // compile number
       code->opcode = OP_NUMBER;
       code->this = n;
-      latest->code_len += 1;
+      s->latest->code_len += 1;
     }
     else
     {
       printf("? ");
     }
   }
-  here = &latest->code[latest->code_len];
 }
 
 static void
-execute_(struct entry *entry)
+execute_(struct state *s, struct entry *entry)
 {
   //~ printf("%s\t%li\n", entry->name, entry->code_len);
   for (struct code *pc = &entry->code[0]; pc < &entry->code[entry->code_len]; ++pc)
@@ -219,85 +222,85 @@ execute_(struct entry *entry)
     {
       case OP_PRINT_TOS:
       {
-        printf("%"PRIiFAST32" ", pop());
+        printf("%"PRIiFAST32" ", pop(s));
         fflush(stdout);
         break;
       }
       
       case OP_DUP:
       {
-        push(stack[sp]);
+        push(s, s->stack[s->sp]);
         break;
       }
       
       case OP_OVER:
       {
-        const cell n1 = pop();
-        const cell n2 = pop();
-        push(n2);
-        push(n1);
-        push(n2);
+        const cell n1 = pop(s);
+        const cell n2 = pop(s);
+        push(s, n2);
+        push(s, n1);
+        push(s, n2);
         break;
       }
       
       case OP_SWAP:
       {
-        const cell n1 = pop();
-        const cell n2 = pop();
-        push(n1);
-        push(n2);
+        const cell n1 = pop(s);
+        const cell n2 = pop(s);
+        push(s, n1);
+        push(s, n2);
         break;
       }
       
       case OP_DROP:
       {
-        pop();
+        pop(s);
         break;
       }
       
       case OP_ADD:
       {
-        const cell n1 = pop();
-        const cell n2 = pop();
-        push(n1 + n2);
+        const cell n1 = pop(s);
+        const cell n2 = pop(s);
+        push(s, n1 + n2);
         break;
       }
       
       case OP_SUB:
       {
-        const cell n1 = pop();
-        const cell n2 = pop();
-        push(n1 - n2);
+        const cell n1 = pop(s);
+        const cell n2 = pop(s);
+        push(s, n1 - n2);
         break;
       }
       
       case OP_MUL:
       {
-        const cell n1 = pop();
-        const cell n2 = pop();
-        push(n1 * n2);
+        const cell n1 = pop(s);
+        const cell n2 = pop(s);
+        push(s, n1 * n2);
         break;
       }
       
       case OP_EQUAL:
       {
-        const cell n1 = pop();
-        const cell n2 = pop();
-        push(n1 == n2);
+        const cell n1 = pop(s);
+        const cell n2 = pop(s);
+        push(s, n1 == n2);
         break;
       }
       
       case OP_LESS:
       {
-        const cell n1 = pop();
-        const cell n2 = pop();
-        push(n2 < n1);
+        const cell n1 = pop(s);
+        const cell n2 = pop(s);
+        push(s, n2 < n1);
         break;
       }
       
       case OP_IF:
       {
-        const cell n = pop();
+        const cell n = pop(s);
         if (!n)
         {
           // doesn't work, because this is only causing if to return, not foo.
@@ -315,7 +318,7 @@ execute_(struct entry *entry)
       
       case OP_WORDS:
       {
-        for (struct entry *entry = latest; entry; entry = entry->prev)
+        for (struct entry *entry = s->latest; entry; entry = entry->prev)
         {
           printf("%.*s ", (int)entry->name_len, entry->name);
         }
@@ -335,33 +338,33 @@ execute_(struct entry *entry)
       
       case OP_EMIT:
       {
-        putchar((char)pop());
+        putchar((char)pop(s));
         break;
       }
       
       case OP_KEY:
       {
-        push((char)getchar());
+        push(s, (char)getchar());
         break;
       }
       
       case OP_LOAD:
       {
-        push(*(cell*)pop());
+        push(s, *(cell*)pop(s));
         break;
       }
       
       case OP_STORE:
       {
-        cell *ptr = (cell*)pop();
-        const cell n = pop();
+        cell *ptr = (cell*)pop(s);
+        cell n = pop(s);
         *ptr = n;
         break;
       }
       
       case OP_CELL:
       {
-        push(sizeof(cell));
+        push(s, sizeof(cell));
         break;
       }
       
@@ -369,7 +372,7 @@ execute_(struct entry *entry)
       {
         struct entry *entry_ = (struct entry*)pc->this;
         // recursion
-        execute_(entry_);
+        execute_(s, entry_);
         break;
       }
       
@@ -381,13 +384,13 @@ execute_(struct entry *entry)
       
       case OP_NUMBER:
       {
-        push(pc->this);
+        push(s, pc->this);
         break;
       }
       
       case OP_HERE:
       {
-        push((cell)&here);
+        push(s, (cell)&s->here);
         break;
       }
       
@@ -401,20 +404,20 @@ execute_(struct entry *entry)
 }
 
 static void
-execute(void)
+execute(struct state *s)
 {
-  struct entry *entry = find_entry();
+  struct entry *entry = find_entry(s);
   if (entry)
   {
-    execute_(entry);
+    execute_(s, entry);
   }
   else
   {
     // try to interpret as an unsigned decimal number
     cell n = 0;
-    if (tib_to_number(&n))
+    if (tib_to_number(s, &n))
     {
-      push(n);
+      push(s, n);
     }
     else
     {
@@ -424,15 +427,25 @@ execute(void)
 }
 
 static void
-comment(void)
+comment(struct state *s)
 {
   
+}
+
+struct state*
+colorforth_newstate(void)
+{
+  struct state *state = calloc(1, sizeof(*state));
+  state->dictionary = calloc(1, 4096);
+  state->latest = state->dictionary;
+  state->here = calloc(1, 4096);
+  return state;
 }
 
 int
 main(int argc, char *argv[])
 {
-  here = dictionary;
+  struct state *state = colorforth_newstate();
   static const struct primitive_map
   {
     const char *name;
@@ -463,12 +476,12 @@ main(int argc, char *argv[])
   };
   for (unsigned int i = 0; i < sizeof(primitive_map) / sizeof(primitive_map[0]); ++i)
   {
-    define_primitive(primitive_map[i].name, primitive_map[i].opcode);
+    define_primitive(state, primitive_map[i].name, primitive_map[i].opcode);
   }
+  func color = execute;
   while (1)
   {
-    func color = execute;
-    tib.len = 0;
+    state->tib.len = 0;
     bool reading_word = true;
     while (reading_word)
     {
@@ -483,6 +496,13 @@ main(int argc, char *argv[])
         
         case '^':
         {
+          if (color == execute)
+          {
+            struct code *code = &state->latest->code[state->latest->code_len];
+            code->opcode = OP_NUMBER;
+            code->this = pop(state);
+            state->latest->code_len += 1;
+          }
           color = compile;
           break;
         }
@@ -503,14 +523,14 @@ main(int argc, char *argv[])
         case ' ':
         case '\t':
         {
-          if (tib.len == 0)
+          if (state->tib.len == 0)
           {
             // Strip leading whitespace.
           }
           else
           {
             // Have word.
-            color();
+            color(state);
             reading_word = false;
           }
           break;
@@ -518,15 +538,15 @@ main(int argc, char *argv[])
         
         case EOF:
         {
-          exit(0);
+          //~ exit(0);
           break;
         }
         
         default:
         {
-          if (tib.len < sizeof(tib.buf))
+          if (state->tib.len < sizeof(state->tib.buf))
           {
-            tib.buf[tib.len++] = c;
+            state->tib.buf[state->tib.len++] = c;
           }
           break;
         }
