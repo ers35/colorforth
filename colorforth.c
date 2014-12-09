@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef int_fast32_t cell;
+typedef int64_t cell;
 // circular stack
 static cell stack[8];
 // stack position
