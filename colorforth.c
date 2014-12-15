@@ -29,6 +29,8 @@ enum opcode
   OP_KEY,
   OP_LOAD,
   OP_STORE,
+  OP_CLOAD,
+  OP_CSTORE,
   OP_CELL,
   // call defined word
   OP_CALL,
@@ -362,6 +364,20 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
       
+      case OP_CLOAD:
+      {
+        push(s, *(char*)pop(s));
+        break;
+      }
+      
+      case OP_CSTORE:
+      {
+        char *ptr = (char*)pop(s);
+        char n = pop(s);
+        *ptr = n;
+        break;
+      }
+      
       case OP_CELL:
       {
         push(s, sizeof(cell));
@@ -471,6 +487,8 @@ main(int argc, char *argv[])
     {"key", OP_KEY},
     {"@", OP_LOAD},
     {"!", OP_STORE},
+    {"c@", OP_CLOAD},
+    {"c!", OP_CSTORE},
     {"cell", OP_CELL},
     {"here", OP_HERE},
   };

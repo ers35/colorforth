@@ -9,17 +9,16 @@
 
 :alloc ^here ^@ ^swap ^over ^+ ^here ^! ^;
 
-(string
+(create (string
 ~\ stored in memory as as length, characters...
 :"init ^here ^@ ^cell ^+ ^;
-:"loop ^dup ^key ^dup ^34 ^= ^if ^; ^swap ^! ^cell ^+ ^"loop ^;
+:"loop ^dup ^key ^dup ^34 ^= ^if ^; ^swap ^c! ^1 ^+ ^"loop ^;
 :"done ^drop ^drop ^here ^@ ^swap ^- ^dup ^alloc ^swap ^over ^! ^;
 :" ^"init ^"loop ^"done ^;
 
-(calculate (end (pointer
-~\ :."init ^swap ^over ^+ ^swap ^;
+(print (string
 :."init ^dup ^dup ^@ ^+ ^swap ^cell ^+ ^;
-:."loop ^over ^over ^= ^if ^; ^dup ^@ ^emit ^cell ^+ ^."loop ^;
+:."loop ^over ^over ^= ^if ^; ^dup ^c@ ^emit ^1 ^+ ^."loop ^;
 :." ^."init ^."loop ^cr ^;
 
 :square ^dup ^* ^;
