@@ -5,15 +5,13 @@
 :cr ^10 ^emit ^;
 :.s ^. ^. ^. ^. ^. ^. ^. ^. ^cr ^;
 
-:dbg ^.s ^bye ^;
-
 :alloc ^here ^@ ^swap ^over ^+ ^here ^! ^;
 
-(create (string
+(create (null-terminated (string
 ~\ stored in memory as as length, characters...
 :"init ^here ^@ ^cell ^+ ^;
-:"loop ^dup ^key ^dup ^34 ^= ^if ^; ^swap ^c! ^1 ^+ ^"loop ^;
-:"done ^drop ^drop ^here ^@ ^swap ^- ^dup ^alloc ^swap ^over ^! ^;
+:"loop ^dup ^key ^dup ~key " ^= ^if ^; ^swap ^c! ^1 ^+ ^"loop ^;
+:"done ^drop ^drop ^here ^@ ^swap ^- ^dup (null ^1 ^+ ^alloc ^swap ^over ^! ^;
 :" ^"init ^"loop ^"done ^;
 
 (print (string
@@ -21,9 +19,14 @@
 :."loop ^over ^over ^= ^if ^; ^dup ^c@ ^emit ^1 ^+ ^."loop ^;
 :." ^."init ^."loop ^cr ^;
 
+:msg ~" hello world" ^;
+~msg ~."
+
+:cmd ^cell ^+ ^system ^;
+:uname ~" uname -a" ^cmd ^;
+~uname
+
 :square ^dup ^* ^;
 ~\ calculated at compile time
 :25square ~25 ~square ^;
-~25square ~.
-:msg ~" hello world" ^;
-~msg ~." ~bye
+~25square ~. ~cr

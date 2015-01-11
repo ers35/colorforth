@@ -37,6 +37,7 @@ enum opcode
   OP_TAIL_CALL,
   OP_NUMBER,
   OP_HERE,
+  OP_SYSTEM,
 };
 
 typedef size_t cell;
@@ -410,6 +411,12 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
       
+      case OP_SYSTEM:
+      {
+        push(s, system((char*)pop(s)));
+        break;
+      }
+      
       default:
       {
         puts("unknown opcode");
@@ -491,6 +498,7 @@ main(int argc, char *argv[])
     {"c!", OP_CSTORE},
     {"cell", OP_CELL},
     {"here", OP_HERE},
+    {"system", OP_SYSTEM},
   };
   for (unsigned int i = 0; i < sizeof(primitive_map) / sizeof(primitive_map[0]); ++i)
   {
