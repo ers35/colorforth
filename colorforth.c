@@ -20,7 +20,9 @@ enum opcode
   OP_MUL,
   OP_EQUAL,
   OP_LESS,
-  OP_IF,
+  OP_WHEN,
+  OP_UNLESS,
+  OP_CHOOSE,
   OP_BYE,
   OP_WORDS,
   OP_RETURN,
@@ -178,18 +180,6 @@ compile(struct state *s)
       code->opcode = OP_TAIL_CALL;
       code->this = 0;
     }
-    // FIXME: why a special case
-    else if (strcmp(entry->name, "if") == 0)
-    {
-      code->opcode = OP_IF;
-      code->this = 0;
-    }
-    // FIXME: why a special case
-    else if (strcmp(entry->name, ";") == 0)
-    {
-      code->opcode = OP_RETURN;
-      code->this = 0;
-    }
     else
     {
       code->opcode = OP_CALL;
@@ -301,14 +291,39 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
       
-      case OP_IF:
+      case OP_WHEN:
       {
+        struct entry *entry_ = (struct entry*)pop(s);
+        const cell n = pop(s);
+        if (n)
+        {
+          execute_(s, entry_);
+        }
+        break;
+      }
+
+      case OP_UNLESS:
+      {
+        struct entry *entry_ = (struct entry*)pop(s);
         const cell n = pop(s);
         if (!n)
         {
-          // doesn't work, because this is only causing if to return, not foo.
-          // fixed with an exception in compile
-          ++pc;
+          execute_(s, entry_);
+        }
+        break;
+      }
+
+      case OP_CHOOSE:
+      {
+        struct entry *entry_false_ = (struct entry*)pop(s);
+        struct entry *entry_true_ = (struct entry*)pop(s);
+        const cell n = pop(s);
+        if (n)
+        {
+          execute_(s, entry_true_);
+        }
+        else {
+          execute_(s, entry_false_);
         }
         break;
       }
@@ -508,7 +523,9 @@ main(int argc, char *argv[])
     {"*", OP_MUL},
     {"=", OP_EQUAL},
     {"<", OP_LESS},
-    {"if", OP_IF},
+    {"when", OP_WHEN},
+    {"unless", OP_UNLESS},
+    {"choose", OP_CHOOSE},
     {"bye", OP_BYE},
     {"words", OP_WORDS},
     {";", OP_RETURN},
