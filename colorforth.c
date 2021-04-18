@@ -24,7 +24,6 @@ enum opcode
   OP_BYE,
   OP_WORDS,
   OP_RETURN,
-  OP_TICK,
   OP_EMIT,
   OP_KEY,
   OP_LOAD,
@@ -35,6 +34,7 @@ enum opcode
   // call defined word
   OP_CALL,
   OP_TAIL_CALL,
+  OP_EXECUTE,
   OP_NUMBER,
   OP_HERE,
   OP_SYSTEM,
@@ -333,12 +333,7 @@ execute_(struct state *s, struct entry *entry)
         pc = &entry->code[entry->code_len];
         break;
       }
-      
-      case OP_TICK:
-      {
-        break;
-      }
-      
+
       case OP_EMIT:
       {
         putchar((char)pop(s));
@@ -404,6 +399,13 @@ execute_(struct state *s, struct entry *entry)
         push(s, pc->this);
         break;
       }
+
+      case OP_EXECUTE:
+      {
+        struct entry *entry_ = (struct entry*)pop(s);
+        execute_(s, entry_);
+        break;
+      }
       
       case OP_HERE:
       {
@@ -450,6 +452,27 @@ execute(struct state *s)
 }
 
 static void
+tick(struct state *s)
+{
+  struct entry *entry = find_entry(s);
+  if (entry) {
+    struct code *code = &s->latest->code[s->latest->code_len];
+    code->opcode = OP_NUMBER;
+    code->this = (cell)entry;
+    s->latest->code_len += 1;
+  }
+  else
+  {
+    for(size_t i = 0; i < s->tib.len; i++)
+    {
+      putchar(s->tib.buf[i]);
+    }
+    puts(": unknown word?");
+    exit(1);
+  }
+}
+
+static void
 comment(struct state *s)
 {
   
@@ -489,7 +512,6 @@ main(int argc, char *argv[])
     {"bye", OP_BYE},
     {"words", OP_WORDS},
     {";", OP_RETURN},
-    {"'", OP_TICK},
     {"emit", OP_EMIT},
     {"key", OP_KEY},
     {"@", OP_LOAD},
@@ -498,6 +520,7 @@ main(int argc, char *argv[])
     {"c!", OP_CSTORE},
     {"cell", OP_CELL},
     {"here", OP_HERE},
+    {"execute", OP_EXECUTE},
     {"system", OP_SYSTEM},
   };
   for (unsigned int i = 0; i < sizeof(primitive_map) / sizeof(primitive_map[0]); ++i)
@@ -536,6 +559,12 @@ main(int argc, char *argv[])
         case '~':
         {
           color = execute;
+          break;
+        }
+
+        case '\'':
+        {
+          color = tick;
           break;
         }
         
