@@ -4,47 +4,44 @@
 (defvar colorForth-mode-abbrev-table (make-abbrev-table) "")
 
 (defface colorForth-mode-define-face
-  '((t (:foreground "red")))
+  '((t (:foreground "red" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-compile-face
-  '((t (:foreground "green4")))
+  '((t (:foreground "green4" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-execute-face
-  '((t (:foreground "yellow4")))
+  '((t (:foreground "yellow4" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-comment-face
-  '((t (:foreground "grey40")))
+  '((t (:foreground "grey40" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
-(defface colorForth-mode-hide-face
-  '((t (:foreground "grey80" :height 0.8)))
+(defface colorForth-mode-tick-face
+  '((t (:foreground "blue" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
 (setq colorForth-highlights
-  '(("\\(^\\|[ \n\t]\\):[^ \n\t]+"    . (0 'colorForth-mode-define-face t))
-     ("\\(^\\|[ \n\t]\\)\\^[^ \n\t]+" . (0 'colorForth-mode-compile-face t))
-     ("\\(^\\|[ \n\t]\\)~[^ \n\t]+"   . (0 'colorForth-mode-execute-face t))
-     ("\\(^\\|[ \n\t]\\)([^ \n\t]+"   . (0 'colorForth-mode-comment-face t))
-     ("\\(^\\|[ \n\t]\\)[:\\^~(]"     . (0 'colorForth-mode-hide-face t))
-     ("~\\\\.*$"                      . (0 'colorForth-mode-comment-face t))))
+  '((":[^:~^(']+" . (0 'colorForth-mode-define-face t))
+     ("\\^[^:~^(']+" . (0 'colorForth-mode-compile-face t))
+     ("~[^:~^(']+" . (0 'colorForth-mode-execute-face t))
+     ("([^:~^(']+" . (0 'colorForth-mode-comment-face t))
+     ("'[^:~^(']+" . (0 'colorForth-mode-tick-face t))))
 
 (define-derived-mode colorForth-mode text-mode "colorForth"
   "major mode for editing colorForth language code."
+  (set (make-local-variable 'font-lock-multiline) t)
   (setq font-lock-defaults '(colorForth-highlights)))
 
-(setq auto-mode-alist (cons '("\\.fs\\'" . colorForth-mode)
-                        auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.cf\\'" . colorForth-mode)
                         auto-mode-alist))
 
 
 (provide 'colorForth-mode)
-
