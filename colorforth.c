@@ -206,6 +206,30 @@ compile(struct state *s)
       code->opcode = OP_TAIL_CALL;
       code->this = 0;
     }
+    // Compile OP_WHEN directly instead of calling it
+    else if (strcmp(entry->name, "when") == 0)
+    {
+      code->opcode = OP_WHEN;
+      code->this = 0;
+    }
+    // Compile OP_UNLESS directly instead of calling it
+    else if (strcmp(entry->name, "unless") == 0)
+    {
+      code->opcode = OP_UNLESS;
+      code->this = 0;
+    }
+    // Compile OP_CHOOSE directly instead of calling it
+    else if (strcmp(entry->name, "choose") == 0)
+    {
+      code->opcode = OP_CHOOSE;
+      code->this = 0;
+    }
+    // Compile OP_RETURN instead of calling it
+    else if (strcmp(entry->name, ";") == 0)
+    {
+      code->opcode = OP_RETURN;
+      code->this = 0;
+    }
     else
     {
       code->opcode = OP_CALL;
@@ -321,9 +345,22 @@ execute_(struct state *s, struct entry *entry)
       {
         struct entry *entry_ = (struct entry*)pop(s);
         const cell n = pop(s);
-        if (n)
-        {
-          execute_(s, entry_);
+        if (n) {
+          // OP_RETURN: leaving the current word
+          if (entry_->code[0].opcode == OP_RETURN)
+          {
+            pc = &entry->code[entry->code_len];
+          }
+          // Call itself -> recurse
+          else if (entry_ == entry)
+          {
+            pc = &entry->code[-1];
+          }
+          // Call entry on the stack
+          else
+          {
+            execute_(s, entry_);
+          }
         }
         break;
       }
@@ -332,9 +369,22 @@ execute_(struct state *s, struct entry *entry)
       {
         struct entry *entry_ = (struct entry*)pop(s);
         const cell n = pop(s);
-        if (!n)
-        {
-          execute_(s, entry_);
+        if (!n) {
+          // OP_RETURN: leaving the current word
+          if (entry_->code[0].opcode == OP_RETURN)
+          {
+            pc = &entry->code[entry->code_len];
+          }
+          // Call itself -> recurse
+          else if (entry_ == entry)
+          {
+            pc = &entry->code[-1];
+          }
+          // Call entry on the stack
+          else
+          {
+            execute_(s, entry_);
+          }
         }
         break;
       }
@@ -344,12 +394,20 @@ execute_(struct state *s, struct entry *entry)
         struct entry *entry_false_ = (struct entry*)pop(s);
         struct entry *entry_true_ = (struct entry*)pop(s);
         const cell n = pop(s);
-        if (n)
+        struct entry *entry_ = n ? entry_true_ : entry_false_;
+        if (entry_->code[0].opcode == OP_RETURN)
         {
-          execute_(s, entry_true_);
+          pc = &entry->code[entry->code_len];
         }
-        else {
-          execute_(s, entry_false_);
+        // Call itself -> recurse
+        else if (entry_ == entry)
+        {
+          pc = &entry->code[-1];
+        }
+        // Call entry on the stack
+        else
+        {
+          execute_(s, entry_);
         }
         break;
       }
