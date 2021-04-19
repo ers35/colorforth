@@ -25,6 +25,7 @@ enum opcode
   OP_CHOOSE,
   OP_BYE,
   OP_WORDS,
+  OP_DISASSEMBLE_DICT,
   OP_RETURN,
   OP_EMIT,
   OP_KEY,
@@ -117,6 +118,31 @@ find_entry(struct state *s)
     }
   }
   return NULL;
+}
+
+static void
+disassemble_dict (struct state *s)
+{
+  printf("-------- Words ------------------------------------------\n");
+  for (struct entry *entry = s->latest; entry; entry = entry->prev)
+    {
+      s->tib.len = entry->name_len;
+      memcpy(s->tib.buf, entry->name, entry->name_len);
+      struct entry *entry_ = find_entry(s);
+      printf("[%lu] ", (cell)entry_);
+      printf("%.*s: ", (int)entry->name_len, entry->name);
+      for (cell i = 0; i < entry->code_len; i++) {
+        printf("%d(", entry->code[i].opcode);
+        if (entry->code[i].opcode == OP_CALL || entry->code[i].opcode == OP_TAIL_CALL) {
+          struct entry *entry_ = (struct entry*) entry->code[i].this;
+          printf("%s | ", entry_->name);
+        }
+        printf("%ld) ", entry->code[i].this);
+      }
+      printf("\n");
+    }
+  printf("---------------------------------------------------------\n");
+
 }
 
 // 'name' must be null-terminated.
@@ -342,6 +368,12 @@ execute_(struct state *s, struct entry *entry)
         }
         break;
       }
+
+      case OP_DISASSEMBLE_DICT:
+      {
+        disassemble_dict(s);
+        break;
+      }
       
       case OP_RETURN:
       {
@@ -528,6 +560,7 @@ main(int argc, char *argv[])
     {"choose", OP_CHOOSE},
     {"bye", OP_BYE},
     {"words", OP_WORDS},
+    {"words+", OP_DISASSEMBLE_DICT},
     {";", OP_RETURN},
     {"emit", OP_EMIT},
     {"key", OP_KEY},
