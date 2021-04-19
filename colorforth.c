@@ -47,14 +47,14 @@ typedef size_t cell;
 // terminal input buffer
 struct tib
 {
-  char buf[8];
+  char buf[20];
   size_t len;
 };
 struct code;
 struct entry;
 struct entry
 {
-  char name[8];
+  char name[20];
   cell name_len;
   struct entry *prev;
   cell code_len;
