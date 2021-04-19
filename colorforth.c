@@ -234,7 +234,7 @@ compile(struct state *s)
 static void
 execute_(struct state *s, struct entry *entry)
 {
-  //~ printf("%s\t%li\n", entry->name, entry->code_len);
+  // printf("-> %s\t%li\n", entry->name, entry->code_len);
   for (struct code *pc = &entry->code[0]; pc < &entry->code[entry->code_len]; ++pc)
   {
     switch (pc->opcode)
@@ -473,6 +473,7 @@ execute_(struct state *s, struct entry *entry)
       }
     }
   }
+  // printf("   %s(done) <-\n", entry->name);
 }
 
 static void
