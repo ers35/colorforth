@@ -44,4 +44,4 @@
                         auto-mode-alist))
 
 
-(provide 'colorForth-mode)
+(provide 'colorforth)
