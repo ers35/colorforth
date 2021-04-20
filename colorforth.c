@@ -281,13 +281,13 @@ execute_(struct state *s, struct entry *entry)
         fflush(stdout);
         break;
       }
-      
+
       case OP_DUP:
       {
         push(s, s->stack[s->sp]);
         break;
       }
-      
+
       case OP_OVER:
       {
         const cell n1 = pop(s);
@@ -297,7 +297,7 @@ execute_(struct state *s, struct entry *entry)
         push(s, n2);
         break;
       }
-      
+
       case OP_SWAP:
       {
         const cell n1 = pop(s);
@@ -306,13 +306,13 @@ execute_(struct state *s, struct entry *entry)
         push(s, n2);
         break;
       }
-      
+
       case OP_DROP:
       {
         pop(s);
         break;
       }
-      
+
       case OP_ADD:
       {
         const cell n1 = pop(s);
@@ -320,7 +320,7 @@ execute_(struct state *s, struct entry *entry)
         push(s, n1 + n2);
         break;
       }
-      
+
       case OP_SUB:
       {
         const cell n1 = pop(s);
@@ -328,7 +328,7 @@ execute_(struct state *s, struct entry *entry)
         push(s, n1 - n2);
         break;
       }
-      
+
       case OP_MUL:
       {
         const cell n1 = pop(s);
@@ -336,7 +336,7 @@ execute_(struct state *s, struct entry *entry)
         push(s, n1 * n2);
         break;
       }
-      
+
       case OP_EQUAL:
       {
         const cell n1 = pop(s);
@@ -344,7 +344,7 @@ execute_(struct state *s, struct entry *entry)
         push(s, n1 == n2);
         break;
       }
-      
+
       case OP_LESS:
       {
         const cell n1 = pop(s);
@@ -352,7 +352,7 @@ execute_(struct state *s, struct entry *entry)
         push(s, n2 < n1);
         break;
       }
-      
+
       case OP_WHEN:
       {
         struct entry *entry_ = (struct entry*)pop(s);
@@ -425,13 +425,13 @@ execute_(struct state *s, struct entry *entry)
         }
         break;
       }
-      
+
       case OP_BYE:
       {
         exit(0);
         break;
       }
-      
+
       case OP_WORDS:
       {
         for (struct entry *entry = s->latest; entry; entry = entry->prev)
@@ -446,7 +446,7 @@ execute_(struct state *s, struct entry *entry)
         disassemble_dict(s);
         break;
       }
-      
+
       case OP_RETURN:
       {
         pc = &entry->code[entry->code_len];
@@ -458,19 +458,19 @@ execute_(struct state *s, struct entry *entry)
         putchar((char)pop(s));
         break;
       }
-      
+
       case OP_KEY:
       {
         push(s, (char)getchar());
         break;
       }
-      
+
       case OP_LOAD:
       {
         push(s, *(cell*)pop(s));
         break;
       }
-      
+
       case OP_STORE:
       {
         cell *ptr = (cell*)pop(s);
@@ -478,13 +478,13 @@ execute_(struct state *s, struct entry *entry)
         *ptr = n;
         break;
       }
-      
+
       case OP_CLOAD:
       {
         push(s, *(char*)pop(s));
         break;
       }
-      
+
       case OP_CSTORE:
       {
         char *ptr = (char*)pop(s);
@@ -492,13 +492,13 @@ execute_(struct state *s, struct entry *entry)
         *ptr = n;
         break;
       }
-      
+
       case OP_CELL:
       {
         push(s, sizeof(cell));
         break;
       }
-      
+
       case OP_CALL:
       {
         struct entry *entry_ = (struct entry*)pc->this;
@@ -506,13 +506,13 @@ execute_(struct state *s, struct entry *entry)
         execute_(s, entry_);
         break;
       }
-      
+
       case OP_TAIL_CALL:
       {
         pc = &entry->code[-1];
         break;
       }
-      
+
       case OP_NUMBER:
       {
         push(s, pc->this);
@@ -525,19 +525,19 @@ execute_(struct state *s, struct entry *entry)
         execute_(s, entry_);
         break;
       }
-      
+
       case OP_HERE:
       {
         push(s, (cell)&s->here);
         break;
       }
-      
+
       case OP_SYSTEM:
       {
         push(s, system((char*)pop(s)));
         break;
       }
-      
+
       default:
       {
         puts("unknown opcode");
@@ -606,7 +606,7 @@ compile_tick(struct state *s)
 static void
 comment(struct state *s)
 {
-  
+
 }
 
 struct state*
@@ -621,6 +621,102 @@ colorforth_newstate(void)
   return state;
 }
 
+void
+parse_colorforth(struct state *state, int c) {
+  switch (c)
+  {
+    case ':':
+    {
+      state->color = define;
+      break;
+    }
+
+    case '^':
+    {
+      if (state->color == execute)
+      {
+        struct code *code = &state->latest->code[state->latest->code_len];
+        code->opcode = OP_NUMBER;
+        code->this = pop(state);
+        state->latest->code_len += 1;
+      }
+      state->color = compile;
+      break;
+    }
+
+    case '~':
+    {
+      state->color = execute;
+      break;
+    }
+
+    case '\'':
+    {
+      if (state->color == execute)
+      {
+        state->color = tick;
+      }
+      else
+      {
+        state->color = compile_tick;
+      }
+      break;
+    }
+
+    case '(':
+    {
+      state->color = comment;
+      break;
+    }
+
+    case ',':
+    {
+      state->color = compile_inline;
+      break;
+    }
+
+    case '\n':
+    case ' ':
+    case '\t':
+    {
+      if (state->tib.len == 0)
+      {
+        // Strip leading whitespace.
+      }
+      else
+      {
+        // Have word.
+        state->color(state);
+        state->tib.len = 0;
+      }
+      break;
+    }
+
+    case EOF:
+    {
+      //~ exit(0);
+      break;
+    }
+
+    default:
+    {
+      if (state->tib.len < sizeof(state->tib.buf))
+      {
+        state->tib.buf[state->tib.len++] = c;
+      }
+      break;
+    }
+  }
+  if (c == '\n')
+  {
+    state->coll = 0; state->line += 1;
+  }
+  else
+  {
+    state->coll += 1;
+  }
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -629,7 +725,7 @@ main(int argc, char *argv[])
   {
     const char *name;
     const enum opcode opcode;
-  } primitive_map[] = 
+  } primitive_map[] =
   {
     {".", OP_PRINT_TOS},
     {"dup", OP_DUP},
@@ -665,104 +761,7 @@ main(int argc, char *argv[])
   }
   while (1)
   {
-    state->tib.len = 0;
-    bool reading_word = true;
-    while (reading_word)
-    {
-      int c;
-      switch (c = getchar())
-      {
-        case ':':
-        {
-          state->color = define;
-          break;
-        }
-        
-        case '^':
-        {
-          if (state->color == execute)
-          {
-            struct code *code = &state->latest->code[state->latest->code_len];
-            code->opcode = OP_NUMBER;
-            code->this = pop(state);
-            state->latest->code_len += 1;
-          }
-          state->color = compile;
-          break;
-        }
-        
-        case '~':
-        {
-          state->color = execute;
-          break;
-        }
-
-        case '\'':
-        {
-          if (state->color == execute)
-          {
-            state->color = tick;
-          }
-          else
-          {
-            state->color = compile_tick;
-          }
-          break;
-        }
-        
-        case '(':
-        {
-          state->color = comment;
-          break;
-        }
-
-        case ',':
-        {
-          state->color = compile_inline;
-          break;
-        }
-        
-        case '\n':
-        case ' ':
-        case '\t':
-        {
-          if (state->tib.len == 0)
-          {
-            // Strip leading whitespace.
-          }
-          else
-          {
-            // Have word.
-            state->color(state);
-            reading_word = false;
-          }
-          break;
-        }
-        
-        case EOF:
-        {
-          //~ exit(0);
-          break;
-        }
-        
-        default:
-        {
-          if (state->tib.len < sizeof(state->tib.buf))
-          {
-            state->tib.buf[state->tib.len++] = c;
-          }
-          break;
-        }
-      }
-      if (c == '\n')
-      {
-        state->coll = 0; state->line += 1;
-      }
-      else
-      {
-        state->coll += 1;
-      }
-    }
+    parse_colorforth(state, getchar());
   }
   return 0;
 }
