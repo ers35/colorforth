@@ -39,6 +39,7 @@ enum opcode
   OP_TAIL_CALL,
   OP_EXECUTE,
   OP_NUMBER,
+  OP_TICK_NUMBER,
   OP_HERE,
   OP_SEE,
   OP_SYSTEM,
@@ -176,7 +177,6 @@ see(struct state *s, struct entry *entry)
 {
   if (entry)
   {
-    printf("[%lu] ", (cell)entry);
     printf(":%.*s ", (int)entry->name_len, entry->name);
     for (cell i = 0; i < entry->code_len; i++)
     {
@@ -191,6 +191,12 @@ see(struct state *s, struct entry *entry)
         case OP_TAIL_CALL:
         {
           printf("[%s] ", entry_->name);
+          break;
+        }
+
+        case OP_TICK_NUMBER:
+        {
+          printf("'%s ", entry_->name);
           break;
         }
 
@@ -588,6 +594,7 @@ execute_(struct state *s, struct entry *entry)
       }
 
       case OP_NUMBER:
+      case OP_TICK_NUMBER:
       {
         push(s, pc->this);
         break;
@@ -673,7 +680,7 @@ compile_tick(struct state *s)
   if (entry)
   {
     struct code *code = &s->latest->code[s->latest->code_len];
-    code->opcode = OP_NUMBER;
+    code->opcode = OP_TICK_NUMBER;
     code->this = (cell)entry;
     s->latest->code_len += 1;
   }
