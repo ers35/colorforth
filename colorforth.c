@@ -578,6 +578,20 @@ tick(struct state *s)
   struct entry *entry = find_entry(s);
   if (entry)
   {
+    push(s, (cell)entry);
+  }
+  else
+  {
+    unknow_word(s, "ticking");
+  }
+}
+
+static void
+compile_tick(struct state *s)
+{
+  struct entry *entry = find_entry(s);
+  if (entry)
+  {
     struct code *code = &s->latest->code[s->latest->code_len];
     code->opcode = OP_NUMBER;
     code->this = (cell)entry;
@@ -686,7 +700,14 @@ main(int argc, char *argv[])
 
         case '\'':
         {
-          color = tick;
+          if (color == execute)
+          {
+            color = tick;
+          }
+          else
+          {
+            color = compile_tick;
+          }
           break;
         }
         
