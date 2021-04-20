@@ -81,6 +81,41 @@ struct state
   size_t line, coll;
 };
 
+static const struct primitive_map
+{
+  const char *name;
+  const enum opcode opcode;
+} primitive_map[] =
+{
+  {".", OP_PRINT_TOS},
+  {"dup", OP_DUP},
+  {"over", OP_OVER},
+  {"swap", OP_SWAP},
+  {"drop", OP_DROP},
+  {"+", OP_ADD},
+  {"-", OP_SUB},
+  {"*", OP_MUL},
+  {"=", OP_EQUAL},
+  {"<", OP_LESS},
+  {"when", OP_WHEN},
+  {"unless", OP_UNLESS},
+  {"choose", OP_CHOOSE},
+  {"bye", OP_BYE},
+  {"words", OP_WORDS},
+  {"words+", OP_DISASSEMBLE_DICT},
+  {";", OP_RETURN},
+  {"emit", OP_EMIT},
+  {"key", OP_KEY},
+  {"@", OP_LOAD},
+  {"!", OP_STORE},
+  {"c@", OP_CLOAD},
+  {"c!", OP_CSTORE},
+  {"cell", OP_CELL},
+  {"here", OP_HERE},
+  {"execute", OP_EXECUTE},
+  {"system", OP_SYSTEM},
+};
+
 static void
 push(struct state *s, const cell n)
 {
@@ -618,6 +653,12 @@ colorforth_newstate(void)
   state->latest = state->dictionary;
   state->here = calloc(1, 4096);
   state->coll = 0; state->line = 1;
+
+  for (unsigned int i = 0; i < sizeof(primitive_map) / sizeof(primitive_map[0]); ++i)
+  {
+    define_primitive(state, primitive_map[i].name, primitive_map[i].opcode);
+  }
+
   return state;
 }
 
@@ -721,44 +762,6 @@ int
 main(int argc, char *argv[])
 {
   struct state *state = colorforth_newstate();
-  static const struct primitive_map
-  {
-    const char *name;
-    const enum opcode opcode;
-  } primitive_map[] =
-  {
-    {".", OP_PRINT_TOS},
-    {"dup", OP_DUP},
-    {"over", OP_OVER},
-    {"swap", OP_SWAP},
-    {"drop", OP_DROP},
-    {"+", OP_ADD},
-    {"-", OP_SUB},
-    {"*", OP_MUL},
-    {"=", OP_EQUAL},
-    {"<", OP_LESS},
-    {"when", OP_WHEN},
-    {"unless", OP_UNLESS},
-    {"choose", OP_CHOOSE},
-    {"bye", OP_BYE},
-    {"words", OP_WORDS},
-    {"words+", OP_DISASSEMBLE_DICT},
-    {";", OP_RETURN},
-    {"emit", OP_EMIT},
-    {"key", OP_KEY},
-    {"@", OP_LOAD},
-    {"!", OP_STORE},
-    {"c@", OP_CLOAD},
-    {"c!", OP_CSTORE},
-    {"cell", OP_CELL},
-    {"here", OP_HERE},
-    {"execute", OP_EXECUTE},
-    {"system", OP_SYSTEM},
-  };
-  for (unsigned int i = 0; i < sizeof(primitive_map) / sizeof(primitive_map[0]); ++i)
-  {
-    define_primitive(state, primitive_map[i].name, primitive_map[i].opcode);
-  }
   while (1)
   {
     parse_colorforth(state, getchar());
