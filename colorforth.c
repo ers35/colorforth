@@ -40,6 +40,7 @@ enum opcode
   OP_EXECUTE,
   OP_NUMBER,
   OP_HERE,
+  OP_SEE,
   OP_SYSTEM,
 };
 
@@ -113,6 +114,7 @@ static const struct primitive_map
   {"cell", OP_CELL},
   {"here", OP_HERE},
   {"execute", OP_EXECUTE},
+  {"see", OP_SEE},
   {"system", OP_SYSTEM},
 };
 
@@ -159,32 +161,6 @@ find_entry(struct state *s)
 }
 
 static void
-disassemble_dict (struct state *s)
-{
-  printf("-------- Words ------------------------------------------\n");
-  for (struct entry *entry = s->latest; entry; entry = entry->prev)
-  {
-    s->tib.len = entry->name_len;
-    memcpy(s->tib.buf, entry->name, entry->name_len);
-    struct entry *entry_ = find_entry(s);
-    printf("[%lu] ", (cell)entry_);
-    printf("%.*s: ", (int)entry->name_len, entry->name);
-    for (cell i = 0; i < entry->code_len; i++)
-    {
-      printf("%d(", entry->code[i].opcode);
-      if (entry->code[i].opcode == OP_CALL || entry->code[i].opcode == OP_TAIL_CALL)
-      {
-        struct entry *entry_ = (struct entry*) entry->code[i].this;
-        printf("%s | ", entry_->name);
-      }
-      printf("%ld) ", entry->code[i].this);
-    }
-    printf("\n");
-  }
-  printf("---------------------------------------------------------\n");
-}
-
-static void
 unknow_word (struct state *s, const char *msg)
 {
   printf("Error %s '", msg);
@@ -193,6 +169,69 @@ unknow_word (struct state *s, const char *msg)
     putchar(s->tib.buf[i]);
   }
   printf("': unknown word at line %ld, column %ld\n", s->line, s->coll);
+}
+
+static void
+see(struct state *s, struct entry *entry)
+{
+  if (entry)
+  {
+    printf("[%lu] ", (cell)entry);
+    printf(":%.*s ", (int)entry->name_len, entry->name);
+    for (cell i = 0; i < entry->code_len; i++)
+    {
+      struct entry *entry_ = (struct entry*) entry->code[i].this;
+      switch(entry->code[i].opcode)
+      {
+        case OP_CALL:
+        {
+          printf("%s ", entry_->name);
+          break;
+        }
+        case OP_TAIL_CALL:
+        {
+          printf("[%s] ", entry_->name);
+          break;
+        }
+
+        case OP_NUMBER:
+        {
+          printf("%ld ", entry->code[i].this);
+          break;
+        }
+
+        default:
+        {
+          for (unsigned int j = 0; j < sizeof(primitive_map) / sizeof(primitive_map[0]); j++)
+          {
+            if (primitive_map[j].opcode == entry->code[i].opcode)
+            {
+              printf("%s ", primitive_map[j].name);
+            }
+          }
+        }
+      }
+    }
+    printf("\n");
+  }
+  else
+  {
+    unknow_word(s, "with");
+  }
+}
+
+static void
+disassemble_dict(struct state *s)
+{
+  printf("-------- Words ------------------------------------------\n");
+  for (struct entry *entry = s->latest; entry; entry = entry->prev)
+  {
+    s->tib.len = entry->name_len;
+    memcpy(s->tib.buf, entry->name, entry->name_len);
+    struct entry *entry_ = find_entry(s);
+    see(s, entry_);
+  }
+  printf("---------------------------------------------------------\n");
 }
 
 // 'name' must be null-terminated.
@@ -564,6 +603,13 @@ execute_(struct state *s, struct entry *entry)
       case OP_HERE:
       {
         push(s, (cell)&s->here);
+        break;
+      }
+
+      case OP_SEE:
+      {
+        struct entry *entry_ = (struct entry*)pop(s);
+        see(s, entry_);
         break;
       }
 
