@@ -76,6 +76,8 @@ struct state
   struct entry *dictionary;
   struct entry *latest;
   void *here;
+  // track stream position for debugging compilation
+  size_t line, coll;
 };
 
 static void
@@ -145,13 +147,13 @@ disassemble_dict (struct state *s)
 }
 
 static void
-exit_unknow_word (struct state *s) {
+unknow_word (struct state *s, const char *msg) {
+  printf("Error %s '", msg);
   for(size_t i = 0; i < s->tib.len; i++)
-    {
-      putchar(s->tib.buf[i]);
-    }
-  puts(": unknown word?");
-  exit(1);
+  {
+    putchar(s->tib.buf[i]);
+  }
+  printf("': unknown word at line %ld, column %ld\n", s->line, s->coll);
 }
 
 // 'name' must be null-terminated.
@@ -235,7 +237,8 @@ compile(struct state *s)
     }
     else
     {
-      exit_unknow_word(s);
+      unknow_word(s, "compiling");
+      exit(1);
     }
   }
 }
@@ -256,7 +259,8 @@ compile_inline(struct state *s)
   }
   else
   {
-    exit_unknow_word(s);
+    unknow_word(s, "inlining");
+    exit(1);
   }
 }
 
@@ -557,7 +561,7 @@ execute(struct state *s)
     }
     else
     {
-      printf("? ");
+      unknow_word(s, "executing");
     }
   }
 }
@@ -574,7 +578,8 @@ tick(struct state *s)
   }
   else
   {
-    exit_unknow_word(s);
+    unknow_word(s, "ticking");
+    exit(1);
   }
 }
 
@@ -637,6 +642,7 @@ main(int argc, char *argv[])
     define_primitive(state, primitive_map[i].name, primitive_map[i].opcode);
   }
   func color = execute;
+  state->coll = 0; state->line = 1;
   while (1)
   {
     state->tib.len = 0;
@@ -720,6 +726,14 @@ main(int argc, char *argv[])
           }
           break;
         }
+      }
+      if (c == '\n')
+      {
+        state->coll = 0; state->line += 1;
+      }
+      else
+      {
+        state->coll += 1;
       }
     }
   }
