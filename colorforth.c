@@ -142,7 +142,16 @@ disassemble_dict (struct state *s)
       printf("\n");
     }
   printf("---------------------------------------------------------\n");
+}
 
+static void
+exit_unknow_word (struct state *s) {
+  for(size_t i = 0; i < s->tib.len; i++)
+    {
+      putchar(s->tib.buf[i]);
+    }
+  puts(": unknown word?");
+  exit(1);
 }
 
 // 'name' must be null-terminated.
@@ -206,27 +215,6 @@ compile(struct state *s)
       code->opcode = OP_TAIL_CALL;
       code->this = 0;
     }
-    // Compile OP_WHEN directly instead of calling it
-    // TODO: replace with macro!!!!
-    else if (strcmp(entry->name, "when") == 0)
-    {
-      code->opcode = OP_WHEN;
-      code->this = 0;
-    }
-    // Compile OP_UNLESS directly instead of calling it
-    // TODO: replace with macro!!!!
-    else if (strcmp(entry->name, "unless") == 0)
-    {
-      code->opcode = OP_UNLESS;
-      code->this = 0;
-    }
-    // Compile OP_CHOOSE directly instead of calling it
-    // TODO: replace with macro!!!!
-    else if (strcmp(entry->name, "choose") == 0)
-    {
-      code->opcode = OP_CHOOSE;
-      code->this = 0;
-    }
     else
     {
       code->opcode = OP_CALL;
@@ -247,8 +235,28 @@ compile(struct state *s)
     }
     else
     {
-      printf("? ");
+      exit_unknow_word(s);
     }
+  }
+}
+
+static void
+compile_inline(struct state *s)
+{
+  struct entry *entry = find_entry(s);
+  if (entry)
+  {
+    const cell code_len = entry->code_len == 1 ? 1 : entry->code_len - 1;
+    for (cell i = 0; i < code_len; i++) {
+      struct code *code = &s->latest->code[s->latest->code_len];
+      code->opcode = entry->code[i].opcode;
+      code->this = entry->code[i].this;
+      s->latest->code_len += 1;
+    }
+  }
+  else
+  {
+    exit_unknow_word(s);
   }
 }
 
@@ -566,12 +574,7 @@ tick(struct state *s)
   }
   else
   {
-    for(size_t i = 0; i < s->tib.len; i++)
-    {
-      putchar(s->tib.buf[i]);
-    }
-    puts(": unknown word?");
-    exit(1);
+    exit_unknow_word(s);
   }
 }
 
@@ -677,6 +680,12 @@ main(int argc, char *argv[])
         case '(':
         {
           color = comment;
+          break;
+        }
+
+        case ',':
+        {
+          color = compile_inline;
           break;
         }
         
