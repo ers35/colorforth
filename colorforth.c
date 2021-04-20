@@ -68,6 +68,7 @@ struct entry
 
 struct state
 {
+  void (*color)(struct state *s);
   // circular stack
   cell stack[8];
   // stack position
@@ -172,8 +173,6 @@ define_primitive(struct state *s, const char name[], const enum opcode opcode)
   entry->code_len = 1;
   s->latest = entry;
 }
-
-typedef void (*func)(struct state *s);
 
 static void
 define(struct state *s)
@@ -614,9 +613,11 @@ struct state*
 colorforth_newstate(void)
 {
   struct state *state = calloc(1, sizeof(*state));
+  state->color = execute;
   state->dictionary = calloc(1, 4096);
   state->latest = state->dictionary;
   state->here = calloc(1, 4096);
+  state->coll = 0; state->line = 1;
   return state;
 }
 
@@ -662,8 +663,6 @@ main(int argc, char *argv[])
   {
     define_primitive(state, primitive_map[i].name, primitive_map[i].opcode);
   }
-  func color = execute;
-  state->coll = 0; state->line = 1;
   while (1)
   {
     state->tib.len = 0;
@@ -675,51 +674,51 @@ main(int argc, char *argv[])
       {
         case ':':
         {
-          color = define;
+          state->color = define;
           break;
         }
         
         case '^':
         {
-          if (color == execute)
+          if (state->color == execute)
           {
             struct code *code = &state->latest->code[state->latest->code_len];
             code->opcode = OP_NUMBER;
             code->this = pop(state);
             state->latest->code_len += 1;
           }
-          color = compile;
+          state->color = compile;
           break;
         }
         
         case '~':
         {
-          color = execute;
+          state->color = execute;
           break;
         }
 
         case '\'':
         {
-          if (color == execute)
+          if (state->color == execute)
           {
-            color = tick;
+            state->color = tick;
           }
           else
           {
-            color = compile_tick;
+            state->color = compile_tick;
           }
           break;
         }
         
         case '(':
         {
-          color = comment;
+          state->color = comment;
           break;
         }
 
         case ',':
         {
-          color = compile_inline;
+          state->color = compile_inline;
           break;
         }
         
@@ -734,7 +733,7 @@ main(int argc, char *argv[])
           else
           {
             // Have word.
-            color(state);
+            state->color(state);
             reading_word = false;
           }
           break;
