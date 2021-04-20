@@ -127,27 +127,30 @@ disassemble_dict (struct state *s)
 {
   printf("-------- Words ------------------------------------------\n");
   for (struct entry *entry = s->latest; entry; entry = entry->prev)
+  {
+    s->tib.len = entry->name_len;
+    memcpy(s->tib.buf, entry->name, entry->name_len);
+    struct entry *entry_ = find_entry(s);
+    printf("[%lu] ", (cell)entry_);
+    printf("%.*s: ", (int)entry->name_len, entry->name);
+    for (cell i = 0; i < entry->code_len; i++)
     {
-      s->tib.len = entry->name_len;
-      memcpy(s->tib.buf, entry->name, entry->name_len);
-      struct entry *entry_ = find_entry(s);
-      printf("[%lu] ", (cell)entry_);
-      printf("%.*s: ", (int)entry->name_len, entry->name);
-      for (cell i = 0; i < entry->code_len; i++) {
-        printf("%d(", entry->code[i].opcode);
-        if (entry->code[i].opcode == OP_CALL || entry->code[i].opcode == OP_TAIL_CALL) {
-          struct entry *entry_ = (struct entry*) entry->code[i].this;
-          printf("%s | ", entry_->name);
-        }
-        printf("%ld) ", entry->code[i].this);
+      printf("%d(", entry->code[i].opcode);
+      if (entry->code[i].opcode == OP_CALL || entry->code[i].opcode == OP_TAIL_CALL)
+      {
+        struct entry *entry_ = (struct entry*) entry->code[i].this;
+        printf("%s | ", entry_->name);
       }
-      printf("\n");
+      printf("%ld) ", entry->code[i].this);
     }
+    printf("\n");
+  }
   printf("---------------------------------------------------------\n");
 }
 
 static void
-unknow_word (struct state *s, const char *msg) {
+unknow_word (struct state *s, const char *msg)
+{
   printf("Error %s '", msg);
   for(size_t i = 0; i < s->tib.len; i++)
   {
@@ -250,7 +253,8 @@ compile_inline(struct state *s)
   if (entry)
   {
     const cell code_len = entry->code_len == 1 ? 1 : entry->code_len - 1;
-    for (cell i = 0; i < code_len; i++) {
+    for (cell i = 0; i < code_len; i++)
+    {
       struct code *code = &s->latest->code[s->latest->code_len];
       code->opcode = entry->code[i].opcode;
       code->this = entry->code[i].this;
@@ -354,7 +358,8 @@ execute_(struct state *s, struct entry *entry)
       {
         struct entry *entry_ = (struct entry*)pop(s);
         const cell n = pop(s);
-        if (n) {
+        if (n)
+        {
           // OP_RETURN: leaving the current word
           if (entry_->code[0].opcode == OP_RETURN)
           {
@@ -378,7 +383,8 @@ execute_(struct state *s, struct entry *entry)
       {
         struct entry *entry_ = (struct entry*)pop(s);
         const cell n = pop(s);
-        if (!n) {
+        if (!n)
+        {
           // OP_RETURN: leaving the current word
           if (entry_->code[0].opcode == OP_RETURN)
           {
@@ -570,7 +576,8 @@ static void
 tick(struct state *s)
 {
   struct entry *entry = find_entry(s);
-  if (entry) {
+  if (entry)
+  {
     struct code *code = &s->latest->code[s->latest->code_len];
     code->opcode = OP_NUMBER;
     code->this = (cell)entry;
