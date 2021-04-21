@@ -190,7 +190,7 @@ see(struct state *s, struct entry *entry)
         }
         case OP_TAIL_CALL:
         {
-          printf("[%s] ", entry_->name);
+          printf("%s ", entry->name);
           break;
         }
 
