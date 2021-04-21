@@ -9,8 +9,11 @@
 #include <string.h>
 
 #include "colorforth.h"
-#include "os-utils.h"
-#include "dict-utils.h"
+
+
+extern void system_func(struct state *s);
+extern void disassemble_dict(struct state *s);
+extern void see_func(struct state *s);
 
 void
 push(struct state *s, const cell n)
