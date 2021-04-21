@@ -10,13 +10,7 @@
 
 #include "colorforth.h"
 #include "os-utils.h"
-
-static struct primitive_map
-{
-  char *name;
-  enum opcode opcode;
-  void (*func)();
-} primitive_map[__LAST_NOT_AN_OPCODE__];
+#include "dict-utils.h"
 
 void
 push(struct state *s, const cell n)
@@ -47,7 +41,7 @@ pop(struct state *s)
   return n;
 }
 
-static struct entry*
+struct entry*
 find_entry(struct state *s)
 {
   for (struct entry *entry = s->latest; entry; entry = entry->prev)
@@ -60,7 +54,7 @@ find_entry(struct state *s)
   return NULL;
 }
 
-static void
+void
 unknow_word (struct state *s, const char *msg)
 {
   printf("Error %s '", msg);
@@ -69,68 +63,6 @@ unknow_word (struct state *s, const char *msg)
     putchar(s->tib.buf[i]);
   }
   printf("': unknown word at line %ld, column %ld\n", s->line, s->coll);
-}
-
-static void
-see(struct state *s, struct entry *entry)
-{
-  if (entry)
-  {
-    printf(":%.*s ", (int)entry->name_len, entry->name);
-    for (size_t i = 0; i < entry->code_len; i++)
-    {
-      struct entry *entry_ = (struct entry*) entry->code[i].this;
-      switch(entry->code[i].opcode)
-      {
-        case OP_CALL:
-        {
-          printf("%s ", entry_->name);
-          break;
-        }
-        case OP_TAIL_CALL:
-        {
-          printf("%s ", entry->name);
-          break;
-        }
-
-        case OP_TICK_NUMBER:
-        {
-          printf("'%s ", entry_->name);
-          break;
-        }
-
-        case OP_NUMBER:
-        {
-          printf("%ld ", entry->code[i].this);
-          break;
-        }
-
-        default:
-        {
-          printf("%s ", primitive_map[entry->code[i].opcode].name);
-        }
-      }
-    }
-    printf("\n");
-  }
-  else
-  {
-    unknow_word(s, "with");
-  }
-}
-
-static void
-disassemble_dict(struct state *s)
-{
-  printf("-------- Words ------------------------------------------\n");
-  for (struct entry *entry = s->latest; entry; entry = entry->prev)
-  {
-    s->tib.len = entry->name_len;
-    memcpy(s->tib.buf, entry->name, entry->name_len);
-    struct entry *entry_ = find_entry(s);
-    see(s, entry_);
-  }
-  printf("---------------------------------------------------------\n");
 }
 
 // 'name' must be null-terminated.
@@ -414,12 +346,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_DISASSEMBLE_DICT:
-      {
-        disassemble_dict(s);
-        break;
-      }
-
       case OP_RETURN:
       {
         pc = &entry->code[entry->code_len];
@@ -503,13 +429,6 @@ execute_(struct state *s, struct entry *entry)
       case OP_HERE:
       {
         push(s, (cell)&s->here);
-        break;
-      }
-
-      case OP_SEE:
-      {
-        struct entry *entry_ = (struct entry*)pop(s);
-        see(s, entry_);
         break;
       }
 
@@ -715,7 +634,6 @@ colorforth_newstate(void)
   define_primitive(state, "choose", OP_CHOOSE);
   define_primitive(state, "bye", OP_BYE);
   define_primitive(state, "words", OP_WORDS);
-  define_primitive(state, "words+", OP_DISASSEMBLE_DICT);
   define_primitive(state, ";", OP_RETURN);
   define_primitive(state, "emit", OP_EMIT);
   define_primitive(state, "key", OP_KEY);
@@ -726,9 +644,11 @@ colorforth_newstate(void)
   define_primitive(state, "cell", OP_CELL);
   define_primitive(state, "here", OP_HERE);
   define_primitive(state, "execute", OP_EXECUTE);
-  define_primitive(state, "see", OP_SEE);
 
   define_extension(state, "system", OP_SYSTEM, system_func);
+
+  define_extension(state, "see", OP_SEE, see_func);
+  define_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble_dict);
 
   return state;
 }

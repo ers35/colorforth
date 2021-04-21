@@ -1,7 +1,7 @@
 default: colorforth
 
-SRC=colorforth.c os-utils.c
-SRC_H=colorforth.h os-utils.h
+SRC=colorforth.c os-utils.c dict-utils.c
+SRC_H=colorforth.h os-utils.h dict-utils.h
 
 lib.cf.h: lib.cf
 	xxd -i lib.cf lib.cf.h

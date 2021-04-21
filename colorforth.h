@@ -83,7 +83,17 @@ struct state
   size_t line, coll;
 };
 
+struct primitive_map
+{
+  char *name;
+  enum opcode opcode;
+  void (*func)();
+} primitive_map[__LAST_NOT_AN_OPCODE__];
+
 extern void push(struct state *s, const cell n);
 extern cell pop(struct state *s);
+
+extern struct entry* find_entry(struct state *s);
+extern void unknow_word (struct state *s, const char *msg);
 
 #endif /* __COLORFORTH_H */
