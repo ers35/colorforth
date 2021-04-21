@@ -1,9 +1,9 @@
 default: colorforth
 
-lib.fs.h: lib.fs
-	xxd -i lib.fs lib.fs.h
+lib.cf.h: lib.cf
+	xxd -i lib.cf lib.cf.h
 
-colorforth: Makefile colorforth.c lib.fs.h
+colorforth: Makefile colorforth.c lib.cf.h
 	gcc -fPIE -std=c99 -Os -Wall -Wextra -pedantic \
 	-s -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
 	-Wl,--no-ld-generated-unwind-info \
@@ -24,17 +24,17 @@ dumpelf: colorforth
 	readelf -a colorforth | less
 
 colorize: colorforth
-	lua colorize.lua < lib.fs | less -R
+	lua colorize.lua < lib.cf | less -R
 
 run: colorforth
 	@#rlwrap ./colorforth
-	@#rlwrap cat lib.fs - | ./colorforth
-	cat lib.fs - | ./colorforth
-	@#rlwrap xsim --trace colorforth.xe < lib.fs
+	@#rlwrap cat lib.cf - | ./colorforth
+	cat lib.cf - | ./colorforth
+	@#rlwrap xsim --trace colorforth.xe < lib.cf
 
 editor: colorforth
 	stty raw
-	cat lib.fs editor.fs - | ./colorforth
+	cat lib.cf editor.fs - | ./colorforth
 	stty -raw
 
 clean:
