@@ -58,9 +58,9 @@ struct entry;
 struct entry
 {
   char name[20];
-  cell name_len;
+  size_t name_len;
   struct entry *prev;
-  cell code_len;
+  size_t code_len;
   struct code
   {
     enum opcode opcode;
@@ -178,7 +178,7 @@ see(struct state *s, struct entry *entry)
   if (entry)
   {
     printf(":%.*s ", (int)entry->name_len, entry->name);
-    for (cell i = 0; i < entry->code_len; i++)
+    for (size_t i = 0; i < entry->code_len; i++)
     {
       struct entry *entry_ = (struct entry*) entry->code[i].this;
       switch(entry->code[i].opcode)
@@ -265,25 +265,10 @@ define(struct state *s)
   s->latest = entry;
 }
 
-// TODO: use strtoul instead
-// or, support signed with strtol
 static bool
-tib_to_number(struct state *s, cell *n_)
+tib_to_number(struct state *s, cell *n)
 {
-  cell n = 0;
-  for (size_t i = 0; i < s->tib.len; ++i)
-  {
-    if (isdigit(s->tib.buf[i]))
-    {
-      n *= 10;
-      n += s->tib.buf[i] - '0';
-    }
-    else
-    {
-      return 0;
-    }
-  }
-  *n_ = n;
+  *n = strtol(s->tib.buf, NULL, 10);
   return 1;
 }
 
@@ -357,7 +342,7 @@ execute_(struct state *s, struct entry *entry)
     {
       case OP_PRINT_TOS:
       {
-        printf("%"PRIiFAST32" ", pop(s));
+        printf("%ld ", pop(s));
         fflush(stdout);
         break;
       }
@@ -405,7 +390,7 @@ execute_(struct state *s, struct entry *entry)
       {
         const cell n1 = pop(s);
         const cell n2 = pop(s);
-        push(s, n1 - n2);
+        push(s, n2 - n1);
         break;
       }
 
@@ -781,6 +766,10 @@ parse_colorforth(struct state *state, int c) {
       {
         // Have word.
         state->color(state);
+        for(size_t i = 0; i < state->tib.len; i++)
+        {
+          state->tib.buf[i] = 0;
+        }
         state->tib.len = 0;
       }
       break;
