@@ -8,118 +8,17 @@
 #include <stdio.h>
 #include <string.h>
 
-enum opcode
-{
-  OP_PRINT_TOS,
-  OP_DUP,
-  OP_OVER,
-  OP_SWAP,
-  OP_DROP,
-  OP_ADD,
-  OP_SUB,
-  OP_MUL,
-  OP_EQUAL,
-  OP_LESS,
-  OP_WHEN,
-  OP_UNLESS,
-  OP_CHOOSE,
-  OP_BYE,
-  OP_WORDS,
-  OP_DISASSEMBLE_DICT,
-  OP_RETURN,
-  OP_EMIT,
-  OP_KEY,
-  OP_LOAD,
-  OP_STORE,
-  OP_CLOAD,
-  OP_CSTORE,
-  OP_CELL,
-  // call defined word
-  OP_CALL,
-  OP_TAIL_CALL,
-  OP_EXECUTE,
-  OP_NUMBER,
-  OP_TICK_NUMBER,
-  OP_HERE,
-  OP_SEE,
-  OP_SYSTEM,
-};
+#include "colorforth.h"
+#include "os-utils.h"
 
-typedef size_t cell;
+static struct primitive_map
+{
+  char *name;
+  enum opcode opcode;
+  void (*func)();
+} primitive_map[__LAST_NOT_AN_OPCODE__];
 
-// terminal input buffer
-struct tib
-{
-  char buf[20];
-  size_t len;
-};
-struct code;
-struct entry;
-struct entry
-{
-  char name[20];
-  size_t name_len;
-  struct entry *prev;
-  size_t code_len;
-  struct code
-  {
-    enum opcode opcode;
-    cell this;
-  } code[];
-};
-
-struct state
-{
-  void (*color)(struct state *s);
-  // circular stack
-  cell stack[8];
-  // stack position
-  int sp;
-  struct tib tib;
-  struct entry *dictionary;
-  struct entry *latest;
-  void *here;
-  // track stream position for debugging compilation
-  size_t line, coll;
-};
-
-static const struct primitive_map
-{
-  const char *name;
-  const enum opcode opcode;
-} primitive_map[] =
-{
-  {".", OP_PRINT_TOS},
-  {"dup", OP_DUP},
-  {"over", OP_OVER},
-  {"swap", OP_SWAP},
-  {"drop", OP_DROP},
-  {"+", OP_ADD},
-  {"-", OP_SUB},
-  {"*", OP_MUL},
-  {"=", OP_EQUAL},
-  {"<", OP_LESS},
-  {"when", OP_WHEN},
-  {"unless", OP_UNLESS},
-  {"choose", OP_CHOOSE},
-  {"bye", OP_BYE},
-  {"words", OP_WORDS},
-  {"words+", OP_DISASSEMBLE_DICT},
-  {";", OP_RETURN},
-  {"emit", OP_EMIT},
-  {"key", OP_KEY},
-  {"@", OP_LOAD},
-  {"!", OP_STORE},
-  {"c@", OP_CLOAD},
-  {"c!", OP_CSTORE},
-  {"cell", OP_CELL},
-  {"here", OP_HERE},
-  {"execute", OP_EXECUTE},
-  {"see", OP_SEE},
-  {"system", OP_SYSTEM},
-};
-
-static void
+void
 push(struct state *s, const cell n)
 {
   if (s->sp == (sizeof(s->stack) / sizeof(s->stack[0])) - 1)
@@ -133,7 +32,7 @@ push(struct state *s, const cell n)
   s->stack[s->sp] = n;
 }
 
-static cell
+cell
 pop(struct state *s)
 {
   const cell n = s->stack[s->sp];
@@ -208,13 +107,7 @@ see(struct state *s, struct entry *entry)
 
         default:
         {
-          for (unsigned int j = 0; j < sizeof(primitive_map) / sizeof(primitive_map[0]); j++)
-          {
-            if (primitive_map[j].opcode == entry->code[i].opcode)
-            {
-              printf("%s ", primitive_map[j].name);
-            }
-          }
+          printf("%s ", primitive_map[entry->code[i].opcode].name);
         }
       }
     }
@@ -242,7 +135,7 @@ disassemble_dict(struct state *s)
 
 // 'name' must be null-terminated.
 static void
-define_primitive(struct state *s, const char name[], const enum opcode opcode)
+define_primitive(struct state *s, char name[], const enum opcode opcode)
 {
   struct entry *entry = (struct entry*)&s->latest->code[s->latest->code_len];
   entry->name_len = strlen(name);
@@ -252,8 +145,30 @@ define_primitive(struct state *s, const char name[], const enum opcode opcode)
   entry->code[0].this = 0;
   entry->code_len = 1;
   s->latest = entry;
+
+  primitive_map[opcode].name = name;
+  primitive_map[opcode].opcode = opcode;
+  primitive_map[opcode].func = NULL;
 }
 
+static void
+define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s)) {
+  define_primitive(s, name, opcode);
+  primitive_map[opcode].func = func;
+}
+
+static bool
+tib_to_number(struct state *s, cell *n)
+{
+  *n = strtol(s->tib.buf, NULL, 10);
+  return 1;
+}
+
+/**
+ *
+ * Color functions
+ *
+ **/
 static void
 define(struct state *s)
 {
@@ -263,13 +178,6 @@ define(struct state *s)
   entry->prev = s->latest;
   entry->code_len = 0;
   s->latest = entry;
-}
-
-static bool
-tib_to_number(struct state *s, cell *n)
-{
-  *n = strtol(s->tib.buf, NULL, 10);
-  return 1;
 }
 
 static void
@@ -605,16 +513,16 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_SYSTEM:
-      {
-        push(s, system((char*)pop(s)));
-        break;
-      }
-
       default:
       {
-        puts("unknown opcode");
-        exit(1);
+        if (primitive_map[pc->opcode].func != NULL)
+        {
+          primitive_map[pc->opcode].func(s);
+        }
+        else {
+          puts("unknown opcode");
+          exit(1);
+        }
       }
     }
   }
@@ -680,24 +588,6 @@ static void
 comment(struct state *s)
 {
 
-}
-
-struct state*
-colorforth_newstate(void)
-{
-  struct state *state = calloc(1, sizeof(*state));
-  state->color = execute;
-  state->dictionary = calloc(1, 4096);
-  state->latest = state->dictionary;
-  state->here = calloc(1, 4096);
-  state->coll = 0; state->line = 1;
-
-  for (unsigned int i = 0; i < sizeof(primitive_map) / sizeof(primitive_map[0]); ++i)
-  {
-    define_primitive(state, primitive_map[i].name, primitive_map[i].opcode);
-  }
-
-  return state;
 }
 
 void
@@ -798,6 +688,49 @@ parse_colorforth(struct state *state, int c) {
   {
     state->coll += 1;
   }
+}
+
+struct state*
+colorforth_newstate(void)
+{
+  struct state *state = calloc(1, sizeof(*state));
+  state->color = execute;
+  state->dictionary = calloc(1, 4096);
+  state->latest = state->dictionary;
+  state->here = calloc(1, 4096);
+  state->coll = 0; state->line = 1;
+
+  define_primitive(state, ".", OP_PRINT_TOS);
+  define_primitive(state, "dup", OP_DUP);
+  define_primitive(state, "over", OP_OVER);
+  define_primitive(state, "swap", OP_SWAP);
+  define_primitive(state, "drop", OP_DROP);
+  define_primitive(state, "+", OP_ADD);
+  define_primitive(state, "-", OP_SUB);
+  define_primitive(state, "*", OP_MUL);
+  define_primitive(state, "=", OP_EQUAL);
+  define_primitive(state, "<", OP_LESS);
+  define_primitive(state, "when", OP_WHEN);
+  define_primitive(state, "unless", OP_UNLESS);
+  define_primitive(state, "choose", OP_CHOOSE);
+  define_primitive(state, "bye", OP_BYE);
+  define_primitive(state, "words", OP_WORDS);
+  define_primitive(state, "words+", OP_DISASSEMBLE_DICT);
+  define_primitive(state, ";", OP_RETURN);
+  define_primitive(state, "emit", OP_EMIT);
+  define_primitive(state, "key", OP_KEY);
+  define_primitive(state, "@", OP_LOAD);
+  define_primitive(state, "!", OP_STORE);
+  define_primitive(state, "c@", OP_CLOAD);
+  define_primitive(state, "c!", OP_CSTORE);
+  define_primitive(state, "cell", OP_CELL);
+  define_primitive(state, "here", OP_HERE);
+  define_primitive(state, "execute", OP_EXECUTE);
+  define_primitive(state, "see", OP_SEE);
+
+  define_extension(state, "system", OP_SYSTEM, system_func);
+
+  return state;
 }
 
 int

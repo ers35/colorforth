@@ -1,14 +1,17 @@
 default: colorforth
 
+SRC=colorforth.c os-utils.c
+SRC_H=colorforth.h os-utils.h
+
 lib.cf.h: lib.cf
 	xxd -i lib.cf lib.cf.h
 
-colorforth: Makefile colorforth.c lib.cf.h
+colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Wextra -pedantic \
 	-s -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
 	-Wl,--no-ld-generated-unwind-info \
 	-Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter -Wno-array-bounds \
-	-o colorforth colorforth.c
+	-o colorforth $(SRC)
 	@#readelf -l colorforth
 	@# required: .gnu.version .gnu.version_r
 	strip --strip-all colorforth
