@@ -346,6 +346,7 @@ execute_(struct state *s, struct entry *entry)
         {
           printf("%.*s ", (int)entry->name_len, entry->name);
         }
+        printf("\n");
         break;
       }
 
