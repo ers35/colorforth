@@ -27,7 +27,7 @@ dumpelf: colorforth
 	readelf -a colorforth | less
 
 colorize: colorforth
-	lua colorize.lua < lib.cf | less -R
+	cat colorize.cf lib.cf | ./colorforth | less -R
 
 run: colorforth
 	@#rlwrap ./colorforth
