@@ -3,14 +3,15 @@ default: colorforth
 SRC=colorforth.c os-utils.c dict-utils.c
 SRC_H=colorforth.h
 
+EXTRA_CFLAGS=-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096
+
 lib.cf.h: lib.cf
 	xxd -i lib.cf lib.cf.h
 
 colorforth: Makefile $(SRC) $(SRC_H)
-	gcc -fPIE -std=c99 -Os -Wall -Wextra -pedantic \
-	-s -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
-	-Wl,--no-ld-generated-unwind-info \
-	-Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter -Wno-array-bounds \
+	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
+	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter -Wno-array-bounds \
+	$(EXTRA_CFLAGS) \
 	-o colorforth $(SRC)
 
 optimize: colorforth
