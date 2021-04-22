@@ -67,7 +67,15 @@ disassemble_dict(struct state *s)
 }
 
 void
-see_func(struct state *s) {
+see_func(struct state *s)
+{
     struct entry *entry_ = (struct entry*)pop(s);
     see(s, entry_);
+}
+
+void
+init_dict_utils(struct state *state)
+{
+  define_extension(state, "see", OP_SEE, see_func);
+  define_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble_dict);
 }

@@ -11,9 +11,8 @@
 #include "colorforth.h"
 
 
-extern void system_func(struct state *s);
-extern void disassemble_dict(struct state *s);
-extern void see_func(struct state *s);
+extern void init_os_utils(struct state *s);
+extern void init_dict_utils(struct state *s);
 
 void
 push(struct state *s, const cell n)
@@ -86,8 +85,9 @@ define_primitive(struct state *s, char name[], const enum opcode opcode)
   primitive_map[opcode].func = NULL;
 }
 
-static void
-define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s)) {
+void
+define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s))
+{
   define_primitive(s, name, opcode);
   primitive_map[opcode].func = func;
 }
@@ -514,7 +514,8 @@ comment(struct state *s)
 }
 
 void
-parse_colorforth(struct state *state, int c) {
+parse_colorforth(struct state *state, int c)
+{
   switch (c)
   {
     case ':':
@@ -649,10 +650,8 @@ colorforth_newstate(void)
   define_primitive(state, "here", OP_HERE);
   define_primitive(state, "execute", OP_EXECUTE);
 
-  define_extension(state, "system", OP_SYSTEM, system_func);
-
-  define_extension(state, "see", OP_SEE, see_func);
-  define_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble_dict);
+  init_os_utils(state);
+  init_dict_utils(state);
 
   return state;
 }

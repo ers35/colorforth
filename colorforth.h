@@ -24,7 +24,6 @@ enum opcode
   OP_CHOOSE,
   OP_BYE,
   OP_WORDS,
-  OP_DISASSEMBLE_DICT,
   OP_RETURN,
   OP_EMIT,
   OP_KEY,
@@ -40,9 +39,10 @@ enum opcode
   OP_NUMBER,
   OP_TICK_NUMBER,
   OP_HERE,
-  OP_SEE,
 
   /* Extensions */
+  OP_SEE,
+  OP_DISASSEMBLE_DICT,
   OP_SYSTEM,
 
   /* Last non opcode - do not remove! */
@@ -97,5 +97,7 @@ extern cell pop(struct state *s);
 
 extern struct entry* find_entry(struct state *s);
 extern void unknow_word (struct state *s, const char *msg);
+
+extern void define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s));
 
 #endif /* __COLORFORTH_H */
