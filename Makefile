@@ -1,9 +1,14 @@
 default: colorforth
 
 SRC=colorforth.c os-utils.c dict-utils.c
-SRC_H=colorforth.h
+SRC_H=colorforth.h lib.cf.h
 
-EXTRA_CFLAGS=-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096
+EMBED_LIB=-D__EMBED_LIB
+
+EXTRA_CFLAGS=-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
+	$(EMBED_LIB)
+
+
 
 lib.cf.h: lib.cf
 	xxd -i lib.cf lib.cf.h

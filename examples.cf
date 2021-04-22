@@ -1,0 +1,16 @@
+~\ one line comment
+
+:msg ~" hello world" ^;
+
+~msg ."
+
+:uname ~" uname -a" ^cmd ;
+~uname
+
+:square ^dup * ;
+~\ calculated at compile time
+:25square ~25 square ^;
+~25square . cr
+
+
+'\ ~see
