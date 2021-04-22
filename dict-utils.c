@@ -34,7 +34,7 @@ see(struct state *s, struct entry *entry)
 
         case OP_NUMBER:
         {
-          printf("%ld ", entry->code[i].this);
+          printf("%"CELL_FMT" ", entry->code[i].this);
           break;
         }
 

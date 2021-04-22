@@ -5,6 +5,8 @@
 
 typedef long cell;
 
+#define CELL_FMT "ld"
+
 enum opcode
 {
   OP_PRINT_TOS,

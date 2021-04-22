@@ -185,7 +185,7 @@ execute_(struct state *s, struct entry *entry)
     {
       case OP_PRINT_TOS:
       {
-        printf("%ld ", pop(s));
+        printf("%"CELL_FMT" ", pop(s));
         fflush(stdout);
         break;
       }
