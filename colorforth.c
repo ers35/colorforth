@@ -99,8 +99,9 @@ define_extension(struct state *s, char name[], const enum opcode opcode, void (*
 static bool
 tib_to_number(struct state *s, cell *n)
 {
-  *n = strtol(s->tib.buf, NULL, 10);
-  return 1;
+  char *endptr;
+  *n = strtol(s->tib.buf, &endptr, 10);
+  return *s->tib.buf != 0 && *endptr == 0;
 }
 
 /**
