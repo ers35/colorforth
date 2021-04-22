@@ -666,6 +666,7 @@ colorforth_newstate(void)
 #endif /* __EMBED_LIB */
 
   state->color = execute;
+  state->coll = 0; state->line = 1;
 
   return state;
 }
