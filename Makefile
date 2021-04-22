@@ -12,6 +12,8 @@ colorforth: Makefile $(SRC) $(SRC_H)
 	-Wl,--no-ld-generated-unwind-info \
 	-Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter -Wno-array-bounds \
 	-o colorforth $(SRC)
+
+optimize: colorforth
 	@#readelf -l colorforth
 	@# required: .gnu.version .gnu.version_r
 	strip --strip-all colorforth
