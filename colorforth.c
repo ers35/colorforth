@@ -68,7 +68,7 @@ unknow_word (struct state *s, const char *msg)
   {
     putchar(s->tib.buf[i]);
   }
-  printf("': unknown word at line %ld, column %ld\n", s->line, s->coll);
+  printf("': unknown word at line %u, column %u\n", s->line, s->coll);
 }
 
 // 'name' must be null-terminated.
