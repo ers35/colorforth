@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <termios.h>
 
 #include "colorforth.h"
 
@@ -14,9 +16,14 @@
 #include "lib.cf.h"
 #endif /* __EMBED_LIB */
 
-
 extern void init_os_utils(struct state *s);
 extern void init_dict_utils(struct state *s);
+
+void
+quit(struct state *state)
+{
+  state->done = 1;
+}
 
 void
 push(struct state *s, const cell n)
@@ -153,7 +160,7 @@ compile(struct state *s)
     else
     {
       unknow_word(s, "compiling");
-      exit(1);
+      quit(s);
     }
   }
 }
@@ -176,7 +183,7 @@ compile_inline(struct state *s)
   else
   {
     unknow_word(s, "inlining");
-    exit(1);
+    quit(s);
   }
 }
 
@@ -341,7 +348,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_BYE:
       {
-        exit(0);
+        quit(s);
         break;
       }
 
@@ -449,7 +456,7 @@ execute_(struct state *s, struct entry *entry)
         }
         else {
           puts("unknown opcode");
-          exit(1);
+          quit(s);
         }
       }
     }
@@ -508,7 +515,7 @@ compile_tick(struct state *s)
   else
   {
     unknow_word(s, "ticking");
-    exit(1);
+    quit(s);
   }
 }
 
@@ -518,14 +525,38 @@ comment(struct state *s)
 
 }
 
+#ifdef __ECHO_COLOR
+#define COLOR_RED      "\x1B[01;91m"
+#define COLOR_GREEN    "\x1B[01;92m"
+#define COLOR_YELLOW   "\x1B[01;93m"
+#define COLOR_BLUE     "\x1B[01;94m"
+#define COLOR_CYAN     "\x1B[01;96m"
+#define COLOR_WHITE    "\x1B[01;37m"
+#define COLOR_CLEAR    "\x1B[0m"
+
 void
-parse_colorforth(struct state *state, int c)
+echo_color(struct state *state, int c, char *color)
 {
+  printf("\b%s%c", color, c);
+}
+#else
+#define echo_color(state, c, color)
+#endif
+
+void
+parse_colorforth(struct state *state, int c, int echo)
+{
+  if (echo)
+  {
+    printf("%c", c);
+  }
+
   switch (c)
   {
     case ':':
     {
       state->color = define;
+      echo_color(state, c, COLOR_RED);
       break;
     }
 
@@ -539,12 +570,14 @@ parse_colorforth(struct state *state, int c)
         state->latest->code_len += 1;
       }
       state->color = compile;
+      echo_color(state, c, COLOR_GREEN);
       break;
     }
 
     case '~':
     {
       state->color = execute;
+      echo_color(state, c, COLOR_YELLOW);
       break;
     }
 
@@ -558,18 +591,21 @@ parse_colorforth(struct state *state, int c)
       {
         state->color = compile_tick;
       }
+      echo_color(state, c, COLOR_BLUE);
       break;
     }
 
     case '(':
     {
       state->color = comment;
+      echo_color(state, c, COLOR_WHITE);
       break;
     }
 
     case ',':
     {
       state->color = compile_inline;
+      echo_color(state, c, COLOR_CYAN);
       break;
     }
 
@@ -594,9 +630,21 @@ parse_colorforth(struct state *state, int c)
       break;
     }
 
+    case '\b':
+    case 127:
+    {
+      printf("\b \b");
+      if (state->tib.len > 0)
+      {
+        state->tib.len -= 1;
+      }
+      break;
+    }
+
     case EOF:
     {
       //~ exit(0);
+      echo_color(state, c, COLOR_CLEAR);
       break;
     }
 
@@ -628,6 +676,7 @@ colorforth_newstate(void)
   state->latest = state->dictionary;
   state->here = calloc(1, 4096);
   state->coll = 0; state->line = 1;
+  state->done = 0;
 
   define_primitive(state, ".", OP_PRINT_TOS);
   define_primitive(state, "dup", OP_DUP);
@@ -661,11 +710,12 @@ colorforth_newstate(void)
 #ifdef __EMBED_LIB
   for(unsigned int i = 0; i < lib_cf_len; i++)
   {
-    parse_colorforth(state, lib_cf[i]);
+    parse_colorforth(state, lib_cf[i], 0);
   }
 #endif /* __EMBED_LIB */
 
   state->color = execute;
+  echo_color(state, ' ', COLOR_YELLOW);
   state->coll = 0; state->line = 1;
 
   return state;
@@ -674,10 +724,24 @@ colorforth_newstate(void)
 int
 main(int argc, char *argv[])
 {
+#ifdef __ECHO_COLOR
+  struct termios old_tio, new_tio;
+  tcgetattr(STDIN_FILENO,&old_tio);
+  new_tio=old_tio;
+  new_tio.c_lflag &=(~ICANON & ~ISIG & ~ECHO);
+  tcsetattr(STDIN_FILENO,TCSANOW,&new_tio);
+#endif
+
   struct state *state = colorforth_newstate();
-  while (1)
+
+  while (!state->done)
   {
-    parse_colorforth(state, getchar());
+    parse_colorforth(state, getchar(), 1);
   }
+
+#ifdef __ECHO_COLOR
+  tcsetattr(STDIN_FILENO,TCSANOW,&old_tio);
+#endif
+
   return 0;
 }

@@ -83,6 +83,7 @@ struct state
   void *here;
   // track stream position for debugging compilation
   unsigned int line, coll;
+  int done;
 };
 
 struct primitive_map

@@ -4,9 +4,10 @@ SRC=colorforth.c os-utils.c dict-utils.c
 SRC_H=colorforth.h lib.cf.h
 
 EMBED_LIB=-D__EMBED_LIB
+ECHO_COLOR=-D__ECHO_COLOR
 
 EXTRA_CFLAGS=-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
-	$(EMBED_LIB)
+	$(EMBED_LIB) $(ECHO_COLOR)
 
 
 
