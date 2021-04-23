@@ -103,4 +103,7 @@ extern void unknow_word (struct state *s, const char *msg);
 
 extern void define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s));
 
+extern struct state* colorforth_newstate(void);
+extern void parse_colorforth(struct state *state, int c);
+
 #endif /* __COLORFORTH_H */

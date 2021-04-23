@@ -1,6 +1,6 @@
 default: colorforth
 
-SRC=colorforth.c os-utils.c dict-utils.c io-utils.c
+SRC=main.c colorforth.c os-utils.c dict-utils.c io-utils.c
 SRC_H=colorforth.h lib.cf.h
 
 EMBED_LIB=-D__EMBED_LIB
