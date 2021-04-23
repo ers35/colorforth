@@ -18,3 +18,8 @@
 :." ^."init ."loop cr ;
 
 :cmd ^cell + system ;
+
+:true   ^1 ;
+:false  ^0 ;
+:on     ,true ^;
+:off    ,false ^;

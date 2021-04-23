@@ -18,6 +18,7 @@
 
 extern void init_os_utils(struct state *s);
 extern void init_dict_utils(struct state *s);
+extern void init_io_utils(struct state *s);
 
 void
 quit(struct state *state)
@@ -544,9 +545,9 @@ echo_color(struct state *state, int c, char *color)
 #endif
 
 void
-parse_colorforth(struct state *state, int c, int echo)
+parse_colorforth(struct state *state, int c)
 {
-  if (echo)
+  if (state->echo_on)
   {
     printf("%c", c);
   }
@@ -677,6 +678,7 @@ colorforth_newstate(void)
   state->here = calloc(1, 4096);
   state->coll = 0; state->line = 1;
   state->done = 0;
+  state->echo_on = 0;
 
   define_primitive(state, ".", OP_PRINT_TOS);
   define_primitive(state, "dup", OP_DUP);
@@ -706,17 +708,19 @@ colorforth_newstate(void)
 
   init_os_utils(state);
   init_dict_utils(state);
+  init_io_utils(state);
 
 #ifdef __EMBED_LIB
   for(unsigned int i = 0; i < lib_cf_len; i++)
   {
-    parse_colorforth(state, lib_cf[i], 0);
+    parse_colorforth(state, lib_cf[i]);
   }
 #endif /* __EMBED_LIB */
 
   state->color = execute;
   echo_color(state, ' ', COLOR_YELLOW);
   state->coll = 0; state->line = 1;
+  state->echo_on = 1;
 
   return state;
 }
@@ -736,7 +740,7 @@ main(int argc, char *argv[])
 
   while (!state->done)
   {
-    parse_colorforth(state, getchar(), 1);
+    parse_colorforth(state, getchar());
   }
 
 #ifdef __ECHO_COLOR

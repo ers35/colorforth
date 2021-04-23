@@ -44,6 +44,7 @@ enum opcode
   OP_SEE,
   OP_DISASSEMBLE_DICT,
   OP_SYSTEM,
+  OP_ECHO_SET,
 
   /* Last non opcode - do not remove! */
   __LAST_NOT_AN_OPCODE__,
@@ -84,6 +85,7 @@ struct state
   // track stream position for debugging compilation
   unsigned int line, coll;
   int done;
+  int echo_on;
 };
 
 struct primitive_map
