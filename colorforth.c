@@ -716,7 +716,7 @@ colorforth_newstate(void)
 #endif /* __EMBED_LIB */
 
   state->color = execute;
-  echo_color(state, ' ', COLOR_YELLOW);
+  echo_color(state, '~', COLOR_YELLOW);
   state->coll = 0; state->line = 1;
   state->echo_on = 1;
 
