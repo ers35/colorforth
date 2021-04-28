@@ -75,9 +75,10 @@ struct entry
 struct stack
 {
   // circular stack
-  cell cells[8];
+  cell *cells;
   // stack position
   int sp;
+  int lim;
 };
 
 struct state

@@ -25,9 +25,16 @@ quit(struct state *state)
 }
 
 void
+init_stack(struct stack *stack, int len)
+{
+  stack->cells = calloc(len, sizeof(cell));
+  stack->lim = len - 1;
+}
+
+void
 push(struct stack *stack, const cell n)
 {
-  if (stack->sp == (sizeof(stack->cells) / sizeof(stack->cells[0])) - 1)
+  if (stack->sp == stack->lim)
   {
     stack->sp = 0;
   }
@@ -44,7 +51,7 @@ pop(struct stack *stack)
   const cell n = stack->cells[stack->sp];
   if (stack->sp == 0)
   {
-    stack->sp = (sizeof(stack->cells) / sizeof(stack->cells[0])) - 1;
+    stack->sp = stack->lim;
   }
   else
   {
@@ -697,7 +704,10 @@ colorforth_newstate(void)
   state->color = execute;
 
   state->stack = calloc(1, sizeof(struct stack));
+  init_stack(state->stack, 8);
+
   state->r_stack = calloc(1, sizeof(struct stack));
+  init_stack(state->r_stack, 30);
 
   state->dictionary = calloc(1, 4096);
   state->latest = state->dictionary;
