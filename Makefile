@@ -16,7 +16,7 @@ lib.cf.h: lib.cf
 
 colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
-	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter -Wno-array-bounds \
+	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
 	$(EXTRA_CFLAGS) \
 	-o colorforth $(SRC)
 

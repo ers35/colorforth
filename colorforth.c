@@ -378,8 +378,16 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_RETURN:
       {
-        // TODO: use the return stack
-        return;
+        struct code *code = (struct code *)pop(s->r_stack);
+        if (code)
+        {
+          pc = code;
+        }
+        else
+        {
+          return;
+        }
+        break;
       }
 
       case OP_EMIT:
@@ -431,15 +439,14 @@ execute_(struct state *s, struct entry *entry)
       case OP_CALL:
       {
         struct entry *entry_ = (struct entry*)pc->this;
-        // recursion
-        // TODO: stay in the same loop with a pc jump
-        execute_(s, entry_);
+        push(s->r_stack, (cell)pc);
+        pc = entry_->code - 1;
         break;
       }
 
       case OP_TAIL_CALL:
       {
-        pc = &entry->code[-1];
+        pc = entry->code - 1;
         break;
       }
 
@@ -690,6 +697,7 @@ colorforth_newstate(void)
   state->color = execute;
 
   state->stack = calloc(1, sizeof(struct stack));
+  state->r_stack = calloc(1, sizeof(struct stack));
 
   state->dictionary = calloc(1, 4096);
   state->latest = state->dictionary;

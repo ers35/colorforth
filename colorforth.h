@@ -84,6 +84,7 @@ struct state
 {
   void (*color)(struct state *s);
   struct stack *stack;
+  struct stack *r_stack;
   struct tib tib;
   struct entry *dictionary;
   struct entry *latest;
