@@ -56,31 +56,38 @@ struct tib
   char buf[20];
   size_t len;
 };
+
 struct code;
+struct code
+{
+  enum opcode opcode;
+  cell this;
+};
+
 struct entry;
 struct entry
 {
   char name[20];
   size_t name_len;
-  struct entry *prev;
-  size_t code_len;
-  struct code
-  {
-    enum opcode opcode;
-    cell this;
-  } code[];
+  struct code *code;
+};
+
+struct stack
+{
+  // circular stack
+  cell cells[8];
+  // stack position
+  int sp;
 };
 
 struct state
 {
   void (*color)(struct state *s);
-  // circular stack
-  cell stack[8];
-  // stack position
-  int sp;
+  struct stack *stack;
   struct tib tib;
   struct entry *dictionary;
   struct entry *latest;
+  void *heap;
   void *here;
   // track stream position for debugging compilation
   unsigned int line, coll;
@@ -95,8 +102,8 @@ struct primitive_map
   void (*func)();
 } primitive_map[__LAST_NOT_AN_OPCODE__];
 
-extern void push(struct state *s, const cell n);
-extern cell pop(struct state *s);
+extern void push(struct stack *stack, const cell n);
+extern cell pop(struct stack *stack);
 
 extern struct entry* find_entry(struct state *s);
 extern void unknow_word (struct state *s, const char *msg);

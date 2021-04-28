@@ -3,7 +3,7 @@
 void
 echo_set(struct state *s)
 {
-  s->echo_on = pop(s);
+  s->echo_on = pop(s->stack);
 }
 
 void

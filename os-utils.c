@@ -3,7 +3,7 @@
 void
 system_func(struct state *s)
 {
-  push(s, system((char*)pop(s)));
+  push(s->stack, system((char*)pop(s->stack)));
 }
 
 void

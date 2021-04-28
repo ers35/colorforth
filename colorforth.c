@@ -25,30 +25,30 @@ quit(struct state *state)
 }
 
 void
-push(struct state *s, const cell n)
+push(struct stack *stack, const cell n)
 {
-  if (s->sp == (sizeof(s->stack) / sizeof(s->stack[0])) - 1)
+  if (stack->sp == (sizeof(stack->cells) / sizeof(stack->cells[0])) - 1)
   {
-    s->sp = 0;
+    stack->sp = 0;
   }
   else
   {
-    s->sp += 1;
+    stack->sp += 1;
   }
-  s->stack[s->sp] = n;
+  stack->cells[stack->sp] = n;
 }
 
 cell
-pop(struct state *s)
+pop(struct stack *stack)
 {
-  const cell n = s->stack[s->sp];
-  if (s->sp == 0)
+  const cell n = stack->cells[stack->sp];
+  if (stack->sp == 0)
   {
-    s->sp = (sizeof(s->stack) / sizeof(s->stack[0])) - 1;
+    stack->sp = (sizeof(stack->cells) / sizeof(stack->cells[0])) - 1;
   }
   else
   {
-    s->sp -= 1;
+    stack->sp -= 1;
   }
   return n;
 }
@@ -56,7 +56,7 @@ pop(struct state *s)
 struct entry*
 find_entry(struct state *s)
 {
-  for (struct entry *entry = s->latest; entry; entry = entry->prev)
+  for (struct entry *entry = s->latest; entry != s->dictionary - 1; entry--)
   {
     if (entry->name_len == s->tib.len && memcmp(entry->name, s->tib.buf, s->tib.len) == 0)
     {
@@ -81,14 +81,18 @@ unknow_word (struct state *s, const char *msg)
 static void
 define_primitive(struct state *s, char name[], const enum opcode opcode)
 {
-  struct entry *entry = (struct entry*)&s->latest->code[s->latest->code_len];
+  struct entry *entry = s->latest;
   entry->name_len = strlen(name);
   memcpy(entry->name, name, entry->name_len);
-  entry->prev = s->latest;
-  entry->code[0].opcode = opcode;
-  entry->code[0].this = 0;
-  entry->code_len = 1;
-  s->latest = entry;
+  entry->code = s->here;
+  entry->code->opcode = opcode;
+  entry->code->this = 0;
+
+  (entry->code + 1)->opcode = OP_RETURN;
+  (entry->code + 1)->this = 0;
+
+  s->latest++;
+  s->here = (struct code *)s->here + 2;
 
   primitive_map[opcode].name = name;
   primitive_map[opcode].opcode = opcode;
@@ -118,32 +122,37 @@ tib_to_number(struct state *s, cell *n)
 static void
 define(struct state *s)
 {
-  struct entry *entry = (struct entry*)&s->latest->code[s->latest->code_len];
+  struct entry *entry = s->latest;
   entry->name_len = s->tib.len;
   memcpy(entry->name, s->tib.buf, s->tib.len);
-  entry->prev = s->latest;
-  entry->code_len = 0;
-  s->latest = entry;
+  entry->code = s->here;
+  s->latest++;
 }
 
 static void
 compile(struct state *s)
 {
   struct entry *entry = find_entry(s);
-  struct code *code = &s->latest->code[s->latest->code_len];
+  struct code *code = (struct code *)s->here;
   if (entry)
   {
-    if (entry == s->latest)
+    // OP_RETURN (;) should always be inlined to allow main loop control
+    if (strcmp(entry->name, ";") == 0)
     {
-      code->opcode = OP_TAIL_CALL;
+      code->opcode = OP_RETURN;
       code->this = 0;
     }
+    else if (entry == s->latest - 1)
+    {
+       code->opcode = OP_TAIL_CALL;
+       code->this = 0;
+     }
     else
     {
       code->opcode = OP_CALL;
       code->this = (cell)entry;
     }
-    s->latest->code_len += 1;
+    s->here = (struct code *)s->here + 1;
   }
   else
   {
@@ -154,7 +163,7 @@ compile(struct state *s)
       // compile number
       code->opcode = OP_NUMBER;
       code->this = n;
-      s->latest->code_len += 1;
+      s->here = (struct code *)s->here + 1;
     }
     else
     {
@@ -170,13 +179,16 @@ compile_inline(struct state *s)
   struct entry *entry = find_entry(s);
   if (entry)
   {
-    const cell code_len = entry->code_len == 1 ? 1 : entry->code_len - 1;
-    for (cell i = 0; i < code_len; i++)
+    for (size_t i = 0, done = 0; !done; i++)
     {
-      struct code *code = &s->latest->code[s->latest->code_len];
+      if (entry->code[i].opcode == OP_RETURN)
+      {
+        break;
+      }
+      struct code *code = (struct code *)s->here;
       code->opcode = entry->code[i].opcode;
       code->this = entry->code[i].this;
-      s->latest->code_len += 1;
+      s->here = (struct code *)s->here + 1;
     }
   }
   else
@@ -189,161 +201,164 @@ compile_inline(struct state *s)
 static void
 execute_(struct state *s, struct entry *entry)
 {
-  // printf("-> %s\t%li\n", entry->name, entry->code_len);
-  for (struct code *pc = &entry->code[0]; pc < &entry->code[entry->code_len]; ++pc)
+  // printf("-> %s\n", entry->name);
+  struct code *pc = entry->code;
+
+  // don't forget to compile a return!!!!
+  while(1)
   {
     switch (pc->opcode)
     {
       case OP_PRINT_TOS:
       {
-        printf("%"CELL_FMT" ", pop(s));
+        printf("%"CELL_FMT" ", pop(s->stack));
         fflush(stdout);
         break;
       }
 
       case OP_DUP:
       {
-        push(s, s->stack[s->sp]);
+        push(s->stack, s->stack->cells[s->stack->sp]);
         break;
       }
 
       case OP_OVER:
       {
-        const cell n1 = pop(s);
-        const cell n2 = pop(s);
-        push(s, n2);
-        push(s, n1);
-        push(s, n2);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n2);
+        push(s->stack, n1);
+        push(s->stack, n2);
         break;
       }
 
       case OP_SWAP:
       {
-        const cell n1 = pop(s);
-        const cell n2 = pop(s);
-        push(s, n1);
-        push(s, n2);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n1);
+        push(s->stack, n2);
         break;
       }
 
       case OP_DROP:
       {
-        pop(s);
+        pop(s->stack);
         break;
       }
 
       case OP_ADD:
       {
-        const cell n1 = pop(s);
-        const cell n2 = pop(s);
-        push(s, n1 + n2);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n1 + n2);
         break;
       }
 
       case OP_SUB:
       {
-        const cell n1 = pop(s);
-        const cell n2 = pop(s);
-        push(s, n2 - n1);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n2 - n1);
         break;
       }
 
       case OP_MUL:
       {
-        const cell n1 = pop(s);
-        const cell n2 = pop(s);
-        push(s, n1 * n2);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n1 * n2);
         break;
       }
 
       case OP_EQUAL:
       {
-        const cell n1 = pop(s);
-        const cell n2 = pop(s);
-        push(s, n1 == n2);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n1 == n2);
         break;
       }
 
       case OP_LESS:
       {
-        const cell n1 = pop(s);
-        const cell n2 = pop(s);
-        push(s, n2 < n1);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n2 < n1);
         break;
       }
 
-      case OP_WHEN:
-      {
-        struct entry *entry_ = (struct entry*)pop(s);
-        const cell n = pop(s);
-        if (n)
-        {
-          // OP_RETURN: leaving the current word
-          if (entry_->code[0].opcode == OP_RETURN)
-          {
-            pc = &entry->code[entry->code_len];
-          }
-          // Call itself -> recurse
-          else if (entry_ == entry)
-          {
-            pc = &entry->code[-1];
-          }
-          // Call entry on the stack
-          else
-          {
-            execute_(s, entry_);
-          }
-        }
-        break;
-      }
-
-      case OP_UNLESS:
-      {
-        struct entry *entry_ = (struct entry*)pop(s);
-        const cell n = pop(s);
-        if (!n)
-        {
-          // OP_RETURN: leaving the current word
-          if (entry_->code[0].opcode == OP_RETURN)
-          {
-            pc = &entry->code[entry->code_len];
-          }
-          // Call itself -> recurse
-          else if (entry_ == entry)
-          {
-            pc = &entry->code[-1];
-          }
-          // Call entry on the stack
-          else
-          {
-            execute_(s, entry_);
-          }
-        }
-        break;
-      }
-
-      case OP_CHOOSE:
-      {
-        struct entry *entry_false_ = (struct entry*)pop(s);
-        struct entry *entry_true_ = (struct entry*)pop(s);
-        const cell n = pop(s);
-        struct entry *entry_ = n ? entry_true_ : entry_false_;
-        if (entry_->code[0].opcode == OP_RETURN)
-        {
-          pc = &entry->code[entry->code_len];
-        }
-        // Call itself -> recurse
-        else if (entry_ == entry)
-        {
-          pc = &entry->code[-1];
-        }
-        // Call entry on the stack
-        else
-        {
-          execute_(s, entry_);
-        }
-        break;
-      }
+      // case OP_WHEN:
+      // {
+      //   struct entry *entry_ = (struct entry*)pop(s->stack);
+      //   const cell n = pop(s->stack);
+      //   if (n)
+      //   {
+      //     // OP_RETURN: leaving the current word
+      //     if (entry_->code[0].opcode == OP_RETURN)
+      //     {
+      //       pc = &entry->code[entry->code_len];
+      //     }
+      //     // Call itself -> recurse
+      //     else if (entry_ == entry)
+      //     {
+      //       pc = &entry->code[-1];
+      //     }
+      //     // Call entry on the stack
+      //     else
+      //     {
+      //       execute_(s, entry_);
+      //     }
+      //   }
+      //   break;
+      // }
+      //
+      // case OP_UNLESS:
+      // {
+      //   struct entry *entry_ = (struct entry*)pop(s->stack);
+      //   const cell n = pop(s->stack);
+      //   if (!n)
+      //   {
+      //     // OP_RETURN: leaving the current word
+      //     if (entry_->code[0].opcode == OP_RETURN)
+      //     {
+      //       pc = &entry->code[entry->code_len];
+      //     }
+      //     // Call itself -> recurse
+      //     else if (entry_ == entry)
+      //     {
+      //       pc = &entry->code[-1];
+      //     }
+      //     // Call entry on the stack
+      //     else
+      //     {
+      //       execute_(s, entry_);
+      //     }
+      //   }
+      //   break;
+      // }
+      //
+      // case OP_CHOOSE:
+      // {
+      //   struct entry *entry_false_ = (struct entry*)pop(s->stack);
+      //   struct entry *entry_true_ = (struct entry*)pop(s->stack);
+      //   const cell n = pop(s->stack);
+      //   struct entry *entry_ = n ? entry_true_ : entry_false_;
+      //   if (entry_->code[0].opcode == OP_RETURN)
+      //   {
+      //     pc = &entry->code[entry->code_len];
+      //   }
+      //   // Call itself -> recurse
+      //   else if (entry_ == entry)
+      //   {
+      //     pc = &entry->code[-1];
+      //   }
+      //   // Call entry on the stack
+      //   else
+      //   {
+      //     execute_(s, entry_);
+      //   }
+      //   break;
+      // }
 
       case OP_BYE:
       {
@@ -353,7 +368,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_WORDS:
       {
-        for (struct entry *entry = s->latest; entry; entry = entry->prev)
+        for (struct entry *entry = s->latest; entry != s->dictionary - 1; entry--)
         {
           printf("%.*s ", (int)entry->name_len, entry->name);
         }
@@ -363,53 +378,53 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_RETURN:
       {
-        pc = &entry->code[entry->code_len];
-        break;
+        // TODO: use the return stack
+        return;
       }
 
       case OP_EMIT:
       {
-        putchar((char)pop(s));
+        putchar((char)pop(s->stack));
         break;
       }
 
       case OP_KEY:
       {
-        push(s, (char)getchar());
+        push(s->stack, (char)getchar());
         break;
       }
 
       case OP_LOAD:
       {
-        push(s, *(cell*)pop(s));
+        push(s->stack, *(cell*)pop(s->stack));
         break;
       }
 
       case OP_STORE:
       {
-        cell *ptr = (cell*)pop(s);
-        cell n = pop(s);
+        cell *ptr = (cell*)pop(s->stack);
+        cell n = pop(s->stack);
         *ptr = n;
         break;
       }
 
       case OP_CLOAD:
       {
-        push(s, *(char*)pop(s));
+        push(s->stack, *(char*)pop(s->stack));
         break;
       }
 
       case OP_CSTORE:
       {
-        char *ptr = (char*)pop(s);
-        char n = pop(s);
+        char *ptr = (char*)pop(s->stack);
+        char n = pop(s->stack);
         *ptr = n;
         break;
       }
 
       case OP_CELL:
       {
-        push(s, sizeof(cell));
+        push(s->stack, sizeof(cell));
         break;
       }
 
@@ -417,6 +432,7 @@ execute_(struct state *s, struct entry *entry)
       {
         struct entry *entry_ = (struct entry*)pc->this;
         // recursion
+        // TODO: stay in the same loop with a pc jump
         execute_(s, entry_);
         break;
       }
@@ -430,20 +446,20 @@ execute_(struct state *s, struct entry *entry)
       case OP_NUMBER:
       case OP_TICK_NUMBER:
       {
-        push(s, pc->this);
+        push(s->stack, pc->this);
         break;
       }
 
       case OP_EXECUTE:
       {
-        struct entry *entry_ = (struct entry*)pop(s);
+        struct entry *entry_ = (struct entry*)pop(s->stack);
         execute_(s, entry_);
         break;
       }
 
       case OP_HERE:
       {
-        push(s, (cell)&s->here);
+        push(s->stack, (cell)&s->here);
         break;
       }
 
@@ -459,6 +475,7 @@ execute_(struct state *s, struct entry *entry)
         }
       }
     }
+    pc++;
   }
   // printf("   %s(done) <-\n", entry->name);
 }
@@ -477,7 +494,7 @@ execute(struct state *s)
     cell n = 0;
     if (tib_to_number(s, &n))
     {
-      push(s, n);
+      push(s->stack, n);
     }
     else
     {
@@ -492,7 +509,7 @@ tick(struct state *s)
   struct entry *entry = find_entry(s);
   if (entry)
   {
-    push(s, (cell)entry);
+    push(s->stack, (cell)entry);
   }
   else
   {
@@ -506,10 +523,10 @@ compile_tick(struct state *s)
   struct entry *entry = find_entry(s);
   if (entry)
   {
-    struct code *code = &s->latest->code[s->latest->code_len];
+    struct code *code = (struct code *)s->here;
     code->opcode = OP_TICK_NUMBER;
     code->this = (cell)entry;
-    s->latest->code_len += 1;
+    s->here = (struct code *)s->here + 1;
   }
   else
   {
@@ -563,10 +580,10 @@ parse_colorforth(struct state *state, int c)
     {
       if (state->color == execute)
       {
-        struct code *code = &state->latest->code[state->latest->code_len];
+        struct code *code = state->here;
         code->opcode = OP_NUMBER;
-        code->this = pop(state);
-        state->latest->code_len += 1;
+        code->this = pop(state->stack);
+        state->here = (struct code *)state->here + 1;
       }
       state->color = compile;
       echo_color(state, c, COLOR_GREEN);
@@ -671,9 +688,15 @@ colorforth_newstate(void)
 {
   struct state *state = calloc(1, sizeof(*state));
   state->color = execute;
+
+  state->stack = calloc(1, sizeof(struct stack));
+
   state->dictionary = calloc(1, 4096);
   state->latest = state->dictionary;
-  state->here = calloc(1, 4096);
+
+  state->heap = calloc(1, 4096);
+  state->here = state->heap;
+
   state->coll = 0; state->line = 1;
   state->done = 0;
   state->echo_on = 0;
