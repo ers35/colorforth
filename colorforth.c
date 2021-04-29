@@ -186,12 +186,8 @@ compile_inline(struct state *s)
   struct entry *entry = find_entry(s);
   if (entry)
   {
-    for (size_t i = 0, done = 0; !done; i++)
+    for (size_t i = 0, done = 0; !done && entry->code[i].opcode != OP_RETURN; i++)
     {
-      if (entry->code[i].opcode == OP_RETURN)
-      {
-        break;
-      }
       struct code *code = (struct code *)s->here;
       code->opcode = entry->code[i].opcode;
       code->this = entry->code[i].this;
