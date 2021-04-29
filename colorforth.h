@@ -19,12 +19,8 @@ enum opcode
   OP_MUL,
   OP_EQUAL,
   OP_LESS,
-  OP_WHEN,
-  OP_UNLESS,
-  OP_CHOOSE,
   OP_BYE,
   OP_WORDS,
-  OP_RETURN,
   OP_EMIT,
   OP_KEY,
   OP_LOAD,
@@ -39,6 +35,11 @@ enum opcode
   OP_NUMBER,
   OP_TICK_NUMBER,
   OP_HERE,
+
+  /* macro */
+  OP_RETURN,
+  OP_WHEN,
+  OP_UNLESS,
 
   /* Extensions */
   OP_SEE,

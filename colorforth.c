@@ -320,78 +320,19 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      // case OP_WHEN:
-      // {
-      //   struct entry *entry_ = (struct entry*)pop(s->stack);
-      //   const cell n = pop(s->stack);
-      //   if (n)
-      //   {
-      //     // OP_RETURN: leaving the current word
-      //     if (entry_->code[0].opcode == OP_RETURN)
-      //     {
-      //       pc = &entry->code[entry->code_len];
-      //     }
-      //     // Call itself -> recurse
-      //     else if (entry_ == entry)
-      //     {
-      //       pc = &entry->code[-1];
-      //     }
-      //     // Call entry on the stack
-      //     else
-      //     {
-      //       execute_(s, entry_);
-      //     }
-      //   }
-      //   break;
-      // }
-      //
-      // case OP_UNLESS:
-      // {
-      //   struct entry *entry_ = (struct entry*)pop(s->stack);
-      //   const cell n = pop(s->stack);
-      //   if (!n)
-      //   {
-      //     // OP_RETURN: leaving the current word
-      //     if (entry_->code[0].opcode == OP_RETURN)
-      //     {
-      //       pc = &entry->code[entry->code_len];
-      //     }
-      //     // Call itself -> recurse
-      //     else if (entry_ == entry)
-      //     {
-      //       pc = &entry->code[-1];
-      //     }
-      //     // Call entry on the stack
-      //     else
-      //     {
-      //       execute_(s, entry_);
-      //     }
-      //   }
-      //   break;
-      // }
-      //
-      // case OP_CHOOSE:
-      // {
-      //   struct entry *entry_false_ = (struct entry*)pop(s->stack);
-      //   struct entry *entry_true_ = (struct entry*)pop(s->stack);
-      //   const cell n = pop(s->stack);
-      //   struct entry *entry_ = n ? entry_true_ : entry_false_;
-      //   if (entry_->code[0].opcode == OP_RETURN)
-      //   {
-      //     pc = &entry->code[entry->code_len];
-      //   }
-      //   // Call itself -> recurse
-      //   else if (entry_ == entry)
-      //   {
-      //     pc = &entry->code[-1];
-      //   }
-      //   // Call entry on the stack
-      //   else
-      //   {
-      //     execute_(s, entry_);
-      //   }
-      //   break;
-      // }
+      case OP_WHEN:
+      {
+        const cell n = pop(s->stack);
+        if (!n) pc++;
+        break;
+      }
+
+      case OP_UNLESS:
+      {
+        const cell n = pop(s->stack);
+        if (n) pc++;
+        break;
+      }
 
       case OP_BYE:
       {
@@ -759,9 +700,6 @@ colorforth_newstate(void)
   define_primitive(state, "*", OP_MUL);
   define_primitive(state, "=", OP_EQUAL);
   define_primitive(state, "<", OP_LESS);
-  define_primitive(state, "when", OP_WHEN);
-  define_primitive(state, "unless", OP_UNLESS);
-  define_primitive(state, "choose", OP_CHOOSE);
   define_primitive(state, "bye", OP_BYE);
   define_primitive(state, "words", OP_WORDS);
   define_primitive(state, "emit", OP_EMIT);
@@ -775,6 +713,8 @@ colorforth_newstate(void)
   define_primitive(state, "execute", OP_EXECUTE);
 
   define_macro(state, ";", OP_RETURN);
+  define_macro(state, "when", OP_WHEN);
+  define_macro(state, "unless", OP_UNLESS);
 
   init_os_utils(state);
   init_dict_utils(state);
