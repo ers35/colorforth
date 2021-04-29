@@ -63,7 +63,7 @@ pop(struct stack *stack)
 struct entry*
 find_entry(struct state *s)
 {
-  for (struct entry *entry = s->latest; entry != s->dictionary - 1; entry--)
+  for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
   {
     if (entry->name_len == s->tib.len && memcmp(entry->name, s->tib.buf, s->tib.len) == 0)
     {
@@ -88,7 +88,7 @@ unknow_word (struct state *s, const char *msg)
 static void
 define_primitive(struct state *s, char name[], const enum opcode opcode)
 {
-  struct entry *entry = s->latest;
+  struct entry *entry = s->dict.latest;
   entry->name_len = strlen(name);
   memcpy(entry->name, name, entry->name_len);
   entry->code = s->here;
@@ -98,7 +98,7 @@ define_primitive(struct state *s, char name[], const enum opcode opcode)
   (entry->code + 1)->opcode = OP_RETURN;
   (entry->code + 1)->this = 0;
 
-  s->latest++;
+  s->dict.latest++;
   s->here = (struct code *)s->here + 2;
 
   primitive_map[opcode].name = name;
@@ -129,11 +129,11 @@ tib_to_number(struct state *s, cell *n)
 static void
 define(struct state *s)
 {
-  struct entry *entry = s->latest;
+  struct entry *entry = s->dict.latest;
   entry->name_len = s->tib.len;
   memcpy(entry->name, s->tib.buf, s->tib.len);
   entry->code = s->here;
-  s->latest++;
+  s->dict.latest++;
 }
 
 static void
@@ -149,7 +149,7 @@ compile(struct state *s)
       code->opcode = OP_RETURN;
       code->this = 0;
     }
-    else if (entry == s->latest - 1)
+    else if (entry == s->dict.latest - 1)
     {
        code->opcode = OP_TAIL_CALL;
        code->this = 0;
@@ -371,7 +371,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_WORDS:
       {
-        for (struct entry *entry = s->latest; entry != s->dictionary - 1; entry--)
+        for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
         {
           printf("%.*s ", (int)entry->name_len, entry->name);
         }
@@ -705,8 +705,8 @@ colorforth_newstate(void)
   state->r_stack = calloc(1, sizeof(struct stack));
   init_stack(state->r_stack, 30);
 
-  state->dictionary = calloc(1, 4096);
-  state->latest = state->dictionary;
+  state->dict.entries = calloc(1, 4096);
+  state->dict.latest = state->dict.entries;
 
   state->heap = calloc(1, 4096);
   state->here = state->heap;

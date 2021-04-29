@@ -81,14 +81,19 @@ struct stack
   int lim;
 };
 
+struct dictionary
+{
+  struct entry *entries;
+  struct entry *latest;
+};
+
 struct state
 {
   void (*color)(struct state *s);
   struct stack *stack;
   struct stack *r_stack;
   struct tib tib;
-  struct entry *dictionary;
-  struct entry *latest;
+  struct dictionary dict;
   void *heap;
   void *here;
   // track stream position for debugging compilation
