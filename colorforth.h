@@ -94,6 +94,7 @@ struct state
   struct stack *r_stack;
   struct tib tib;
   struct dictionary dict;
+  struct dictionary macro_dict;
   void *heap;
   void *here;
   // track stream position for debugging compilation
@@ -112,7 +113,7 @@ struct primitive_map
 extern void push(struct stack *stack, const cell n);
 extern cell pop(struct stack *stack);
 
-extern struct entry* find_entry(struct state *s);
+extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern void unknow_word (struct state *s, const char *msg);
 
 extern void define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s));

@@ -61,9 +61,9 @@ pop(struct stack *stack)
 }
 
 struct entry*
-find_entry(struct state *s)
+find_entry(struct state *s, struct dictionary *dict)
 {
-  for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
     if (entry->name_len == s->tib.len && memcmp(entry->name, s->tib.buf, s->tib.len) == 0)
     {
@@ -74,21 +74,27 @@ find_entry(struct state *s)
 }
 
 void
-unknow_word (struct state *s, const char *msg)
+print_tib(struct state *s)
 {
-  printf("Error %s '", msg);
   for(size_t i = 0; i < s->tib.len; i++)
   {
     putchar(s->tib.buf[i]);
   }
+}
+
+void
+unknow_word (struct state *s, const char *msg)
+{
+  printf("Error %s '", msg);
+  print_tib(s);
   printf("': unknown word at line %u, column %u\n", s->line, s->coll);
 }
 
 // 'name' must be null-terminated.
 static void
-define_primitive(struct state *s, char name[], const enum opcode opcode)
+define_generic(struct state *s, struct dictionary *dict, char name[], const enum opcode opcode)
 {
-  struct entry *entry = s->dict.latest;
+  struct entry *entry = dict->latest;
   entry->name_len = strlen(name);
   memcpy(entry->name, name, entry->name_len);
   entry->code = s->here;
@@ -98,12 +104,24 @@ define_primitive(struct state *s, char name[], const enum opcode opcode)
   (entry->code + 1)->opcode = OP_RETURN;
   (entry->code + 1)->this = 0;
 
-  s->dict.latest++;
+  dict->latest++;
   s->here = (struct code *)s->here + 2;
 
   primitive_map[opcode].name = name;
   primitive_map[opcode].opcode = opcode;
   primitive_map[opcode].func = NULL;
+}
+
+static void
+define_primitive(struct state *s, char name[], const enum opcode opcode)
+{
+  define_generic(s, &s->dict, name, opcode);
+}
+
+static void
+define_macro(struct state *s, char name[], const enum opcode opcode)
+{
+  define_generic(s, &s->macro_dict, name, opcode);
 }
 
 void
@@ -137,19 +155,37 @@ define(struct state *s)
 }
 
 static void
+inline_entry(struct state *s, struct entry *entry)
+{
+  for (size_t i = 0, done = 0; !done; i++)
+  {
+    // inline the first OP_RETURN
+    if (entry->code[i].opcode == OP_RETURN && i > 0)
+    {
+      break;
+    }
+    struct code *code = (struct code *)s->here;
+    code->opcode = entry->code[i].opcode;
+    code->this = entry->code[i].this;
+    s->here = (struct code *)s->here + 1;
+  }
+}
+
+static void
 compile(struct state *s)
 {
-  struct entry *entry = find_entry(s);
+  struct entry *macro_entry = find_entry(s, &s->macro_dict);
+  if (macro_entry)
+  {
+    inline_entry(s, macro_entry);
+    return;
+  }
+
+  struct entry *entry = find_entry(s, &s->dict);
   struct code *code = (struct code *)s->here;
   if (entry)
   {
-    // OP_RETURN (;) should always be inlined to allow main loop control
-    if (strcmp(entry->name, ";") == 0)
-    {
-      code->opcode = OP_RETURN;
-      code->this = 0;
-    }
-    else if (entry == s->dict.latest - 1)
+    if (entry == s->dict.latest - 1)
     {
        code->opcode = OP_TAIL_CALL;
        code->this = 0;
@@ -183,16 +219,10 @@ compile(struct state *s)
 static void
 compile_inline(struct state *s)
 {
-  struct entry *entry = find_entry(s);
+  struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
-    for (size_t i = 0, done = 0; !done && entry->code[i].opcode != OP_RETURN; i++)
-    {
-      struct code *code = (struct code *)s->here;
-      code->opcode = entry->code[i].opcode;
-      code->this = entry->code[i].this;
-      s->here = (struct code *)s->here + 1;
-    }
+    inline_entry(s, entry);
   }
   else
   {
@@ -493,7 +523,7 @@ execute_(struct state *s, struct entry *entry)
 static void
 execute(struct state *s)
 {
-  struct entry *entry = find_entry(s);
+  struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
     execute_(s, entry);
@@ -516,7 +546,7 @@ execute(struct state *s)
 static void
 tick(struct state *s)
 {
-  struct entry *entry = find_entry(s);
+  struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
     push(s->stack, (cell)entry);
@@ -530,7 +560,7 @@ tick(struct state *s)
 static void
 compile_tick(struct state *s)
 {
-  struct entry *entry = find_entry(s);
+  struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
     struct code *code = (struct code *)s->here;
@@ -708,6 +738,9 @@ colorforth_newstate(void)
   state->dict.entries = calloc(1, 4096);
   state->dict.latest = state->dict.entries;
 
+  state->macro_dict.entries = calloc(1, 4096);
+  state->macro_dict.latest = state->macro_dict.entries;
+
   state->heap = calloc(1, 4096);
   state->here = state->heap;
 
@@ -730,7 +763,6 @@ colorforth_newstate(void)
   define_primitive(state, "choose", OP_CHOOSE);
   define_primitive(state, "bye", OP_BYE);
   define_primitive(state, "words", OP_WORDS);
-  define_primitive(state, ";", OP_RETURN);
   define_primitive(state, "emit", OP_EMIT);
   define_primitive(state, "key", OP_KEY);
   define_primitive(state, "@", OP_LOAD);
@@ -740,6 +772,8 @@ colorforth_newstate(void)
   define_primitive(state, "cell", OP_CELL);
   define_primitive(state, "here", OP_HERE);
   define_primitive(state, "execute", OP_EXECUTE);
+
+  define_macro(state, ";", OP_RETURN);
 
   init_os_utils(state);
   init_dict_utils(state);

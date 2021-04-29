@@ -67,7 +67,7 @@ disassemble_dict(struct state *s)
   {
     s->tib.len = entry->name_len;
     memcpy(s->tib.buf, entry->name, entry->name_len);
-    struct entry *entry_ = find_entry(s);
+    struct entry *entry_ = find_entry(s, &s->dict);
     see(s, entry_);
   }
   printf("---------------------------------------------------------\n");
