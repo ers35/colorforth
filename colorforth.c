@@ -493,7 +493,8 @@ execute_(struct state *s, struct entry *entry)
       case OP_EXECUTE:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
-        execute_(s, entry_);
+        push(s->r_stack, (cell)pc);
+        pc = entry_->code - 1;
         break;
       }
 
