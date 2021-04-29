@@ -121,7 +121,7 @@ extern cell pop(struct stack *stack);
 extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern void unknow_word (struct state *s, const char *msg);
 
-extern void define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s));
+extern void define_primitive_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s));
 
 extern struct state* colorforth_newstate(void);
 extern void parse_colorforth(struct state *state, int c);

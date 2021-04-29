@@ -9,5 +9,5 @@ echo_set(struct state *s)
 void
 init_io_utils(struct state *state)
 {
-  define_extension(state, "echo!", OP_ECHO_SET, echo_set);
+  define_primitive_extension(state, "echo!", OP_ECHO_SET, echo_set);
 }

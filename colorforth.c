@@ -92,7 +92,7 @@ unknow_word (struct state *s, const char *msg)
 
 // 'name' must be null-terminated.
 static void
-define_generic(struct state *s, struct dictionary *dict, char name[], const enum opcode opcode)
+define_primitive_generic(struct state *s, struct dictionary *dict, char name[], const enum opcode opcode)
 {
   struct entry *entry = dict->latest;
   entry->name_len = strlen(name);
@@ -115,17 +115,17 @@ define_generic(struct state *s, struct dictionary *dict, char name[], const enum
 static void
 define_primitive(struct state *s, char name[], const enum opcode opcode)
 {
-  define_generic(s, &s->dict, name, opcode);
+  define_primitive_generic(s, &s->dict, name, opcode);
 }
 
 static void
-define_macro(struct state *s, char name[], const enum opcode opcode)
+define_primitive_macro(struct state *s, char name[], const enum opcode opcode)
 {
-  define_generic(s, &s->macro_dict, name, opcode);
+  define_primitive_generic(s, &s->macro_dict, name, opcode);
 }
 
 void
-define_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s))
+define_primitive_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s))
 {
   define_primitive(s, name, opcode);
   primitive_map[opcode].func = func;
@@ -145,13 +145,25 @@ tib_to_number(struct state *s, cell *n)
  *
  **/
 static void
-define(struct state *s)
+define_generic(struct state *s, struct dictionary *dict)
 {
-  struct entry *entry = s->dict.latest;
+  struct entry *entry = dict->latest;
   entry->name_len = s->tib.len;
   memcpy(entry->name, s->tib.buf, s->tib.len);
   entry->code = s->here;
-  s->dict.latest++;
+  dict->latest++;
+}
+
+static void
+define(struct state *s)
+{
+  define_generic(s, &s->dict);
+}
+
+static void
+define_macro(struct state *s)
+{
+  define_generic(s, &s->macro_dict);
 }
 
 static void
@@ -543,6 +555,7 @@ comment(struct state *s)
 
 #ifdef __ECHO_COLOR
 #define COLOR_RED      "\x1B[01;91m"
+#define COLOR_MAGENTA  "\x1B[01;95m"
 #define COLOR_GREEN    "\x1B[01;92m"
 #define COLOR_YELLOW   "\x1B[01;93m"
 #define COLOR_BLUE     "\x1B[01;94m"
@@ -571,8 +584,16 @@ parse_colorforth(struct state *state, int c)
   {
     case ':':
     {
-      state->color = define;
-      echo_color(state, c, COLOR_RED);
+      if (state->color == define)
+      {
+        state->color = define_macro;
+        echo_color(state, c, COLOR_MAGENTA);
+      }
+      else
+      {
+        state->color = define;
+        echo_color(state, c, COLOR_RED);
+      }
       break;
     }
 
@@ -730,13 +751,13 @@ colorforth_newstate(void)
   define_primitive(state, "here", OP_HERE);
   define_primitive(state, "execute", OP_EXECUTE);
 
-  define_macro(state, ";", OP_RETURN);
-  define_macro(state, "when", OP_WHEN);
-  define_macro(state, "unless", OP_UNLESS);
+  define_primitive_macro(state, ";", OP_RETURN);
+  define_primitive_macro(state, "when", OP_WHEN);
+  define_primitive_macro(state, "unless", OP_UNLESS);
 
-  define_macro(state, ">R", OP_R_PUSH);
-  define_macro(state, "R>", OP_R_POP);
-  define_macro(state, "R@", OP_R_FETCH);
+  define_primitive_macro(state, ">R", OP_R_PUSH);
+  define_primitive_macro(state, "R>", OP_R_POP);
+  define_primitive_macro(state, "R@", OP_R_FETCH);
 
   init_os_utils(state);
   init_dict_utils(state);

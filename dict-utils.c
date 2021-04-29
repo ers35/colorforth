@@ -83,6 +83,6 @@ see_func(struct state *s)
 void
 init_dict_utils(struct state *state)
 {
-  define_extension(state, "see", OP_SEE, see_func);
-  define_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble_dict);
+  define_primitive_extension(state, "see", OP_SEE, see_func);
+  define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble_dict);
 }
