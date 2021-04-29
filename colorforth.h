@@ -41,6 +41,10 @@ enum opcode
   OP_WHEN,
   OP_UNLESS,
 
+  OP_R_PUSH,
+  OP_R_POP,
+  OP_R_FETCH,
+
   /* Extensions */
   OP_SEE,
   OP_DISASSEMBLE_DICT,

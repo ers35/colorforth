@@ -445,6 +445,24 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_R_PUSH:
+      {
+        push(s->r_stack, pop(s->stack));
+        break;
+      }
+
+      case OP_R_POP:
+      {
+        push(s->stack, pop(s->r_stack));
+        break;
+      }
+
+      case OP_R_FETCH:
+      {
+        push(s->stack, s->r_stack->cells[s->r_stack->sp]);
+        break;
+      }
+
       default:
       {
         if (primitive_map[pc->opcode].func != NULL)
@@ -715,6 +733,10 @@ colorforth_newstate(void)
   define_macro(state, ";", OP_RETURN);
   define_macro(state, "when", OP_WHEN);
   define_macro(state, "unless", OP_UNLESS);
+
+  define_macro(state, ">R", OP_R_PUSH);
+  define_macro(state, "R>", OP_R_POP);
+  define_macro(state, "R@", OP_R_FETCH);
 
   init_os_utils(state);
   init_dict_utils(state);
