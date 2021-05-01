@@ -60,6 +60,17 @@ pop(struct stack *stack)
   return n;
 }
 
+static void
+dot_s(struct stack *stack)
+{
+  for (int i = 0, p = stack->sp + 1; i <= stack->lim; i++, p++)
+  {
+    if (p > stack->lim) p = 0;
+    printf("%"CELL_FMT" ", stack->cells[p]);
+  }
+  printf(" <tos\n");
+}
+
 struct entry*
 find_entry(struct state *s, struct dictionary *dict)
 {
@@ -468,6 +479,12 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_DOT_S:
+      {
+        dot_s(s->stack);
+        break;
+      }
+
       default:
       {
         if (primitive_map[pc->opcode].func != NULL)
@@ -704,7 +721,7 @@ colorforth_newstate(void)
   state->color = execute;
 
   state->stack = calloc(1, sizeof(struct stack));
-  init_stack(state->stack, 8);
+  init_stack(state->stack, 30);
 
   state->r_stack = calloc(1, sizeof(struct stack));
   init_stack(state->r_stack, 30);
@@ -743,6 +760,7 @@ colorforth_newstate(void)
   define_primitive(state, "cell", OP_CELL);
   define_primitive(state, "here", OP_HERE);
   define_primitive(state, "execute", OP_EXECUTE);
+  define_primitive(state, ".s", OP_DOT_S);
 
   define_primitive_macro(state, ";", OP_RETURN);
   define_primitive_macro(state, "when", OP_WHEN);

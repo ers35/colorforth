@@ -17,8 +17,6 @@
 :cr ^10 emit ;
 :tab ^9 emit ;
 
-:.s ^. . . . . . . . cr ;
-
 :dumpc ^ 2>R dup c@ . tab 1+ 2R> ;
 :dumpl ^ 2>R 'dumpc ^12 times cr 2R> ;
 :dump  (a -) 'dumpl ^10 times ;
