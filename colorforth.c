@@ -726,13 +726,13 @@ colorforth_newstate(void)
   state->r_stack = calloc(1, sizeof(struct stack));
   init_stack(state->r_stack, 30);
 
-  state->dict.entries = calloc(1, 4096);
+  state->dict.entries = calloc(1, 40960);
   state->dict.latest = state->dict.entries;
 
-  state->macro_dict.entries = calloc(1, 4096);
+  state->macro_dict.entries = calloc(1, 40960);
   state->macro_dict.latest = state->macro_dict.entries;
 
-  state->heap = calloc(1, 4096);
+  state->heap = calloc(1, 40960);
   state->here = state->heap;
 
   state->coll = 0; state->line = 1;
