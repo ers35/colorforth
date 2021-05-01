@@ -1,8 +1,27 @@
 (one line comment)
 :\ ^key 10 = when ; ^\ ;
 
+::2R> ^R> R> ;
+::2>R ^>R >R ;
+
+::2dup ^dup dup ;
+::2drop ^drop drop ;
+
+::1+ ^1 + ;
+::1- ^1 - ;
+
+::;; ^R> drop ;
+
+:times (xt n -) ^over execute 1- dup when times 2drop ;
+
 :cr ^10 emit ;
+:tab ^9 emit ;
+
 :.s ^. . . . . . . . cr ;
+
+:dumpc ^ 2>R dup c@ . tab 1+ 2R> ;
+:dumpl ^ 2>R 'dumpc ^12 times cr 2R> ;
+:dump  (a -) 'dumpl ^10 times ;
 
 :alloc ^here @ swap over + here ! ;
 
