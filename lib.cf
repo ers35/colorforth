@@ -1,6 +1,13 @@
 (one line comment)
 :\ ^key 10 = when ; ^\ ;
 
+(boolean constant)
+:true   ^1 ;
+:false  ^0 ;
+:on     ,true ^;
+:off    ,false ^;
+
+(helper words)
 ::2R> ^R> R> ;
 ::2>R ^>R >R ;
 
@@ -12,14 +19,24 @@
 
 ::;; ^R> drop ;
 
+(loop)
 :times (xt n -) ^over execute 1- dup when times 2drop ;
 
+(rendering)
 :cr ^10 emit ;
 :tab ^9 emit ;
 
-:dumpc ^ 2>R dup c@ . tab 1+ 2R> ;
-:dumpl ^ 2>R 'dumpc ^12 times cr 2R> ;
-:dump  (a -) 'dumpl ^10 times ;
+(dump word)
+:emit.; ^ drop 46 emit ;; ;
+:v-emit (c -) ^
+  ^dup 32 < when emit.;
+  dup 127 swap < when emit.;
+  emit
+;
+
+:<dumpc> ^ 2>R dup c@ dup v-emit 32 emit . tab 1+ 2R> ;
+:<dumpl> ^ 2>R '<dumpc> ^12 times cr 2R> ;
+:dump  (a -) ^ cr '<dumpl> ^10 times drop cr ;
 
 :alloc ^here @ swap over + here ! ;
 
@@ -34,9 +51,5 @@
 :."loop ^over over = when ; ^dup c@ emit 1 + ."loop ;
 :." ^."init ."loop cr ;
 
+(system)
 :cmd ^cell + system ;
-
-:true   ^1 ;
-:false  ^0 ;
-:on     ,true ^;
-:off    ,false ^;
