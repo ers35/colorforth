@@ -197,16 +197,8 @@ compile(struct state *s)
   struct code *code = (struct code *)s->here;
   if (entry)
   {
-    if (entry == s->dict.latest - 1)
-    {
-       code->opcode = OP_TAIL_CALL;
-       code->this = 0;
-     }
-    else
-    {
-      code->opcode = OP_CALL;
-      code->this = (cell)entry;
-    }
+    code->opcode = entry == s->dict.latest - 1 ? OP_TAIL_CALL : OP_CALL;
+    code->this = (cell)entry;
     s->here = (struct code *)s->here + 1;
   }
   else
@@ -432,7 +424,8 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_TAIL_CALL:
       {
-        pc = entry->code - 1;
+        struct entry *entry_ = (struct entry*)pc->this;
+        pc = entry_->code - 1;
         break;
       }
 
