@@ -14,3 +14,10 @@
 
 
 '\ ~see
+
+~\ variable: store the address leaved by alloc on my-var
+~\ with compile/execute/compile pattern
+~cell alloc :my-var ^ ~ ^;
+~'my-var ~see
+100 my-var !
+my-var @ .

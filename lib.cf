@@ -38,7 +38,7 @@
 :<dumpl> ^ 2>R '<dumpc> ^12 times cr 2R> ;
 :dump  (a -) ^ cr '<dumpl> ^10 times drop cr ;
 
-:alloc ^here @ swap over + here ! ;
+:alloc (n - a) ^here @ swap over + here ! ;
 
 (create null-terminated string)
 :"init ^here @ cell + ;
