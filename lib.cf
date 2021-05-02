@@ -29,10 +29,9 @@
 (dump word)
 :emit.; ^ drop 46 emit ;; ;
 :v-emit (c -) ^
-  ^dup 32 < when emit.;
-  dup 127 swap < when emit.;
-  emit
-;
+  dup  32 < when emit.;
+  dup 128 < unless emit.;
+  emit ;
 
 :<dumpc> ^ 2>R dup c@ dup v-emit 32 emit . tab 1+ 2R> ;
 :<dumpl> ^ 2>R '<dumpc> ^12 times cr 2R> ;
