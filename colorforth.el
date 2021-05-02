@@ -9,12 +9,12 @@
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-compile-face
-  '((t (:foreground "green4" :extend t)))
+  '((t (:foreground "green" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-execute-face
-  '((t (:foreground "yellow4" :extend t)))
+  '((t (:foreground "yellow" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
@@ -24,12 +24,12 @@
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-tick-face
-  '((t (:foreground "blue" :extend t)))
+  '((t (:foreground "sky blue" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-inline-face
-  '((t (:foreground "VioletRed4" :extend t)))
+  '((t (:foreground "VioletRed" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
