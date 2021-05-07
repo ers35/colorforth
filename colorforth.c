@@ -254,6 +254,8 @@ execute_(struct state *s, struct entry *entry)
   // printf("-> %s\n", entry->name);
   struct code *pc = entry->code;
 
+  push(s->r_stack, 0);
+
   // don't forget to compile a return!!!!
   while(1)
   {
