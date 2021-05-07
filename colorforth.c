@@ -28,7 +28,19 @@ void
 init_stack(struct stack *stack, int len)
 {
   stack->cells = calloc(len, sizeof(cell));
+  stack->sp = 0;
   stack->lim = len - 1;
+}
+
+static void
+dot_s(struct stack *stack)
+{
+  for (int i = 0, p = stack->sp + 1; i <= stack->lim; i++, p++)
+  {
+    if (p > stack->lim) p = 0;
+    printf("%"CELL_FMT" ", stack->cells[p]);
+  }
+  printf(" <tos\n");
 }
 
 void
@@ -57,18 +69,8 @@ pop(struct stack *stack)
   {
     stack->sp -= 1;
   }
-  return n;
-}
 
-static void
-dot_s(struct stack *stack)
-{
-  for (int i = 0, p = stack->sp + 1; i <= stack->lim; i++, p++)
-  {
-    if (p > stack->lim) p = 0;
-    printf("%"CELL_FMT" ", stack->cells[p]);
-  }
-  printf(" <tos\n");
+  return n;
 }
 
 struct entry*
@@ -491,7 +493,8 @@ execute_(struct state *s, struct entry *entry)
         {
           primitive_map[pc->opcode].func(s);
         }
-        else {
+        else
+        {
           puts("unknown opcode");
           quit(s);
         }
