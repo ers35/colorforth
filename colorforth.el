@@ -29,7 +29,12 @@
   :group 'colorForth-mode-lock-faces)
 
 (defface colorForth-mode-inline-face
-  '((t (:foreground "VioletRed" :extend t)))
+  '((t (:foreground "cyan4" :extend t)))
+  "Face for colorForth mode."
+  :group 'colorForth-mode-lock-faces)
+
+(defface colorForth-mode-macro-face
+  '((t (:foreground "dark violet" :extend t)))
   "Face for colorForth mode."
   :group 'colorForth-mode-lock-faces)
 
@@ -42,7 +47,7 @@
      (",[^:~%^('|,]+" . (0 'colorForth-mode-inline-face t))
      ("([^:~%^('|,]+" . (0 'colorForth-mode-comment-face t))
      ("\\\\[^\n]+" . (0 'colorForth-mode-comment-face t))
-     ("|[^:~%^('|,]+" . (0 'colorForth-mode-inline-face t))))
+     ("|[^:~%^('|,]+" . (0 'colorForth-mode-macro-face t))))
 
 (define-derived-mode colorForth-mode text-mode "colorForth"
   "major mode for editing colorForth language code."
