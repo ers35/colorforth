@@ -8,16 +8,16 @@
 :off    ,false ^;
 
 (helper words)
-::2R> ^R> R> ;
-::2>R ^>R >R ;
+|2R> ^R> R> ;
+|2>R ^>R >R ;
 
-::2dup ^dup dup ;
-::2drop ^drop drop ;
+|2dup ^dup dup ;
+|2drop ^drop drop ;
 
-::1+ ^1 + ;
-::1- ^1 - ;
+|1+ ^1 + ;
+|1- ^1 - ;
 
-::;; ^R> drop ;
+|;; ^R> drop ;
 
 (loop)
 :times (xt n -) ^over execute 1- dup when times 2drop ;

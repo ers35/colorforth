@@ -169,6 +169,18 @@ define_generic(struct state *s, struct dictionary *dict)
   entry->code = NULL;
 }
 
+static void
+define(struct state *s)
+{
+  define_generic(s, &s->dict);
+}
+
+static void
+define_macro(struct state *s)
+{
+  define_generic(s, &s->macro_dict);
+}
+
 void
 attach_entry_to_code(struct state *s)
 {
@@ -183,18 +195,6 @@ attach_entry_to_code(struct state *s)
   {
     macro_entry->code = s->here;
   }
-}
-
-static void
-define(struct state *s)
-{
-  define_generic(s, &s->dict);
-}
-
-static void
-define_macro(struct state *s)
-{
-  define_generic(s, &s->macro_dict);
 }
 
 static void
@@ -621,16 +621,15 @@ parse_colorforth(struct state *state, int c)
   {
     case ':':
     {
-      if (state->color == define)
-      {
-        state->color = define_macro;
-        echo_color(state, c, COLOR_MAGENTA);
-      }
-      else
-      {
-        state->color = define;
-        echo_color(state, c, COLOR_RED);
-      }
+      state->color = define;
+      echo_color(state, c, COLOR_RED);
+      break;
+    }
+
+    case '|':
+    {
+      state->color = define_macro;
+      echo_color(state, c, COLOR_MAGENTA);
       break;
     }
 
