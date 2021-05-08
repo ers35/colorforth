@@ -8,27 +8,23 @@
 :eof? ^-1 = ;
 
 :clear!  ^[esc0 esc] ;
-:red!    ^[esc ~key 1 ^esc] ;
-:green!  ^[esc ~key 2 ^esc] ;
-:blue!   ^[esc ~key 4 ^esc] ;
-:cyan!   ^[esc ~key 6 ^esc] ;
-:yellow! ^[esc ~key 3 ^esc] ;
-:white!  ^[esc1 ~key 3 ^emit ~key 7 ^esc] ;
-
-:continue ^0 ;
-:or-continue 'continue ,choose ^;
-:case ,or-continue '; ,when ^;
+:red!;    ^[esc ~key 1 ^esc] ;; ;
+:green!;  ^[esc ~key 2 ^esc] ;; ;
+:blue!;   ^[esc ~key 4 ^esc] ;; ;
+:cyan!;   ^[esc ~key 6 ^esc] ;; ;
+:yellow!; ^[esc ~key 3 ^esc] ;; ;
+:white!;  ^[esc1 ~key 3 ^emit ~key 7 ^esc] ;; ;
 
 :.key
-  ^dup ~key : ^= 'red! ,case
-  ^dup ~key ^ ^= 'green! ,case
-  ^dup ~key ~ ^= 'yellow! ,case
-  ^dup ~key ' ^= 'blue! ,case
-  ^dup ~key , ^= 'cyan! ,case
-  ^dup ~key ( ^= 'white! ,or-continue ^drop
-  ^dup ~key \ ^= 'white! ,or-continue ^drop
+  ^dup ~key : ^= when red!;
+  ^dup ~key ^ ^= when green!;
+  ^dup ~key ~ ^= when yellow!;
+  ^dup ~key ' ^= when blue!;
+  ^dup ~key , ^= when cyan!;
+  ^dup ~key ( ^= when white!;
+  ^dup ~key \ ^= when white!;
   ^dup emit ;
 
-:colorize ^key .key eof? 'colorize ,unless ^clear! bye ;
+:colorize ^key .key eof? unless colorize clear! bye ;
 
 ~colorize
