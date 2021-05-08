@@ -107,6 +107,7 @@ unknow_word (struct state *s, const char *msg)
 static void
 define_primitive_generic(struct state *s, struct dictionary *dict, char name[], const enum opcode opcode)
 {
+  dict->latest++;
   struct entry *entry = dict->latest;
   entry->name_len = strlen(name);
   memcpy(entry->name, name, entry->name_len);
@@ -117,7 +118,6 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[], 
   (entry->code + 1)->opcode = OP_RETURN;
   (entry->code + 1)->this = 0;
 
-  dict->latest++;
   s->here = (struct code *)s->here + 2;
 
   primitive_map[opcode].name = name;
@@ -160,11 +160,11 @@ tib_to_number(struct state *s, cell *n)
 static void
 define_generic(struct state *s, struct dictionary *dict)
 {
+  dict->latest++;
   struct entry *entry = dict->latest;
   entry->name_len = s->tib.len;
   memcpy(entry->name, s->tib.buf, s->tib.len);
   entry->code = s->here;
-  dict->latest++;
 }
 
 static void
@@ -210,7 +210,7 @@ compile(struct state *s)
   struct code *code = (struct code *)s->here;
   if (entry)
   {
-    code->opcode = entry == s->dict.latest - 1 ? OP_TAIL_CALL : OP_CALL;
+    code->opcode = entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL;
     code->this = (cell)entry;
     s->here = (struct code *)s->here + 1;
   }
@@ -732,10 +732,10 @@ colorforth_newstate(void)
   init_stack(state->r_stack, 30);
 
   state->dict.entries = calloc(1, 40960);
-  state->dict.latest = state->dict.entries;
+  state->dict.latest = state->dict.entries - 1;
 
   state->macro_dict.entries = calloc(1, 40960);
-  state->macro_dict.latest = state->macro_dict.entries;
+  state->macro_dict.latest = state->macro_dict.entries - 1;
 
   state->heap = calloc(1, 40960);
   state->here = state->heap;

@@ -63,7 +63,7 @@ void
 disassemble_dict(struct state *s)
 {
   printf("-------- Words ------------------------------------------\n");
-  for (struct entry *entry = s->dict.latest - 1; entry != s->dict.entries - 1; entry--)
+  for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
   {
     s->tib.len = entry->name_len;
     memcpy(s->tib.buf, entry->name, entry->name_len);
