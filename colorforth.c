@@ -10,14 +10,6 @@
 
 #include "colorforth.h"
 
-#ifdef __EMBED_LIB
-#include "lib.cf.h"
-#endif /* __EMBED_LIB */
-
-extern void init_os_utils(struct state *s);
-extern void init_dict_utils(struct state *s);
-extern void init_io_utils(struct state *s);
-
 void
 quit(struct state *state)
 {
@@ -808,13 +800,6 @@ colorforth_newstate(void)
   define_primitive_macro(state, "R@", OP_R_FETCH);
 
   LOAD_EXTENTIONS
-
-#ifdef __EMBED_LIB
-  for(unsigned int i = 0; i < lib_cf_len; i++)
-  {
-    parse_colorforth(state, lib_cf[i]);
-  }
-#endif /* __EMBED_LIB */
 
   state->color = execute;
   echo_color(state, '~', COLOR_YELLOW);

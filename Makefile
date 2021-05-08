@@ -3,8 +3,11 @@ default: colorforth
 SRC=main.c colorforth.c \
 	extensions/os-utils.c \
 	extensions/dict-utils.c \
-	extensions/io-utils.c
-SRC_H=colorforth.h conf.h extensions/lib.cf.h
+	extensions/io-utils.c \
+	extensions/embed_lib_cf.c
+
+SRC_H=colorforth.h \
+	conf.h
 
 EXTRA_CFLAGS=-I. -Iextensions \
 	-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096
