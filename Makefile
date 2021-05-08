@@ -47,4 +47,7 @@ run: colorforth
 	@#rlwrap xsim --trace colorforth.xe < lib.cf
 
 clean:
-	rm -rf colorforth
+	rm -f colorforth
+
+mrproper: clean
+	rm -f conf.h
