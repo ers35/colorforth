@@ -1,2 +1,2 @@
-![](screenshot.png?raw=true)
-![](screenshot-colorize.png?raw=true)
+![](doc/screenshot.png?raw=true)
+![](doc/screenshot-colorize.png?raw=true)

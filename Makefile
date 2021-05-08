@@ -1,18 +1,22 @@
 default: colorforth
 
-SRC=main.c colorforth.c os-utils.c dict-utils.c io-utils.c
-SRC_H=colorforth.h lib.cf.h
+SRC=main.c colorforth.c \
+	extensions/os-utils.c \
+	extensions/dict-utils.c \
+	extensions/io-utils.c
+SRC_H=colorforth.h extensions/lib.cf.h
 
 EMBED_LIB=-D__EMBED_LIB
 ECHO_COLOR=-D__ECHO_COLOR
 
-EXTRA_CFLAGS=-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
+EXTRA_CFLAGS=-I. -Iextensions \
+	-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
 	$(EMBED_LIB) $(ECHO_COLOR)
 
 
 
-lib.cf.h: lib.cf
-	xxd -i lib.cf lib.cf.h
+extensions/lib.cf.h: forth/lib.cf
+	xxd -i forth/lib.cf extensions/lib.cf.h
 
 colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
@@ -36,18 +40,13 @@ dumpelf: colorforth
 	readelf -a colorforth | less
 
 colorize: colorforth
-	cat colorize.cf lib.cf | ./colorforth | less -R
+	cat forth/colorize.cf forth/lib.cf | ./colorforth | less -R
 
 run: colorforth
 	@#rlwrap ./colorforth
 	@#rlwrap cat lib.cf - | ./colorforth
-	cat lib.cf - | ./colorforth
+	cat forth/lib.cf - | ./colorforth
 	@#rlwrap xsim --trace colorforth.xe < lib.cf
-
-editor: colorforth
-	stty raw
-	cat lib.cf editor.fs - | ./colorforth
-	stty -raw
 
 clean:
 	rm -rf colorforth
