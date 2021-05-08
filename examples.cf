@@ -1,4 +1,6 @@
-~\ one line comment
+%off echo!
+
+\ one line comment
 
 :msg ~" hello world" ^;
 
@@ -18,6 +20,7 @@
 ~\ variable: store the address leaved by alloc on my-var
 ~\ with execute/compile pattern
 :my-var ~cell alloc ^;
+
 ~'my-var ~see
 100 my-var !
 my-var @ .

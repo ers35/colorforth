@@ -648,6 +648,14 @@ parse_colorforth(struct state *state, int c)
       break;
     }
 
+    case '%':
+    {
+      state->echo_on = 0;
+      state->color = execute;
+      echo_color(state, c, COLOR_YELLOW);
+      break;
+    }
+
     case '~':
     {
       state->color = execute;
