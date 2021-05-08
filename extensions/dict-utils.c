@@ -3,6 +3,22 @@
 
 #include "colorforth.h"
 
+void
+dump_words(struct dictionary *dict)
+{
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  {
+    printf("%.*s ", (int)entry->name_len, entry->name);
+  }
+}
+
+void
+words(struct state *s)
+{
+  dump_words(&s->macro_dict);
+  dump_words(&s->dict);
+  printf("\n");
+}
 
 void
 see(struct state *s, struct entry *entry)
@@ -60,16 +76,24 @@ see(struct state *s, struct entry *entry)
 }
 
 void
-disassemble_dict(struct state *s)
+disassemble_dict(struct state *s, struct dictionary *dict)
 {
-  printf("-------- Words ------------------------------------------\n");
-  for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
     s->tib.len = entry->name_len;
     memcpy(s->tib.buf, entry->name, entry->name_len);
-    struct entry *entry_ = find_entry(s, &s->dict);
+    struct entry *entry_ = find_entry(s, dict);
     see(s, entry_);
   }
+}
+
+void
+disassemble(struct state *s)
+{
+  printf("-------- Words ------------------------------------------\n");
+  disassemble_dict(s, &s->dict);
+  printf("--------Macros-------------------------------------------\n");
+  disassemble_dict(s, &s->macro_dict);
   printf("---------------------------------------------------------\n");
 }
 
@@ -83,6 +107,7 @@ see_func(struct state *s)
 void
 init_dict_utils(struct state *state)
 {
+  define_primitive_extension(state, "words", OP_WORDS, words);
   define_primitive_extension(state, "see", OP_SEE, see_func);
-  define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble_dict);
+  define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble);
 }

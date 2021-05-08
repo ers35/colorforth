@@ -372,16 +372,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_WORDS:
-      {
-        for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
-        {
-          printf("%.*s ", (int)entry->name_len, entry->name);
-        }
-        printf("\n");
-        break;
-      }
-
       case OP_RETURN:
       {
         struct code *code = (struct code *)pop(s->r_stack);
