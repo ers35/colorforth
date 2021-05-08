@@ -2,6 +2,7 @@
 #define __COLORFORTH_H
 
 #include <stdlib.h>
+#include "conf.h"
 
 typedef long cell;
 
@@ -59,7 +60,7 @@ enum opcode
 // terminal input buffer
 struct tib
 {
-  char buf[20];
+  char buf[TIB_SIZE];
   size_t len;
 };
 

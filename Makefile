@@ -4,16 +4,14 @@ SRC=main.c colorforth.c \
 	extensions/os-utils.c \
 	extensions/dict-utils.c \
 	extensions/io-utils.c
-SRC_H=colorforth.h extensions/lib.cf.h
-
-EMBED_LIB=-D__EMBED_LIB
-ECHO_COLOR=-D__ECHO_COLOR
+SRC_H=colorforth.h conf.h extensions/lib.cf.h
 
 EXTRA_CFLAGS=-I. -Iextensions \
-	-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096 \
-	$(EMBED_LIB) $(ECHO_COLOR)
+	-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096
 
 
+conf.h: conf.tmpl.h
+	cp conf.tmpl.h conf.h
 
 extensions/lib.cf.h: forth/lib.cf
 	xxd -i forth/lib.cf extensions/lib.cf.h

@@ -612,10 +612,12 @@ echo_color(struct state *state, int c, char *color)
 void
 parse_colorforth(struct state *state, int c)
 {
+#ifdef __ECHO_COLOR
   if (state->echo_on)
   {
     printf("%c", c);
   }
+#endif
 
   switch (c)
   {
@@ -756,18 +758,18 @@ colorforth_newstate(void)
   state->color = execute;
 
   state->stack = calloc(1, sizeof(struct stack));
-  init_stack(state->stack, 30);
+  init_stack(state->stack, STACK_SIZE);
 
   state->r_stack = calloc(1, sizeof(struct stack));
-  init_stack(state->r_stack, 30);
+  init_stack(state->r_stack, R_STACK_SIZE);
 
-  state->dict.entries = calloc(1, 40960);
+  state->dict.entries = calloc(DICT_SIZE, sizeof(struct entry));
   state->dict.latest = state->dict.entries - 1;
 
-  state->macro_dict.entries = calloc(1, 40960);
+  state->macro_dict.entries = calloc(MACRO_DICT_SIZE, sizeof(struct entry));
   state->macro_dict.latest = state->macro_dict.entries - 1;
 
-  state->heap = calloc(1, 40960);
+  state->heap = calloc(1, HEAP_SIZE);
   state->here = state->heap;
 
   state->coll = 0; state->line = 1;
@@ -805,9 +807,7 @@ colorforth_newstate(void)
   define_primitive_macro(state, "R>", OP_R_POP);
   define_primitive_macro(state, "R@", OP_R_FETCH);
 
-  init_os_utils(state);
-  init_dict_utils(state);
-  init_io_utils(state);
+  LOAD_EXTENTIONS
 
 #ifdef __EMBED_LIB
   for(unsigned int i = 0; i < lib_cf_len; i++)
