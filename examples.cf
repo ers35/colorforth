@@ -1,10 +1,10 @@
 ~\ one line comment
 
-~" hello world" :msg ~ ^;
+:msg ~" hello world" ^;
 
 ~msg ."
 
-~" uname -a" :uname  ~ ^cmd ;
+:uname ~" uname -a" ^cmd ;
 ~uname
 
 :square ^dup * ;
@@ -17,7 +17,7 @@
 
 ~\ variable: store the address leaved by alloc on my-var
 ~\ with execute/compile pattern
-~cell alloc :my-var ~ ^;
+:my-var ~cell alloc ^;
 ~'my-var ~see
 100 my-var !
 my-var @ .
