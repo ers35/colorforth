@@ -16,7 +16,7 @@
 :blue!;    ^[esc ~key 4 ^esc] ;; ;
 :cyan!;    ^[esc ~key 6 ^esc] ;; ;
 :yellow!;  ^[esc ~key 3 ^esc] ;; ;
-:white!;   ^[esc1 ~key 3 ^emit ~key 7 ^esc] ;; ;
+:white!   ^[esc1 ~key 3 ^emit ~key 7 ^esc] emit ;
 
 :.key
   ^dup ~key : ^= when red!;
@@ -26,8 +26,8 @@
   ^dup ~key % ^= when yellow!;
   ^dup ~key ' ^= when blue!;
   ^dup ~key , ^= when cyan!;
-  ^dup ~key ( ^= when white!;
-  ^dup ~key \ ^= when white!;
+  ^dup ~key ( ^= when white!
+  ^dup ~key \ ^= when white!
   ^dup emit ;
 
 :colorize ^key .key eof? unless colorize clear! bye ;
