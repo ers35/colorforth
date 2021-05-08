@@ -41,13 +41,13 @@
 
 (create null-terminated string)
 :"init ^here @ cell + ;
-:"loop ^dup key dup 34 ^= when ; ^swap c! 1 + "loop ;
+:"loop ^dup key dup 34 = when ; swap c! 1 + "loop ;
 :"done ^drop drop here @ - dup (null ^1 + alloc swap over ! ;
 :" ^"init "loop "done ;
 
 (print string)
 :."init ^dup dup @ + swap cell + ;
-:."loop ^over over = when ; ^dup c@ emit 1 + ."loop ;
+:."loop ^over over = when ; dup c@ emit 1 + ."loop ;
 :." ^."init ."loop cr ;
 
 (system)
