@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "conf.h"
 
+#include "extensions/echo-color.h"
+
 typedef long cell;
 
 #define CELL_FMT "ld"

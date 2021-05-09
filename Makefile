@@ -6,6 +6,7 @@ SRC=main.c colorforth.c \
 	extensions/os-utils.c \
 	extensions/dict-utils.c \
 	extensions/io-utils.c \
+	extensions/echo-color.c \
 	extensions/embed-lib_cf.c
 
 SRC_H=colorforth.h \

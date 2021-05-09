@@ -9,7 +9,6 @@
 #include <string.h>
 
 #include "colorforth.h"
-#include "extensions/echo-color.h"
 
 void
 quit(struct state *state, char ask)
