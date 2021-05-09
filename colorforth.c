@@ -12,10 +12,20 @@
 #include "extensions/echo-color.h"
 
 void
-quit(struct state *state)
+quit(struct state *state, char ask)
 {
-  state->done = 1;
-  echo_color(state, ' ', COLOR_CLEAR);
+  char c = 'y';
+  if (ask)
+  {
+    printf("Quit? (y/n) ");
+    c = getchar();
+  }
+  if (c == 'y')
+  {
+    state->done = 1;
+    echo_color(state, ' ', COLOR_CLEAR);
+  }
+  printf("\n");
 }
 
 void
@@ -243,7 +253,7 @@ compile(struct state *s)
     else
     {
       unknow_word(s, "compiling");
-      quit(s);
+      quit(s, 1);
     }
   }
 }
@@ -259,7 +269,7 @@ compile_inline(struct state *s)
   else
   {
     unknow_word(s, "inlining");
-    quit(s);
+    quit(s, 1);
   }
 }
 
@@ -370,7 +380,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_BYE:
       {
-        quit(s);
+        quit(s, 0);
         break;
       }
 
@@ -503,7 +513,7 @@ execute_(struct state *s, struct entry *entry)
         else
         {
           puts("unknown opcode");
-          quit(s);
+          quit(s, 1);
         }
       }
     }
@@ -564,7 +574,7 @@ compile_tick(struct state *s)
   else
   {
     unknow_word(s, "ticking");
-    quit(s);
+    quit(s, 1);
   }
 }
 
