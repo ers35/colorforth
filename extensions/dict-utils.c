@@ -114,9 +114,23 @@ void
 room(struct state *s)
 {
   printf("-------- ROOM -------------------------------------------\n");
-  printf("There is %ld entries defined\n", s->dict.latest - s->dict.entries + 1);
-  printf("There is %ld macros defined\n",  s->macro_dict.latest - s->macro_dict.entries + 1);
-  printf("There is %ld bytes used on the heap\n", (char *)s->here - (char *)s->heap);
+  printf("The circular stack size is %d cells\n", s->stack->lim + 1);
+  printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
+  printf("Maximm length of a word is %d chars\n", TIB_SIZE);
+
+  printf("--\n");
+
+  const size_t defined = s->dict.latest - s->dict.entries + 1;
+  printf("There is %ld / %d (%ld%%) entries defined\n", defined, DICT_SIZE,
+         (defined*100/DICT_SIZE));
+
+  const size_t defined_macro = s->macro_dict.latest - s->macro_dict.entries + 1;
+  printf("There is %ld / %d (%ld%%) macros defined\n", defined_macro, MACRO_DICT_SIZE,
+         (defined_macro*100/MACRO_DICT_SIZE));
+
+  const size_t used = (char *)s->here - (char *)s->heap;
+  printf("There is %ld / %d (%ld%%) bytes used on the heap\n", used, HEAP_SIZE,
+         (used*100/HEAP_SIZE));
   printf("---------------------------------------------------------\n");
 }
 
