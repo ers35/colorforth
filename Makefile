@@ -1,5 +1,7 @@
 default: colorforth
 
+.PHONY: optim
+
 SRC=main.c colorforth.c \
 	extensions/os-utils.c \
 	extensions/dict-utils.c \
@@ -9,9 +11,8 @@ SRC=main.c colorforth.c \
 SRC_H=colorforth.h \
 	conf.h
 
-EXTRA_CFLAGS=-I. -Iextensions \
-	-Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096
-
+optim_cpl:
+	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)
 
 conf.h: conf.tmpl.h
 	cp conf.tmpl.h conf.h
@@ -22,7 +23,7 @@ extensions/lib.cf.h: forth/lib.cf
 colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
-	$(EXTRA_CFLAGS) \
+	-I. -Iextensions $(EXTRA_CFLAGS) \
 	-o colorforth $(SRC)
 
 optimize: colorforth
