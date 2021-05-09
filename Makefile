@@ -6,10 +6,11 @@ SRC=main.c colorforth.c \
 	extensions/os-utils.c \
 	extensions/dict-utils.c \
 	extensions/io-utils.c \
-	extensions/embed_lib_cf.c
+	extensions/embed-lib_cf.c
 
 SRC_H=colorforth.h \
-	conf.h
+	conf.h \
+	extensions/echo-color.h
 
 optim_cpl:
 	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)
