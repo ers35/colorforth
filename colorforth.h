@@ -50,6 +50,7 @@ enum opcode
   /* Extensions */
   OP_SEE,
   OP_DISASSEMBLE_DICT,
+  OP_ROOM,
   OP_SYSTEM,
   OP_ECHO_SET,
 

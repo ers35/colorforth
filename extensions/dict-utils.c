@@ -111,9 +111,20 @@ see_func(struct state *s)
 }
 
 void
+room(struct state *s)
+{
+  printf("-------- ROOM -------------------------------------------\n");
+  printf("There is %ld entries defined\n", s->dict.latest - s->dict.entries + 1);
+  printf("There is %ld macros defined\n",  s->macro_dict.latest - s->macro_dict.entries + 1);
+  printf("There is %ld bytes used on the heap\n", (char *)s->here - (char *)s->heap);
+  printf("---------------------------------------------------------\n");
+}
+
+void
 init_dict_utils(struct state *state)
 {
   define_primitive_extension(state, "words", OP_WORDS, words);
   define_primitive_extension(state, "see", OP_SEE, see_func);
   define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble);
+  define_primitive_extension(state, "room", OP_ROOM, room);
 }
