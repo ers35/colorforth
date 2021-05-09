@@ -25,6 +25,7 @@ see(struct state *s, struct entry *entry)
 {
   if (entry)
   {
+    char display_next_sc = 0;
     printf(":%.*s ", (int)entry->name_len, entry->name);
     for (size_t i = 0, done = 0; !done; i++)
     {
@@ -34,7 +35,10 @@ see(struct state *s, struct entry *entry)
         case OP_RETURN:
         {
           printf("; ");
-          done = 1;
+          if (!display_next_sc)
+          {
+            done = 1;
+          }
           break;
         }
 
@@ -66,6 +70,8 @@ see(struct state *s, struct entry *entry)
           printf("%s ", primitive_map[entry->code[i].opcode].name);
         }
       }
+
+      display_next_sc = (entry->code[i].opcode == OP_WHEN || entry->code[i].opcode == OP_UNLESS) ? 1 : 0;
     }
     printf("\n");
   }
