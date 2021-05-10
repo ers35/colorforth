@@ -120,16 +120,16 @@ room(struct state *s)
 
   printf("--\n");
 
-  const size_t defined = s->dict.latest - s->dict.entries + 1;
-  printf("There is %ld / %d (%ld%%) entries defined\n", defined, DICT_SIZE,
+  const unsigned int defined = s->dict.latest - s->dict.entries + 1;
+  printf("There is %u / %d (%u%%) entries defined\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
 
-  const size_t defined_macro = s->macro_dict.latest - s->macro_dict.entries + 1;
-  printf("There is %ld / %d (%ld%%) macros defined\n", defined_macro, MACRO_DICT_SIZE,
+  const unsigned int defined_macro = s->macro_dict.latest - s->macro_dict.entries + 1;
+  printf("There is %u / %d (%u%%) macros defined\n", defined_macro, MACRO_DICT_SIZE,
          (defined_macro*100/MACRO_DICT_SIZE));
 
-  const size_t used = (char *)s->here - (char *)s->heap;
-  printf("There is %ld / %d (%ld%%) bytes used on the heap\n", used, HEAP_SIZE,
+  const unsigned int used = (char *)s->here - (char *)s->heap;
+  printf("There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,
          (used*100/HEAP_SIZE));
   printf("---------------------------------------------------------\n");
 }
