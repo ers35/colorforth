@@ -1,5 +1,8 @@
-#include "lib.cf.h"
 #include "colorforth.h"
+
+#ifdef __EMBED_LIB_CF
+
+#include "lib.cf.h"
 
 void
 embed_lib_cf (struct state *state)
@@ -9,3 +12,11 @@ embed_lib_cf (struct state *state)
     parse_colorforth(state, lib_cf[i]);
   }
 }
+
+#else
+void
+embed_lib_cf (struct state *state)
+{
+}
+
+#endif /* __EMBED_LIB_CF */

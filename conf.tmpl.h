@@ -4,6 +4,8 @@
 // Enable colors in the terminal
 #define __ECHO_COLOR
 
+// Embed lib.cf
+#define __EMBED_LIB_CF
 
 // Various sizes
 #define STACK_SIZE 30
