@@ -1,0 +1,29 @@
+#-*- makefile -*-
+
+default: cf.exe
+
+
+SRC=main.c colorf~1.c \
+	extens~1\os-utils.c \
+	extens~1\dict-u~1.c \
+	extens~1\io-utils.c \
+	extens~1\echo-c~1.c \
+	extens~1\embed-~1.c
+
+SRC_H=colorf~1.h \
+	conf.h \
+	extens~1\echo-c~1.h
+
+conf.h: conftm~1.h
+	copy conftm~1.h conf.h
+
+patch4dos:
+	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' *.c
+	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' extens~1/*
+	sed -i 's/include "echo-color.h"/include "echo-c~1.h"/g' colorf~1.h
+
+pdos: patch4dos
+
+
+cf.exe: Makefile.dos $(SRC) $(SRC_H)
+	gcc -o cf.exe $(SRC) -I. -Iextens~1 -std=c99
