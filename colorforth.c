@@ -1,7 +1,6 @@
 // The author disclaims copyright to this source code.
 
 #include <ctype.h>
-#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
