@@ -2,7 +2,7 @@
 
 #ifdef __ECHO_COLOR
 
-#include <stdio.h>
+#include <cf-stdio.h>
 #include <unistd.h>
 #include <termios.h>
 
@@ -11,7 +11,7 @@ struct termios old_tio;
 void
 echo_color(struct state *state, int c, char *color)
 {
-  printf("\b%s%c", color, c);
+  cf_printf("\b%s%c", color, c);
 }
 
 void
@@ -31,4 +31,3 @@ reset_terminal()
 }
 
 #endif /* __ECHO_COLOR */
-

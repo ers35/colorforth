@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cf-stdio.h>
 #include <string.h>
 
 #include "colorforth.h"
@@ -8,7 +8,7 @@ dump_words(struct dictionary *dict)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
-    printf("%.*s ", (int)entry->name_len, entry->name);
+    cf_printf("%.*s ", (int)entry->name_len, entry->name);
   }
 }
 
@@ -17,7 +17,7 @@ words(struct state *s)
 {
   dump_words(&s->macro_dict);
   dump_words(&s->dict);
-  printf("\n");
+  cf_printf("\n");
 }
 
 void
@@ -26,7 +26,7 @@ see(struct state *s, struct entry *entry)
   if (entry)
   {
     char display_next_sc = 0;
-    printf(":%.*s ", (int)entry->name_len, entry->name);
+    cf_printf(":%.*s ", (int)entry->name_len, entry->name);
     for (size_t i = 0, done = 0; !done; i++)
     {
       struct entry *entry_ = (struct entry*) entry->code[i].this;
@@ -34,7 +34,7 @@ see(struct state *s, struct entry *entry)
       {
         case OP_RETURN:
         {
-          printf("; ");
+          cf_printf("; ");
           if (!display_next_sc)
           {
             done = 1;
@@ -44,36 +44,36 @@ see(struct state *s, struct entry *entry)
 
         case OP_CALL:
         {
-          printf("%s ", entry_->name);
+          cf_printf("%s ", entry_->name);
           break;
         }
         case OP_TAIL_CALL:
         {
-          printf("%s¬ ", entry->name);
+          cf_printf("%s¬ ", entry->name);
           break;
         }
 
         case OP_TICK_NUMBER:
         {
-          printf("'%s ", entry_->name);
+          cf_printf("'%s ", entry_->name);
           break;
         }
 
         case OP_NUMBER:
         {
-          printf("%"CELL_FMT" ", entry->code[i].this);
+          cf_printf("%"CELL_FMT" ", entry->code[i].this);
           break;
         }
 
         default:
         {
-          printf("%s ", primitive_map[entry->code[i].opcode].name);
+          cf_printf("%s ", primitive_map[entry->code[i].opcode].name);
         }
       }
 
       display_next_sc = (entry->code[i].opcode == OP_WHEN || entry->code[i].opcode == OP_UNLESS) ? 1 : 0;
     }
-    printf("\n");
+    cf_printf("\n");
   }
   else
   {
@@ -96,11 +96,11 @@ disassemble_dict(struct state *s, struct dictionary *dict)
 void
 disassemble(struct state *s)
 {
-  printf("-------- Words ------------------------------------------\n");
+  cf_printf("-------- Words ------------------------------------------\n");
   disassemble_dict(s, &s->dict);
-  printf("--------Macros-------------------------------------------\n");
+  cf_printf("--------Macros-------------------------------------------\n");
   disassemble_dict(s, &s->macro_dict);
-  printf("---------------------------------------------------------\n");
+  cf_printf("---------------------------------------------------------\n");
 }
 
 void
@@ -113,27 +113,27 @@ see_func(struct state *s)
 void
 room(struct state *s)
 {
-  printf("-------- ROOM -------------------------------------------\n");
-  printf("Cell size is %ld bytes / %ld bits\n", sizeof(cell), sizeof(cell) * 8);
+  cf_printf("-------- ROOM -------------------------------------------\n");
+  cf_printf("Cell size is %ld bytes / %ld bits\n", sizeof(cell), sizeof(cell) * 8);
 
-  printf("The circular stack size is %d cells\n", s->stack->lim + 1);
-  printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
-  printf("Maximm length of a word is %d chars\n", TIB_SIZE);
+  cf_printf("The circular stack size is %d cells\n", s->stack->lim + 1);
+  cf_printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
+  cf_printf("Maximm length of a word is %d chars\n", TIB_SIZE);
 
-  printf("--\n");
+  cf_printf("--\n");
 
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
-  printf("There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
+  cf_printf("There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
 
   const unsigned int defined_macro = s->macro_dict.latest - s->macro_dict.entries + 1;
-  printf("There is %u / %d (%u%%) macros defined in the macro dictionary\n", defined_macro, MACRO_DICT_SIZE,
+  cf_printf("There is %u / %d (%u%%) macros defined in the macro dictionary\n", defined_macro, MACRO_DICT_SIZE,
          (defined_macro*100/MACRO_DICT_SIZE));
 
   const unsigned int used = (char *)s->here - (char *)s->heap;
-  printf("There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,
+  cf_printf("There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,
          (used*100/HEAP_SIZE));
-  printf("---------------------------------------------------------\n");
+  cf_printf("---------------------------------------------------------\n");
 }
 
 void

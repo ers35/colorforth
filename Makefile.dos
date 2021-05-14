@@ -4,6 +4,7 @@ default: cf.exe
 
 
 SRC=main.c colorf~1.c \
+	cf-stdio/cf-stdio.c \
 	extens~1\os-utils.c \
 	extens~1\dict-u~1.c \
 	extens~1\io-utils.c \
@@ -11,6 +12,7 @@ SRC=main.c colorf~1.c \
 	extens~1\embed-~1.c
 
 SRC_H=colorf~1.h \
+	cf-stdio/cf-stdio.h \
 	conf.h \
 	extens~1\echo-c~1.h
 
@@ -28,7 +30,7 @@ pdos: patch4dos
 cf.exe: Makefile.dos $(SRC) $(SRC_H)
 	gcc -std=c99 -Os -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
-	-I. -Iextens~1 \
+	-I. -Iextens~1  -Icf-stdio  \
 	-o cf.exe $(SRC)
 
 clean:

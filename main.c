@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cf-stdio.h>
 
 #include "colorforth.h"
 
@@ -11,7 +11,7 @@ main(int argc, char *argv[])
 
   while (!state->done)
   {
-    parse_colorforth(state, getchar());
+    parse_colorforth(state, cf_getchar());
   }
 
   reset_terminal();

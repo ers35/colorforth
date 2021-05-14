@@ -3,6 +3,7 @@ default: colorforth
 .PHONY: optim
 
 SRC=main.c colorforth.c \
+	cf-stdio/cf-stdio.c \
 	extensions/os-utils.c \
 	extensions/dict-utils.c \
 	extensions/io-utils.c \
@@ -11,6 +12,7 @@ SRC=main.c colorforth.c \
 
 SRC_H=colorforth.h \
 	conf.h \
+	cf-stdio/cf-stdio.h \
 	extensions/echo-color.h
 
 optim_cpl:
@@ -25,7 +27,7 @@ extensions/lib.cf.h: forth/lib.cf
 colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
-	-I. -Iextensions $(EXTRA_CFLAGS) \
+	-I. -Iextensions -Icf-stdio $(EXTRA_CFLAGS) \
 	-o colorforth $(SRC)
 
 optimize: colorforth
