@@ -26,4 +26,10 @@ pdos: patch4dos
 
 
 cf.exe: Makefile.dos $(SRC) $(SRC_H)
-	gcc -o cf.exe $(SRC) -I. -Iextens~1 -std=c99
+	gcc -std=c99 -Os -Wall -Werror -Wextra -pedantic \
+	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
+	-I. -Iextens~1 \
+	-o cf.exe $(SRC)
+
+clean:
+	del cf.exe
