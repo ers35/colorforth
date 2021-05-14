@@ -114,6 +114,8 @@ void
 room(struct state *s)
 {
   printf("-------- ROOM -------------------------------------------\n");
+  printf("Cell size is %ld bytes / %ld bits\n", sizeof(cell), sizeof(cell) * 8);
+
   printf("The circular stack size is %d cells\n", s->stack->lim + 1);
   printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
   printf("Maximm length of a word is %d chars\n", TIB_SIZE);
@@ -121,11 +123,11 @@ room(struct state *s)
   printf("--\n");
 
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
-  printf("There is %u / %d (%u%%) entries defined\n", defined, DICT_SIZE,
+  printf("There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
 
   const unsigned int defined_macro = s->macro_dict.latest - s->macro_dict.entries + 1;
-  printf("There is %u / %d (%u%%) macros defined\n", defined_macro, MACRO_DICT_SIZE,
+  printf("There is %u / %d (%u%%) macros defined in the macro dictionary\n", defined_macro, MACRO_DICT_SIZE,
          (defined_macro*100/MACRO_DICT_SIZE));
 
   const unsigned int used = (char *)s->here - (char *)s->heap;
