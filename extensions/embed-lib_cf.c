@@ -1,3 +1,4 @@
+// The author disclaims copyright to this source code.
 #include "colorforth.h"
 
 #ifdef __EMBED_LIB_CF

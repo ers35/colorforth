@@ -1,3 +1,4 @@
+// The author disclaims copyright to this source code.
 #ifndef __ECHO_COLOR_H
 #define __ECHO_COLOR_H
 

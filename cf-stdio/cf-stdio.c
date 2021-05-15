@@ -1,3 +1,4 @@
+// The author disclaims copyright to this source code.
 #include <cf-stdio.h>
 #include <stdarg.h>
 

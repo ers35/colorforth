@@ -1,3 +1,4 @@
+// The author disclaims copyright to this source code.
 #ifndef __CF_STDIO_H
 #define __CF_STDIO_H
 

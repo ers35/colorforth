@@ -1,3 +1,4 @@
+// The author disclaims copyright to this source code.
 #ifndef __COLORFORTH_H
 #define __COLORFORTH_H
 
