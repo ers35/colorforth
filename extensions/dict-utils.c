@@ -114,7 +114,7 @@ void
 room(struct state *s)
 {
   cf_printf("-------- ROOM -------------------------------------------\n");
-  cf_printf("Cell size is %ld bytes / %ld bits\n", sizeof(cell), sizeof(cell) * 8);
+  cf_printf("Cell size is %u bytes / %u bits\n", (unsigned int) sizeof(cell), (unsigned int) sizeof(cell) * 8);
 
   cf_printf("The circular stack size is %d cells\n", s->stack->lim + 1);
   cf_printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
