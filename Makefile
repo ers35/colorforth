@@ -12,6 +12,7 @@ SRC=main.c colorforth.c \
 
 SRC_H=colorforth.h \
 	conf.h \
+	extensions/lib.cf.h \
 	cf-stdio/cf-stdio.h \
 	extensions/echo-color.h
 
