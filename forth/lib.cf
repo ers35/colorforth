@@ -48,7 +48,7 @@
 (print string)
 :."init ^dup dup @ + swap cell + ;
 :."loop ^over over = when ; dup c@ emit 1 + ."loop ;
-:." ^."init ."loop cr ;
+:." ^."init ."loop 2drop ;
 
 (system)
 :cmd ^cell + system ;
