@@ -14,6 +14,7 @@ SRC=main.c colorf~1.c \
 SRC_H=colorf~1.h \
 	cf-stdio/cf-stdio.h \
 	conf.h \
+	extens~1\libcf~1.h \
 	extens~1\echo-c~1.h
 
 conf.h: conftm~1.h
@@ -23,6 +24,7 @@ patch4dos:
 	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' *.c
 	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' extens~1/*
 	sed -i 's/include "echo-color.h"/include "echo-c~1.h"/g' colorf~1.h
+	sed -i 's/include "lib.cf.h"/include "libcf~1.h"/g' extens~1/embed-~1.c
 
 pdos: patch4dos
 
