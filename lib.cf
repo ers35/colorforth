@@ -23,7 +23,7 @@
 :cells ^cell * ;
 
 (loop)
-:times (xt n -) ^over execute 1- dup when times 2drop ;
+:times (xt n -) ^1- over execute dup when times 2drop ;
 
 (rendering)
 :cr ^10 emit ;
