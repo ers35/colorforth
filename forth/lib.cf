@@ -54,6 +54,8 @@
 :type
 :." ^."init ."loop 2drop ;
 :typen ^type cr ;
+:ntypen ^cr type cr ;
+
 
 (system)
 :cmd ^cell + system ;
