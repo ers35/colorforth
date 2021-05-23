@@ -20,7 +20,7 @@
 |;; ^R> drop ;
 
 |cells ^cell * ;
-:cells ^cell * ;
+:cells ^cells ;
 
 (loop)
 :times (xt n -) ^1- over execute dup when times 2drop ;
