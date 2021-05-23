@@ -23,4 +23,15 @@
 
 ~'my-var ~see
 100 my-var !
-my-var @ .
+my-var @ . cr cr
+
+~\ Loop example
+:hello ~" Hello world!" ^typen ;
+
+:loop1 'hello ^10 times ;
+~loop1 cr
+
+~\ The counter is juste on the top of stack (TOS)
+:hello-count ^dup . hello ;
+:loop2 'hello-count ^5 times ;
+~loop2 cr
