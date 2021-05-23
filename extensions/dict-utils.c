@@ -112,17 +112,8 @@ see_func(struct state *s)
 }
 
 void
-room(struct state *s)
+shortroom(struct state *s)
 {
-  cf_printf("-------- ROOM -------------------------------------------\n");
-  cf_printf("Cell size is %u bytes / %u bits\n", (unsigned int) sizeof(cell), (unsigned int) sizeof(cell) * 8);
-
-  cf_printf("The circular stack size is %d cells\n", s->stack->lim + 1);
-  cf_printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
-  cf_printf("Maximm length of a word is %d chars\n", TIB_SIZE);
-
-  cf_printf("--\n");
-
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
   cf_printf("There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
@@ -138,10 +129,33 @@ room(struct state *s)
 }
 
 void
+fullroom(struct state *s)
+{
+  cf_printf("-------- ROOM -------------------------------------------\n");
+  cf_printf("Cell size is %u bytes / %u bits\n", (unsigned int) sizeof(cell), (unsigned int) sizeof(cell) * 8);
+
+  cf_printf("The circular stack size is %d cells\n", s->stack->lim + 1);
+  cf_printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
+  cf_printf("Maximm length of a word is %d chars\n", TIB_SIZE);
+
+  cf_printf("--\n");
+
+  shortroom(s);
+}
+
+void
+room(struct state *s)
+{
+  cf_printf("-------- ROOM -------------------------------------------\n");
+  shortroom(s);
+}
+
+void
 init_dict_utils(struct state *state)
 {
   define_primitive_extension(state, "words", OP_WORDS, words);
   define_primitive_extension(state, "see", OP_SEE, see_func);
   define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble);
   define_primitive_extension(state, "room", OP_ROOM, room);
+  define_primitive_extension(state, "fullroom", OP_FULLROOM, fullroom);
 }
