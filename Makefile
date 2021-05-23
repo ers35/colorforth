@@ -22,8 +22,8 @@ optim_cpl:
 conf.h: conf.tmpl.h
 	cp conf.tmpl.h conf.h
 
-extensions/lib.cf.h: forth/lib.cf
-	xxd -i forth/lib.cf extensions/lib.cf.h
+extensions/lib.cf.h: lib.cf
+	xxd -i lib.cf extensions/lib.cf.h
 
 colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
