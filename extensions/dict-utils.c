@@ -16,7 +16,7 @@ dump_words(struct dictionary *dict)
 void
 words(struct state *s)
 {
-  dump_words(&s->macro_dict);
+  dump_words(&s->inlined_dict);
   dump_words(&s->dict);
   cf_printf("\n");
 }
@@ -99,8 +99,8 @@ disassemble(struct state *s)
 {
   cf_printf("-------- Words ------------------------------------------\n");
   disassemble_dict(s, &s->dict);
-  cf_printf("--------Macros-------------------------------------------\n");
-  disassemble_dict(s, &s->macro_dict);
+  cf_printf("--------Inlined-------------------------------------------\n");
+  disassemble_dict(s, &s->inlined_dict);
   cf_printf("---------------------------------------------------------\n");
 }
 
@@ -127,9 +127,9 @@ room(struct state *s)
   cf_printf("There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
 
-  const unsigned int defined_macro = s->macro_dict.latest - s->macro_dict.entries + 1;
-  cf_printf("There is %u / %d (%u%%) macros defined in the macro dictionary\n", defined_macro, MACRO_DICT_SIZE,
-         (defined_macro*100/MACRO_DICT_SIZE));
+  const unsigned int defined_inlined = s->inlined_dict.latest - s->inlined_dict.entries + 1;
+  cf_printf("There is %u / %d (%u%%) inlined defined in the inlined dictionary\n", defined_inlined, INLINED_DICT_SIZE,
+         (defined_inlined*100/INLINED_DICT_SIZE));
 
   const unsigned int used = (char *)s->here - (char *)s->heap;
   cf_printf("There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,

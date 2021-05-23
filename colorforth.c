@@ -134,9 +134,9 @@ define_primitive(struct state *s, char name[], const enum opcode opcode)
 }
 
 static void
-define_primitive_macro(struct state *s, char name[], const enum opcode opcode)
+define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
 {
-  define_primitive_generic(s, &s->macro_dict, name, opcode);
+  define_primitive_generic(s, &s->inlined_dict, name, opcode);
 }
 
 void
@@ -178,9 +178,9 @@ define(struct state *s)
 }
 
 static void
-define_macro(struct state *s)
+define_inlined(struct state *s)
 {
-  define_generic(s, &s->macro_dict);
+  define_generic(s, &s->inlined_dict);
 }
 
 static void
@@ -203,7 +203,7 @@ static void
 attach_entry_to_code(struct state *s)
 {
   dict_attach_entry_to_code(s, &s->dict);
-  dict_attach_entry_to_code(s, &s->macro_dict);
+  dict_attach_entry_to_code(s, &s->inlined_dict);
 }
 
 static void
@@ -227,10 +227,10 @@ inline_entry(struct state *s, struct entry *entry)
 static void
 compile(struct state *s)
 {
-  struct entry *macro_entry = find_entry(s, &s->macro_dict);
-  if (macro_entry)
+  struct entry *inlined_entry = find_entry(s, &s->inlined_dict);
+  if (inlined_entry)
   {
-    inline_entry(s, macro_entry);
+    inline_entry(s, inlined_entry);
     return;
   }
 
@@ -610,7 +610,7 @@ parse_colorforth(struct state *state, int c)
 
     case '|':
     {
-      state->color = define_macro;
+      state->color = define_inlined;
       echo_color(state, c, COLOR_MAGENTA);
       break;
     }
@@ -746,8 +746,8 @@ colorforth_newstate(void)
   state->dict.entries = calloc(DICT_SIZE, sizeof(struct entry));
   state->dict.latest = state->dict.entries - 1;
 
-  state->macro_dict.entries = calloc(MACRO_DICT_SIZE, sizeof(struct entry));
-  state->macro_dict.latest = state->macro_dict.entries - 1;
+  state->inlined_dict.entries = calloc(INLINED_DICT_SIZE, sizeof(struct entry));
+  state->inlined_dict.latest = state->inlined_dict.entries - 1;
 
   state->heap = calloc(1, HEAP_SIZE);
   state->here = state->heap;
@@ -779,13 +779,13 @@ colorforth_newstate(void)
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
 
-  define_primitive_macro(state, ";", OP_RETURN);
-  define_primitive_macro(state, "when", OP_WHEN);
-  define_primitive_macro(state, "unless", OP_UNLESS);
+  define_primitive_inlined(state, ";", OP_RETURN);
+  define_primitive_inlined(state, "when", OP_WHEN);
+  define_primitive_inlined(state, "unless", OP_UNLESS);
 
-  define_primitive_macro(state, ">R", OP_R_PUSH);
-  define_primitive_macro(state, "R>", OP_R_POP);
-  define_primitive_macro(state, "R@", OP_R_FETCH);
+  define_primitive_inlined(state, ">R", OP_R_PUSH);
+  define_primitive_inlined(state, "R>", OP_R_POP);
+  define_primitive_inlined(state, "R@", OP_R_FETCH);
 
   LOAD_EXTENTIONS
 

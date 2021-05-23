@@ -41,7 +41,7 @@ enum opcode
   OP_HERE,
   OP_DOT_S,
 
-  /* macro */
+  /* inlined */
   OP_RETURN,
   OP_WHEN,
   OP_UNLESS,
@@ -105,7 +105,7 @@ struct state
   struct stack *r_stack;
   struct tib tib;
   struct dictionary dict;
-  struct dictionary macro_dict;
+  struct dictionary inlined_dict;
   void *heap;
   void *here;
   // track stream position for debugging compilation
