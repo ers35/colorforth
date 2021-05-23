@@ -39,6 +39,8 @@ enum opcode
   OP_NUMBER,
   OP_TICK_NUMBER,
   OP_HERE,
+  OP_LATEST,
+  OP_I_LATEST,
   OP_DOT_S,
 
   /* inlined */

@@ -485,6 +485,18 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_LATEST:
+      {
+        push(s->stack, (cell)&s->dict.latest);
+        break;
+      }
+
+      case OP_I_LATEST:
+      {
+        push(s->stack, (cell)&s->inlined_dict.latest);
+        break;
+      }
+
       case OP_R_PUSH:
       {
         push(s->r_stack, pop(s->stack));
@@ -776,6 +788,8 @@ colorforth_newstate(void)
   define_primitive(state, "c!", OP_CSTORE);
   define_primitive(state, "cell", OP_CELL);
   define_primitive(state, "here", OP_HERE);
+  define_primitive(state, "latest", OP_LATEST);
+  define_primitive(state, "i-latest", OP_I_LATEST);
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
 

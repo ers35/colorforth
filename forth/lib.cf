@@ -19,6 +19,9 @@
 
 |;; ^R> drop ;
 
+|cells ^cell * ;
+:cells ^cell * ;
+
 (loop)
 :times (xt n -) ^over execute 1- dup when times 2drop ;
 
@@ -52,3 +55,7 @@
 
 (system)
 :cmd ^cell + system ;
+
+(marker/forget)
+:marker ^latest @  i-latest @   here @ 8 cells + ;
+:forget ^latest !  i-latest !   here ! ;
