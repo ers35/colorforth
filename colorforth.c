@@ -183,20 +183,27 @@ define_macro(struct state *s)
   define_generic(s, &s->macro_dict);
 }
 
-void
+static void
+dict_attach_entry_to_code(struct state *s, struct dictionary *dict)
+{
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  {
+    if (entry->code == NULL)
+    {
+      entry->code = s->here;
+    }
+    else
+    {
+      break;
+    }
+  }
+}
+
+static void
 attach_entry_to_code(struct state *s)
 {
-  struct entry *entry = s->dict.latest;
-  if (entry->code == NULL)
-  {
-    entry->code = s->here;
-  }
-
-  struct entry *macro_entry = s->macro_dict.latest;
-  if (macro_entry->code == NULL)
-  {
-    macro_entry->code = s->here;
-  }
+  dict_attach_entry_to_code(s, &s->dict);
+  dict_attach_entry_to_code(s, &s->macro_dict);
 }
 
 static void
