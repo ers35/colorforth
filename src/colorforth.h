@@ -59,6 +59,8 @@ enum opcode
   OP_FULLROOM,
   OP_SHORTROOM,
   OP_SYSTEM,
+  OP_C_ALLOC,
+  OP_C_FREE,
   OP_ECHO_SET,
 
   /* Last non opcode - do not remove! */
