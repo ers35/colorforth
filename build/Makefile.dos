@@ -1,0 +1,39 @@
+#-*- makefile -*-
+
+default: cf.exe
+
+
+SRC=src\main.c src\colorf~1.c \
+	src\cf-stdio.c \
+	ext\os-utils.c \
+	ext\dict-u~1.c \
+	ext\io-utils.c \
+	ext\echo-c~1.c \
+	ext\embed-~1.c
+
+SRC_H=src\colorf~1.h \
+	src\cf-stdio.h \
+	conf.h \
+	src\libcf~1.h \
+	ext\echo-c~1.h
+
+conf.h: src\conftm~1.h
+	copy src\conftm~1.h conf.h
+
+patch4dos:
+	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' *.c
+	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' ext/*
+	sed -i 's/include "echo-color.h"/include "echo-c~1.h"/g' colorf~1.h
+	sed -i 's/include "lib.cf.h"/include "libcf~1.h"/g' ext/embed-~1.c
+
+pdos: patch4dos
+
+
+cf.exe: Makefile.dos $(SRC) $(SRC_H)
+	gcc -std=c99 -Os -Wall -Werror -Wextra -pedantic \
+	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
+	-I. -Isrc -Iext  \
+	-o cf.exe $(SRC)
+
+clean:
+	del cf.exe

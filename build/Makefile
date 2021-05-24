@@ -1,0 +1,53 @@
+default: colorforth
+
+.PHONY: optim
+
+SRC=src/main.c src/colorforth.c \
+	src/cf-stdio.c \
+	ext/os-utils.c \
+	ext/dict-utils.c \
+	ext/io-utils.c \
+	ext/echo-color.c \
+	ext/embed-lib_cf.c
+
+SRC_H=src/colorforth.h \
+	conf.h \
+	src/lib.cf.h \
+	src/cf-stdio.h \
+	ext/echo-color.h
+
+optim_cpl:
+	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)
+
+conf.h: src/conf.tmpl.h
+	cp src/conf.tmpl.h conf.h
+
+src/lib.cf.h: src/lib.cf
+	xxd -i src/lib.cf src/lib.cf.h
+
+colorforth: Makefile $(SRC) $(SRC_H)
+	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
+	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
+	-I. -Isrc -Iext $(EXTRA_CFLAGS) \
+	-o colorforth $(SRC)
+
+optimize: colorforth
+	@#readelf -l colorforth
+	@# required: .gnu.version .gnu.version_r
+	strip --strip-all colorforth
+	strip -R.comment -R.note -R.eh_frame_hdr -R.eh_frame -R.note.ABI-tag -R.jcr \
+	colorforth
+	objcopy -I elf64-x86-64 -O elf64-x86-64 --section-alignment 512 colorforth colorforth
+	@#xcc -std=c99 -Os -Wno-missing-braces -target=XS1-L16A-128-QF124-C10 colorforth.c -o colorforth.xe
+
+dump: colorforth
+	 objdump -d -M intel colorforth | less
+
+dumpelf: colorforth
+	readelf -a colorforth | less
+
+clean:
+	rm -f colorforth
+
+mrproper: clean
+	rm -f conf.h
