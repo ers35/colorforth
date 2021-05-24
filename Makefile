@@ -2,33 +2,33 @@ default: colorforth
 
 .PHONY: optim
 
-SRC=main.c colorforth.c \
-	cf-stdio/cf-stdio.c \
-	extensions/os-utils.c \
-	extensions/dict-utils.c \
-	extensions/io-utils.c \
-	extensions/echo-color.c \
-	extensions/embed-lib_cf.c
+SRC=src/main.c src/colorforth.c \
+	src/cf-stdio.c \
+	ext/os-utils.c \
+	ext/dict-utils.c \
+	ext/io-utils.c \
+	ext/echo-color.c \
+	ext/embed-lib_cf.c
 
-SRC_H=colorforth.h \
+SRC_H=src/colorforth.h \
 	conf.h \
-	extensions/lib.cf.h \
-	cf-stdio/cf-stdio.h \
-	extensions/echo-color.h
+	src/lib.cf.h \
+	src/cf-stdio.h \
+	ext/echo-color.h
 
 optim_cpl:
 	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)
 
-conf.h: conf.tmpl.h
-	cp conf.tmpl.h conf.h
+conf.h: src/conf.tmpl.h
+	cp src/conf.tmpl.h conf.h
 
-extensions/lib.cf.h: lib.cf
-	xxd -i lib.cf extensions/lib.cf.h
+src/lib.cf.h: src/lib.cf
+	xxd -i src/lib.cf src/lib.cf.h
 
 colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
-	-I. -Iextensions -Icf-stdio $(EXTRA_CFLAGS) \
+	-I. -Isrc -Iext $(EXTRA_CFLAGS) \
 	-o colorforth $(SRC)
 
 optimize: colorforth
@@ -45,15 +45,6 @@ dump: colorforth
 
 dumpelf: colorforth
 	readelf -a colorforth | less
-
-colorize: colorforth
-	cat forth/colorize.cf forth/lib.cf | ./colorforth | less -R
-
-run: colorforth
-	@#rlwrap ./colorforth
-	@#rlwrap cat lib.cf - | ./colorforth
-	cat forth/lib.cf - | ./colorforth
-	@#rlwrap xsim --trace colorforth.xe < lib.cf
 
 clean:
 	rm -f colorforth
