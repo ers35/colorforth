@@ -10,6 +10,7 @@ parse_command_line(struct state *state, int argc, char *argv[])
     parse_from_string(state, argv[i], 0);
     parse_from_string(state, " ", 0);
   }
+  parse_from_string(state, "~", 0);
 }
 
 int

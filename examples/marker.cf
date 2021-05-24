@@ -9,7 +9,7 @@
 ~" See what 'mark-1' looks like:" ~ntypen
 ~'mark-1 ~see
 
-~\ Allocate and create wore words
+~\ Allocate and create more words
 ~20000 alloc
 :second-word ~" The second word" ^typen ;
 
