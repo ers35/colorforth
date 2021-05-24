@@ -18,6 +18,9 @@ dos:
 	make -f build/Makefile.dos patch4dos
 	make -f build/Makefile.dos
 
+conf.h: src/conf.tmpl.h
+	make -f build/Makefile conf.h
+
 clean:
 	rm -f colorforth
 
