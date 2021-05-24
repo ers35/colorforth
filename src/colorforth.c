@@ -20,15 +20,15 @@ quit(struct state *state, char ask)
   char c = 'n';
   if (ask)
   {
-    cf_printf("Continue? (y/n) ");
-    c = cf_getchar();
+    cf_printf(state, "Continue? (y/n) ");
+    c = cf_getchar(state);
   }
   if (c == 'n')
   {
     state->done = 1;
     echo_color(state, ' ', COLOR_CLEAR);
   }
-  cf_printf("\n");
+  cf_printf(state, "\n");
 }
 
 void
@@ -40,14 +40,14 @@ init_stack(struct stack *stack, int len)
 }
 
 static void
-dot_s(struct stack *stack)
+dot_s(struct state *state, struct stack *stack)
 {
   for (int i = 0, p = stack->sp + 1; i <= stack->lim; i++, p++)
   {
     if (p > stack->lim) p = 0;
-    cf_printf("%"CELL_FMT" ", stack->cells[p]);
+    cf_printf(state, "%"CELL_FMT" ", stack->cells[p]);
   }
-  cf_printf(" <tos\n");
+  cf_printf(state, " <tos\n");
 }
 
 void
@@ -98,16 +98,16 @@ print_tib(struct state *s)
 {
   for(size_t i = 0; i < s->tib.len; i++)
   {
-    cf_putchar(s->tib.buf[i]);
+    cf_putchar(s, s->tib.buf[i]);
   }
 }
 
 void
 unknow_word (struct state *s, const char *msg)
 {
-  cf_printf("Error %s '", msg);
+  cf_printf(s, "Error %s '", msg);
   print_tib(s);
-  cf_printf("': unknown word at line %u, column %u\n", s->line, s->coll);
+  cf_printf(s, "': unknown word at line %u, column %u\n", s->line, s->coll);
 }
 
 // 'name' must be null-terminated.
@@ -286,7 +286,7 @@ compile_inline(struct state *s)
 static void
 execute_(struct state *s, struct entry *entry)
 {
-  // cf_printf("-> %s\n", entry->name);
+  // cf_printf(s, "-> %s\n", entry->name);
   struct code *pc = entry->code;
 
   push(s->r_stack, 0);
@@ -298,7 +298,7 @@ execute_(struct state *s, struct entry *entry)
     {
       case OP_PRINT_TOS:
       {
-        cf_printf("%"CELL_FMT" ", pop(s->stack));
+        cf_printf(s, "%"CELL_FMT" ", pop(s->stack));
         cf_fflush();
         break;
       }
@@ -410,13 +410,13 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_EMIT:
       {
-        cf_putchar((char)pop(s->stack));
+        cf_putchar(s, (char)pop(s->stack));
         break;
       }
 
       case OP_KEY:
       {
-        push(s->stack, (char)cf_getchar());
+        push(s->stack, (char)cf_getchar(s));
         break;
       }
 
@@ -522,7 +522,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_DOT_S:
       {
-        dot_s(s->stack);
+        dot_s(s, s->stack);
         break;
       }
 
@@ -534,14 +534,14 @@ execute_(struct state *s, struct entry *entry)
         }
         else
         {
-          cf_printf("unknown opcode");
+          cf_printf(s, "unknown opcode");
           quit(s, 1);
         }
       }
     }
     pc++;
   }
-  // cf_printf("   %s(done) <-\n", entry->name);
+  // cf_printf(s, "   %s(done) <-\n", entry->name);
 }
 
 static void
@@ -612,7 +612,7 @@ parse_colorforth(struct state *state, int c)
 #ifdef __ECHO_COLOR
   if (state->echo_on && c != '%')
   {
-    cf_printf("%c", c);
+    cf_printf(state, "%c", c);
   }
 #endif
 
@@ -714,7 +714,7 @@ parse_colorforth(struct state *state, int c)
     case '\b':
     case 127:
     {
-      cf_printf("\b \b");
+      cf_printf(state, "\b \b");
       if (state->tib.len > 0)
       {
         state->tib.len -= 1;

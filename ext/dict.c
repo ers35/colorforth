@@ -5,20 +5,20 @@
 #include "colorforth.h"
 
 void
-dump_words(struct dictionary *dict)
+dump_words(struct state *s, struct dictionary *dict)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
-    cf_printf("%.*s ", (int)entry->name_len, entry->name);
+    cf_printf(s, "%.*s ", (int)entry->name_len, entry->name);
   }
 }
 
 void
 words(struct state *s)
 {
-  dump_words(&s->inlined_dict);
-  dump_words(&s->dict);
-  cf_printf("\n");
+  dump_words(s, &s->inlined_dict);
+  dump_words(s, &s->dict);
+  cf_printf(s, "\n");
 }
 
 void
@@ -27,7 +27,7 @@ see(struct state *s, struct entry *entry)
   if (entry)
   {
     char display_next_sc = 0;
-    cf_printf(":%.*s ", (int)entry->name_len, entry->name);
+    cf_printf(s, ":%.*s ", (int)entry->name_len, entry->name);
     for (size_t i = 0, done = 0; !done; i++)
     {
       struct entry *entry_ = (struct entry*) entry->code[i].this;
@@ -35,7 +35,7 @@ see(struct state *s, struct entry *entry)
       {
         case OP_RETURN:
         {
-          cf_printf("; ");
+          cf_printf(s, "; ");
           if (!display_next_sc)
           {
             done = 1;
@@ -45,36 +45,36 @@ see(struct state *s, struct entry *entry)
 
         case OP_CALL:
         {
-          cf_printf("%s ", entry_->name);
+          cf_printf(s, "%s ", entry_->name);
           break;
         }
         case OP_TAIL_CALL:
         {
-          cf_printf("%s¬ ", entry->name);
+          cf_printf(s, "%s¬ ", entry->name);
           break;
         }
 
         case OP_TICK_NUMBER:
         {
-          cf_printf("'%s ", entry_->name);
+          cf_printf(s, "'%s ", entry_->name);
           break;
         }
 
         case OP_NUMBER:
         {
-          cf_printf("%"CELL_FMT" ", entry->code[i].this);
+          cf_printf(s, "%"CELL_FMT" ", entry->code[i].this);
           break;
         }
 
         default:
         {
-          cf_printf("%s ", primitive_map[entry->code[i].opcode].name);
+          cf_printf(s, "%s ", primitive_map[entry->code[i].opcode].name);
         }
       }
 
       display_next_sc = (entry->code[i].opcode == OP_WHEN || entry->code[i].opcode == OP_UNLESS) ? 1 : 0;
     }
-    cf_printf("\n");
+    cf_printf(s, "\n");
   }
   else
   {
@@ -97,11 +97,11 @@ disassemble_dict(struct state *s, struct dictionary *dict)
 void
 disassemble(struct state *s)
 {
-  cf_printf("-------- Words ------------------------------------------\n");
+  cf_printf(s, "-------- Words ------------------------------------------\n");
   disassemble_dict(s, &s->dict);
-  cf_printf("--------Inlined-------------------------------------------\n");
+  cf_printf(s, "--------Inlined-------------------------------------------\n");
   disassemble_dict(s, &s->inlined_dict);
-  cf_printf("---------------------------------------------------------\n");
+  cf_printf(s, "---------------------------------------------------------\n");
 }
 
 void
@@ -115,30 +115,30 @@ void
 commonroom(struct state *s)
 {
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
-  cf_printf("There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
+  cf_printf(s, "There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
 
   const unsigned int defined_inlined = s->inlined_dict.latest - s->inlined_dict.entries + 1;
-  cf_printf("There is %u / %d (%u%%) inlined defined in the inlined dictionary\n", defined_inlined, INLINED_DICT_SIZE,
+  cf_printf(s, "There is %u / %d (%u%%) inlined defined in the inlined dictionary\n", defined_inlined, INLINED_DICT_SIZE,
          (defined_inlined*100/INLINED_DICT_SIZE));
 
   const unsigned int used = (char *)s->here - (char *)s->heap;
-  cf_printf("There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,
+  cf_printf(s, "There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,
          (used*100/HEAP_SIZE));
-  cf_printf("---------------------------------------------------------\n");
+  cf_printf(s, "---------------------------------------------------------\n");
 }
 
 void
 fullroom(struct state *s)
 {
-  cf_printf("-------- ROOM -------------------------------------------\n");
-  cf_printf("Cell size is %u bytes / %u bits\n", (unsigned int) sizeof(cell), (unsigned int) sizeof(cell) * 8);
+  cf_printf(s, "-------- ROOM -------------------------------------------\n");
+  cf_printf(s, "Cell size is %u bytes / %u bits\n", (unsigned int) sizeof(cell), (unsigned int) sizeof(cell) * 8);
 
-  cf_printf("The circular stack size is %d cells\n", s->stack->lim + 1);
-  cf_printf("The circular return stack size is %d cells\n", s->r_stack->lim + 1);
-  cf_printf("Maximm length of a word is %d chars\n", TIB_SIZE);
+  cf_printf(s, "The circular stack size is %d cells\n", s->stack->lim + 1);
+  cf_printf(s, "The circular return stack size is %d cells\n", s->r_stack->lim + 1);
+  cf_printf(s, "Maximm length of a word is %d chars\n", TIB_SIZE);
 
-  cf_printf("--\n");
+  cf_printf(s, "--\n");
 
   commonroom(s);
 }
@@ -146,7 +146,7 @@ fullroom(struct state *s)
 void
 room(struct state *s)
 {
-  cf_printf("-------- ROOM -------------------------------------------\n");
+  cf_printf(s, "-------- ROOM -------------------------------------------\n");
   commonroom(s);
 }
 
@@ -156,7 +156,7 @@ shortroom(struct state *s)
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
   const unsigned int defined_inlined = s->inlined_dict.latest - s->inlined_dict.entries + 1;
   const unsigned int used = (char *)s->here - (char *)s->heap;
-  cf_printf("ROOM: Entries: %u / %d (%u%%) | Inlined: %u / %d (%u%%) | Heap (bytes): %u / %d (%u%%)\n",
+  cf_printf(s, "ROOM: Entries: %u / %d (%u%%) | Inlined: %u / %d (%u%%) | Heap (bytes): %u / %d (%u%%)\n",
             defined, DICT_SIZE, (defined*100/DICT_SIZE),
             defined_inlined, INLINED_DICT_SIZE, (defined_inlined*100/INLINED_DICT_SIZE),
             used, HEAP_SIZE,(used*100/HEAP_SIZE));

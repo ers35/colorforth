@@ -24,7 +24,7 @@ main(int argc, char *argv[])
 
   while (!state->done)
   {
-    parse_colorforth(state, cf_getchar());
+    parse_colorforth(state, cf_getchar(state));
   }
 
   reset_terminal();

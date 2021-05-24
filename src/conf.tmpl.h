@@ -2,9 +2,6 @@
 #ifndef __CONF_H
 #define __CONF_H
 
-// Internal stdio
-#define __INTERNAL_STDIO 1
-
 // Enable colors in the terminal
 #define __ECHO_COLOR
 

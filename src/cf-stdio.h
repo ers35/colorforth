@@ -4,27 +4,15 @@
 
 #include <conf.h>
 #include <stdio.h>
+#include <colorforth.h>
 
 #define CF_EOF EOF
 
-#ifdef __INTERNAL_STDIO
+extern void cf_putchar(struct state *s, int c);
+extern int cf_getchar(struct state *s);
 
-#define cf_putchar(c) putchar(c)
-#define cf_getchar() getchar()
-
-#define cf_printf(...) printf( __VA_ARGS__ )
-
-#define cf_fflush() fflush(stdout)
-
-#else
-
-extern void cf_putchar(int c);
-extern int cf_getchar();
-
-extern void cf_printf(const char* format, ...);
+extern void cf_printf(struct state *s, const char* format, ...);
 
 extern void cf_fflush();
-
-#endif /* __INTERNAL_STDIO */
 
 #endif /* __CF_STDIO_H */

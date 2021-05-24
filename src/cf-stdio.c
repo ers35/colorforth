@@ -2,20 +2,18 @@
 #include <cf-stdio.h>
 #include <stdarg.h>
 
-#ifndef __INTERNAL_STDIO
-
 void
-cf_putchar(int c)
+cf_putchar(struct state *s, int c)
 {
   putchar(c);
 }
 
-int cf_getchar()
+int cf_getchar(struct state *s)
 {
   return getchar();
 }
 
-void cf_printf(const char* format, ...)
+void cf_printf(struct state *s, const char* format, ...)
 {
   va_list arg;
 
@@ -28,5 +26,3 @@ void cf_fflush()
 {
   fflush(stdout);
 }
-
-#endif /* __INTERNAL_STDIO */
