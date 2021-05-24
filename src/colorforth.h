@@ -137,5 +137,6 @@ extern void define_primitive_extension(struct state *s, char name[], const enum 
 
 extern struct state* colorforth_newstate(void);
 extern void parse_colorforth(struct state *state, int c);
+extern void parse_from_string(struct state *s, char *str, unsigned int len);
 
 #endif /* __COLORFORTH_H */

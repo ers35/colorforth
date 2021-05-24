@@ -8,8 +8,7 @@ SRC=src\main.c src\colorf~1.c \
 	ext\os.c \
 	ext\dict.c \
 	ext\io.c \
-	ext\color.c \
-	ext\embed-~1.c
+	ext\color.c
 
 SRC_H=src\colorf~1.h \
 	src\cf-stdio.h \
@@ -23,7 +22,7 @@ conf.h: src\conftm~1.h
 patch4dos: conf.h
 	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' src/*.c
 	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' ext/*
-	sed -i 's/include "lib.cf.h"/include "libcf~1.h"/g' ext/embed-~1.c
+	sed -i 's/include "lib.cf.h"/include "libcf~1.h"/g' src/colorf~1.c
 	sed -i "s%#define __ECHO_COLOR%//#define __ECHO_COLOR%g" conf.h
 
 cf.exe: $(SRC) $(SRC_H)

@@ -9,6 +9,11 @@
 
 #include "colorforth.h"
 
+#ifdef __EMBED_LIB_CF
+#include "lib.cf.h"
+#endif /* __EMBED_LIB_CF */
+
+
 void
 quit(struct state *state, char ask)
 {
@@ -743,6 +748,17 @@ parse_colorforth(struct state *state, int c)
   }
 }
 
+void
+parse_from_string(struct state *s, char *str, unsigned int len)
+{
+  if (!len) len = 0xFFFF;
+
+  for(unsigned int i = 0; i < len && str[i]; i++)
+  {
+    parse_colorforth(s, str[i]);
+  }
+}
+
 struct state*
 colorforth_newstate(void)
 {
@@ -801,7 +817,11 @@ colorforth_newstate(void)
   define_primitive_inlined(state, "R>", OP_R_POP);
   define_primitive_inlined(state, "R@", OP_R_FETCH);
 
-  LOAD_EXTENTIONS
+  LOAD_EXTENTIONS;
+
+#ifdef __EMBED_LIB_CF
+  parse_from_string(state, (char *)src_lib_cf, src_lib_cf_len);
+#endif /* __EMBED_LIB_CF */
 
   state->color = execute;
   echo_color(state, '~', COLOR_YELLOW);

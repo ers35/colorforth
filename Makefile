@@ -3,8 +3,7 @@ SRC=src/main.c src/colorforth.c \
 	ext/os.c \
 	ext/dict.c \
 	ext/io.c \
-	ext/color.c \
-	ext/embed-lib_cf.c
+	ext/color.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
