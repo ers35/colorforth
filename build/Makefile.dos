@@ -20,16 +20,14 @@ SRC_H=src\colorf~1.h \
 conf.h: src\conftm~1.h
 	copy src\conftm~1.h conf.h
 
-patch4dos:
-	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' *.c
+patch4dos: conf.h
+	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' src/*.c
 	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' ext/*
-	sed -i 's/include "echo-color.h"/include "echo-c~1.h"/g' colorf~1.h
+	sed -i 's/include "echo-color.h"/include "echo-c~1.h"/g' src/colorf~1.h
 	sed -i 's/include "lib.cf.h"/include "libcf~1.h"/g' ext/embed-~1.c
+	sed -i "s%#define __ECHO_COLOR%//#define __ECHO_COLOR%g" conf.h
 
-pdos: patch4dos
-
-
-cf.exe: Makefile.dos $(SRC) $(SRC_H)
+cf.exe: $(SRC) $(SRC_H)
 	gcc -std=c99 -Os -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
 	-I. -Isrc -Iext  \
