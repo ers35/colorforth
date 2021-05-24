@@ -4,17 +4,17 @@ default: colorforth
 
 SRC=src/main.c src/colorforth.c \
 	src/cf-stdio.c \
-	ext/os-utils.c \
-	ext/dict-utils.c \
-	ext/io-utils.c \
-	ext/echo-color.c \
+	ext/os.c \
+	ext/dict.c \
+	ext/io.c \
+	ext/color.c \
 	ext/embed-lib_cf.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
 	src/lib.cf.h \
 	src/cf-stdio.h \
-	ext/echo-color.h
+	ext/color.h
 
 optim_cpl:
 	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "conf.h"
 
-#include "echo-color.h"
+#include "color.h"
 
 typedef long cell;
 
