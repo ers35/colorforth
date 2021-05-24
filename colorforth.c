@@ -12,13 +12,13 @@
 void
 quit(struct state *state, char ask)
 {
-  char c = 'y';
+  char c = 'n';
   if (ask)
   {
-    cf_printf("Quit? (y/n) ");
+    cf_printf("Continue? (y/n) ");
     c = cf_getchar();
   }
-  if (c == 'y')
+  if (c == 'n')
   {
     state->done = 1;
     echo_color(state, ' ', COLOR_CLEAR);
