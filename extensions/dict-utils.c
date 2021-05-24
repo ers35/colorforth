@@ -112,7 +112,7 @@ see_func(struct state *s)
 }
 
 void
-shortroom(struct state *s)
+commonroom(struct state *s)
 {
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
   cf_printf("There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
@@ -140,14 +140,26 @@ fullroom(struct state *s)
 
   cf_printf("--\n");
 
-  shortroom(s);
+  commonroom(s);
 }
 
 void
 room(struct state *s)
 {
   cf_printf("-------- ROOM -------------------------------------------\n");
-  shortroom(s);
+  commonroom(s);
+}
+
+void
+shortroom(struct state *s)
+{
+  const unsigned int defined = s->dict.latest - s->dict.entries + 1;
+  const unsigned int defined_inlined = s->inlined_dict.latest - s->inlined_dict.entries + 1;
+  const unsigned int used = (char *)s->here - (char *)s->heap;
+  cf_printf("ROOM: Entries: %u / %d (%u%%) | Inlined: %u / %d (%u%%) | Heap (bytes): %u / %d (%u%%)\n",
+            defined, DICT_SIZE, (defined*100/DICT_SIZE),
+            defined_inlined, INLINED_DICT_SIZE, (defined_inlined*100/INLINED_DICT_SIZE),
+            used, HEAP_SIZE,(used*100/HEAP_SIZE));
 }
 
 void
@@ -158,4 +170,5 @@ init_dict_utils(struct state *state)
   define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble);
   define_primitive_extension(state, "room", OP_ROOM, room);
   define_primitive_extension(state, "fullroom", OP_FULLROOM, fullroom);
+  define_primitive_extension(state, "shortroom", OP_SHORTROOM, shortroom);
 }

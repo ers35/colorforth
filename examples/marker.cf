@@ -4,7 +4,7 @@
 ~\ Store the current state in a 3 cells word
 :mark-1 ~marker ^~ ^~ ^;
 
-~room
+~shortroom
 
 ~" See what 'mark-1' looks like:" ~ntypen
 ~'mark-1 ~see
@@ -14,7 +14,7 @@
 :second-word ~" The second word" ^typen ;
 
 %cr first-word second-word
-cr room
+cr shortroom
 
 ~" Forget all above mark-1:" ~ntypen
 mark-1  forget
@@ -28,10 +28,10 @@ mark-1  forget
 
 %first-word second-word third-word
 
-cr room
+cr shortroom
 
 ~" Allocate more space:" ~ntypen
-~40000 alloc room
+~30000 alloc shortroom
 
 ~" 'mark-1' is still the same:" ~ntypen
 ~'mark-1 ~see
@@ -40,7 +40,7 @@ cr room
 mark-1 forget
 ~first-word second-word third-word
 
-cr room
+cr shortroom
 
 ~" The heap and the dictionaries has been reset to their original state" ntypen
 
