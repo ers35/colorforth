@@ -20,9 +20,9 @@ conf.h: src\conftm~1.h
 	copy src\conftm~1.h conf.h
 
 patch4dos: conf.h
-	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' src/*.c
-	sed -i 's/include "colorforth.h"/include "colorf~1.h"/g' ext/*
-	sed -i 's/include "lib.cf.h"/include "libcf~1.h"/g' src/colorf~1.c
+	sed -i 's/include <colorforth.h>/include <colorf~1.h>/g' src/*
+	sed -i 's/include <colorforth.h>/include <colorf~1.h>/g' ext/*
+	sed -i 's/include <lib.cf.h>/include <libcf~1.h>/g' src/colorf~1.c
 	sed -i "s%#define __ECHO_COLOR%//#define __ECHO_COLOR%g" conf.h
 
 cf.exe: $(SRC) $(SRC_H)

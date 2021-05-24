@@ -1,6 +1,6 @@
 // The author disclaims copyright to this source code.
 #include <cf-stdio.h>
-#include "colorforth.h"
+#include <colorforth.h>
 
 void
 parse_command_line(struct state *state, int argc, char *argv[])

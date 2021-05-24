@@ -1,5 +1,5 @@
 // The author disclaims copyright to this source code.
-#include "colorforth.h"
+#include <colorforth.h>
 
 void
 system_func(struct state *s)

@@ -2,7 +2,7 @@
 #include <cf-stdio.h>
 #include <string.h>
 
-#include "colorforth.h"
+#include <colorforth.h>
 
 void
 dump_words(struct state *s, struct dictionary *dict)

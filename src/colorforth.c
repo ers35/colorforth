@@ -7,10 +7,10 @@
 #include <cf-stdio.h>
 #include <string.h>
 
-#include "colorforth.h"
+#include <colorforth.h>
 
 #ifdef __EMBED_LIB_CF
-#include "lib.cf.h"
+#include <lib.cf.h>
 #endif /* __EMBED_LIB_CF */
 
 

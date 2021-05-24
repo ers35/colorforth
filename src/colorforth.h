@@ -3,9 +3,9 @@
 #define __COLORFORTH_H
 
 #include <stdlib.h>
-#include "conf.h"
+#include <conf.h>
 
-#include "color.h"
+#include <color.h>
 
 typedef long cell;
 
