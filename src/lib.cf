@@ -4,8 +4,11 @@
 (boolean constant)
 |true   ^1 ;
 |false  ^0 ;
+
 |on     ^true ^;
 |off    ^false ^;
+:on  ^on ;
+:off ^off ;
 
 :eon! ^on echo! ;
 :eoff! ^off echo! ;
