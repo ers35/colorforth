@@ -21,7 +21,7 @@ init_terminal()
   struct termios new_tio;
   tcgetattr(STDIN_FILENO,&old_tio);
   new_tio=old_tio;
-  new_tio.c_lflag &=(~ICANON & ~ISIG & ~ECHO);
+  new_tio.c_lflag &=(~ICANON & ~ECHO);
   tcsetattr(STDIN_FILENO,TCSANOW,&new_tio);
 }
 
