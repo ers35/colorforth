@@ -2,10 +2,13 @@
 :\ ^key 10 = when ; ^\ ;
 
 (boolean constant)
-:true   ^1 ;
-:false  ^0 ;
-:on     ,true ^;
-:off    ,false ^;
+|true   ^1 ;
+|false  ^0 ;
+|on     ^true ^;
+|off    ^false ^;
+
+:eon! ^on echo! ;
+:eoff! ^off echo! ;
 
 (helper words)
 |2R> ^R> R> ;
