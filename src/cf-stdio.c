@@ -10,6 +10,13 @@ cf_putchar(struct state *s, int c)
 
 int cf_getchar(struct state *s)
 {
+  if (s->str_stream)
+  {
+    int c = *s->str_stream;
+    s->str_stream += 1;
+    return c;
+  }
+
   return getchar();
 }
 

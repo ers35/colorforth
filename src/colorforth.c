@@ -753,10 +753,13 @@ parse_from_string(struct state *s, char *str, unsigned int len)
 {
   if (!len) len = 0xFFFF;
 
-  for(unsigned int i = 0; i < len && str[i]; i++)
+  s->str_stream = str;
+  for(unsigned int i = 0; i < len && *s->str_stream; i++)
   {
-    parse_colorforth(s, str[i]);
+    parse_colorforth(s, cf_getchar(s));
   }
+
+  s->str_stream = NULL;
 }
 
 struct state*
@@ -783,6 +786,8 @@ colorforth_newstate(void)
   state->coll = 0; state->line = 1;
   state->done = 0;
   state->echo_on = 0;
+
+  state->str_stream = NULL;
 
   define_primitive(state, ".", OP_PRINT_TOS);
   define_primitive(state, "dup", OP_DUP);

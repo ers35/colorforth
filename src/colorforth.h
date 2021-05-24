@@ -118,6 +118,9 @@ struct state
   unsigned int line, coll;
   int done;
   int echo_on;
+
+  // streams
+  char *str_stream;
 };
 
 struct primitive_map

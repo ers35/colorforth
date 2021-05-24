@@ -34,6 +34,7 @@
 (rendering)
 :cr ^10 emit ;
 :tab ^9 emit ;
+:space ^32 emit ;
 
 (dump word)
 :emit.; ^ drop 46 emit ;; ;
@@ -42,7 +43,7 @@
   dup 128 < unless emit.;
   emit ;
 
-:<dumpc> ^ 2>R dup c@ dup v-emit 32 emit . tab 1+ 2R> ;
+:<dumpc> ^ 2>R dup c@ dup v-emit space . tab 1+ 2R> ;
 :<dumpl> ^ 2>R '<dumpc> ^12 times cr 2R> ;
 :dump  (a -) ^ cr '<dumpl> ^10 times drop cr ;
 
@@ -50,7 +51,7 @@
 
 (create null-terminated string)
 :"init ^here @ cell + ;
-:"loop ^dup key dup 34 = when ; swap c! 1 + "loop ;
+:"loop ^dup key dup ~key " ^= when ; swap c! 1 + "loop ;
 :"done ^drop drop here @ - dup (null ^1 + alloc swap over ! ;
 :" ^"init "loop "done ;
 

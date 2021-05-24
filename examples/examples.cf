@@ -5,6 +5,7 @@
 :msg ~" hello world" ^;
 
 ~msg ." cr
+~msg dump
 
 :uname ~" uname -a" ^cmd ;
 ~uname
