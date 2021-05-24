@@ -610,7 +610,7 @@ void
 parse_colorforth(struct state *state, int c)
 {
 #ifdef __ECHO_COLOR
-  if (state->echo_on)
+  if (state->echo_on && c != '%')
   {
     cf_printf("%c", c);
   }

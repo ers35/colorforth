@@ -12,7 +12,14 @@ struct termios old_tio;
 void
 echo_color(struct state *state, int c, char *color)
 {
-  cf_printf("\b%s%c", color, c);
+  if (state->echo_on)
+  {
+    cf_printf("\b%s%c", color, c);
+  }
+  else
+  {
+    cf_printf("%s", color);
+  }
 }
 
 void
