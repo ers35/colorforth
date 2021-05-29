@@ -30,6 +30,8 @@ cr
 :doc-on!  'doc '<doc-on>  ^is ;
 :doc-off! 'doc '<doc-off> ^is ;
 
+:documentation (xt-) ^doc-on!  execute  doc-off! ;
+
 ~" I am the word-with-docstring"
 :word-with-docstring
   ~" DOCSTRING: This is the word-with-docstring word documentation" ^doc
@@ -44,6 +46,11 @@ cr
 doc-on!
   word-with-docstring
 doc-off!
+
+cr
+word-with-docstring
+
+cr 'word-with-docstring ~documentation
 
 cr
 word-with-docstring
@@ -66,6 +73,12 @@ ping
 pong
 ping
 pong
+
+I am the word-with-docstring
+4
+15
+
+DOCSTRING: This is the word-with-docstring word documentation
 
 I am the word-with-docstring
 4
