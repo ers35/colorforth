@@ -3,6 +3,7 @@
 #define __COLORFORTH_H
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <conf.h>
 
 #include <color.h>
@@ -122,6 +123,7 @@ struct state
 
   // streams
   char *str_stream;
+  FILE *file_stream;
 };
 
 struct primitive_map
@@ -142,5 +144,6 @@ extern void define_primitive_extension(struct state *s, char name[], const enum 
 extern struct state* colorforth_newstate(void);
 extern void parse_colorforth(struct state *state, int c);
 extern void parse_from_string(struct state *s, char *str, unsigned int len);
+extern void parse_from_file(struct state *s, char *filename);
 
 #endif /* __COLORFORTH_H */

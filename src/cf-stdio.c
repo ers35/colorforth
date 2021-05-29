@@ -17,6 +17,17 @@ int cf_getchar(struct state *s)
     return c;
   }
 
+  if (s->file_stream)
+  {
+    char c;
+    int len = fread(&c, 1, 1, s->file_stream);
+    if (len != 1)
+    {
+      return CF_EOF;
+    }
+    return c;
+  }
+
   return getchar();
 }
 

@@ -756,12 +756,28 @@ parse_from_string(struct state *s, char *str, unsigned int len)
   if (!len) len = 0xFFFF;
 
   s->str_stream = str;
-  for(unsigned int i = 0; i < len && *s->str_stream; i++)
+  for(unsigned int i = 0; i < len && *s->str_stream && !s->done ; i++)
   {
     parse_colorforth(s, cf_getchar(s));
   }
 
   s->str_stream = NULL;
+}
+
+void
+parse_from_file(struct state *s, char *filename)
+{
+  s->file_stream = fopen(filename, "r");
+  if (!s->file_stream) return;
+
+  int c;
+  while((c = cf_getchar(s)) != CF_EOF && !s->done)
+  {
+    parse_colorforth(s, c);
+  }
+
+  fclose(s->file_stream);
+  s->file_stream = NULL;
 }
 
 struct state*
