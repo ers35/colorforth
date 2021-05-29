@@ -13,7 +13,7 @@
 #define R_STACK_SIZE 30
 
 #define DICT_SIZE 100
-#define INLINED_DICT_SIZE 20
+#define INLINED_DICT_SIZE 100
 
 #define HEAP_SIZE 40960
 
