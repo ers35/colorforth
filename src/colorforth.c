@@ -117,6 +117,7 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[], 
   dict->latest++;
   struct entry *entry = dict->latest;
   entry->name_len = strlen(name);
+  entry->name = calloc(1, entry->name_len);
   memcpy(entry->name, name, entry->name_len);
   entry->code = s->here;
   entry->code->opcode = opcode;
@@ -170,6 +171,7 @@ define_generic(struct state *s, struct dictionary *dict)
   dict->latest++;
   struct entry *entry = dict->latest;
   entry->name_len = s->tib.len;
+  entry->name = calloc(1, entry->name_len);
   memcpy(entry->name, s->tib.buf, s->tib.len);
   // code will be attached to entry at the first compile code
   // this is to allow to manipulate here inside a colon definition

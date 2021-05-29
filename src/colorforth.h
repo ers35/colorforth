@@ -84,7 +84,7 @@ struct code
 struct entry;
 struct entry
 {
-  char name[TIB_SIZE];
+  char *name;
   size_t name_len;
   struct code *code;
 };
