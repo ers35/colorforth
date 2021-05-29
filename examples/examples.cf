@@ -27,7 +27,7 @@
 my-var @ . cr cr
 
 ~\ Loop example
-:hello ~" Hello world!" ^typen ;
+:hello ~" Hello world!" ^prn ;
 
 :loop1 'hello ^10 times ;
 ~loop1 cr

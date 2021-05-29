@@ -58,10 +58,10 @@
 (print string)
 :."init ^dup dup @ + swap cell + ;
 :."loop ^over over = when ; dup c@ emit 1 + ."loop ;
-:type
+:pr
 :." ^."init ."loop 2drop ;
-:typen ^type cr ;
-:ntypen ^cr type cr ;
+:prn ^pr cr ;
+:nprn ^cr pr cr ;
 
 
 (system)

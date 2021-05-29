@@ -1,25 +1,25 @@
 %
-:first-word ~" The first word" ^typen ;
+:first-word ~" The first word" ^prn ;
 
 ~\ Store the current state in a 3 cells word
 :mark-1 ~marker ^~ ^~ ^;
 
 ~shortroom
 
-~" See what 'mark-1' looks like:" ~ntypen
+~" See what 'mark-1' looks like:" ~nprn
 ~'mark-1 ~see
 
 ~\ Allocate and create more words
 ~20000 alloc
-:second-word ~" The second word" ^typen ;
+:second-word ~" The second word" ^prn ;
 
 %cr first-word second-word
 cr shortroom
 
-~" Forget all above mark-1:" ~ntypen
+~" Forget all above mark-1:" ~nprn
 mark-1  forget
 
-:third-word ~" The third word" ^typen ;
+:third-word ~" The third word" ^prn ;
 
 |an-inlined-word ^first-word ;
 |and-another ^2 2 + . ;
@@ -30,18 +30,18 @@ mark-1  forget
 
 cr shortroom
 
-~" Allocate more space:" ~ntypen
+~" Allocate more space:" ~nprn
 ~30000 alloc shortroom
 
-~" 'mark-1' is still the same:" ~ntypen
+~" 'mark-1' is still the same:" ~nprn
 ~'mark-1 ~see
 
-~" Forget all above mark-1:" ~ntypen
+~" Forget all above mark-1:" ~nprn
 mark-1 forget
 ~first-word second-word third-word
 
 cr shortroom
 
-~" The heap and the dictionaries has been reset to their original state" ntypen
+~" The heap and the dictionaries has been reset to their original state" nprn
 
 ~bye
