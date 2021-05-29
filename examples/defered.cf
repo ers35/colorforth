@@ -1,0 +1,78 @@
+%
+:first-word ~" I am the FIRST word" ^prn ;
+:second-word ~" I am the SECOND word" ^prn ;
+:wd
+
+~'wd ~'first-word ~is
+wd
+
+~'wd ~'second-word ~is
+wd
+
+~'wd ~'first-word ~is
+wd
+
+
+cr
+:ping
+:pong   ~" pong" ^prn 1- dup when ping ;
+:<ping> ~" ping" ^prn 1- dup when pong ;
+
+~'ping ~'<ping> ~is
+
+10 ping
+
+cr
+:<doc-on>  ^prn ;; ;
+:<doc-off> ^drop ;
+
+:doc
+:doc-on!  'doc '<doc-on>  ^is ;
+:doc-off! 'doc '<doc-off> ^is ;
+
+~" I am the word-with-docstring"
+:word-with-docstring
+  ~" DOCSTRING: This is the word-with-docstring word documentation" ^doc
+  ~ ^prn
+  2 2 + . cr
+  3 5 * . cr ;
+
+~
+word-with-docstring
+
+cr
+doc-on!
+  word-with-docstring
+doc-off!
+
+cr
+word-with-docstring
+
+bye
+
+
+== Output ==================
+I am the FIRST word
+I am the SECOND word
+I am the FIRST word
+
+ping
+pong
+ping
+pong
+ping
+pong
+ping
+pong
+ping
+pong
+
+I am the word-with-docstring
+4
+15
+
+DOCSTRING: This is the word-with-docstring word documentation
+
+I am the word-with-docstring
+4
+15
