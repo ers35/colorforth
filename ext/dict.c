@@ -163,6 +163,15 @@ shortroom(struct state *s)
 }
 
 void
+is (struct state *s)
+{
+  struct entry *entry_to = (struct entry*)pop(s->stack);
+  struct entry *entry_from = (struct entry*)pop(s->stack);
+
+  entry_from->code = entry_to->code;
+}
+
+void
 init_dict_utils(struct state *state)
 {
   define_primitive_extension(state, "words", OP_WORDS, words);
@@ -171,4 +180,5 @@ init_dict_utils(struct state *state)
   define_primitive_extension(state, "room", OP_ROOM, room);
   define_primitive_extension(state, "fullroom", OP_FULLROOM, fullroom);
   define_primitive_extension(state, "shortroom", OP_SHORTROOM, shortroom);
+  define_primitive_extension(state, "is", OP_IS, is);
 }

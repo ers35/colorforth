@@ -58,6 +58,7 @@ enum opcode
   OP_ROOM,
   OP_FULLROOM,
   OP_SHORTROOM,
+  OP_IS,
   OP_SYSTEM,
   OP_C_ALLOC,
   OP_C_FREE,
