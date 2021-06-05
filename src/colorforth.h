@@ -71,6 +71,8 @@ enum opcode
   // io
   OP_ECHO_SET,
   OP_FILE_SIZE,
+  OP_FILE_LOAD,
+  OP_FILE_SAVE,
   OP_INCLUDED,
 
   /* Last non opcode - do not remove! */
