@@ -10,12 +10,13 @@
 :.bottles ^dup 2 min cells bottles + @ execute ;
 
 :.of-beer ~"  of beer " ^pr ;
+:.on-the-wall ~" on the wall " ^prn ;
+
 :.beer ^.bottles .of-beer ;
-:.on-the-wall ~" on the wall " ^pr ;
 :.wall ^.beer .on-the-wall ;
 :.take ~" Take one down, pass it around" ^pr ;
-:.verse ^.wall cr .beer cr
-      1- .take cr .wall cr ;
+:.verse ^.wall .beer cr
+      1- .take cr .wall ;
 :.verses ^cr .verse dup when .verses ;
 ~
 
