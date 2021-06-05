@@ -1,13 +1,15 @@
 %
+~\ File size
 " examples.cf" file-size
 " examples.cf contains " pr . " bytes." prn
 
 
+~\ Load example
 " included.cf" load   dup dump
 " --------" prn   dup pr   " --------" prn
 c-free
 
-
+~\ Save and reload example
 " This is a test" " test.txt" save
 
 :buf ~" test.txt" load ^;
