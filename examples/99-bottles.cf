@@ -1,0 +1,24 @@
+%
+:bottles ~3 cells alloc ^;
+:bottles! ^over cells bottles + ! 1+ ;
+
+~0
+:.nomore ~" no more bottles" ^pr ;  ~'.nomore   ~bottles!
+:.bottle ~" 1 bottle" ^pr ;         ~'.bottle   ~bottles!
+:.nbottles ~" bottles" ^over . pr ; ~'.nbottles ~bottles!
+
+:.bottles ^dup 2 min cells bottles + @ execute ;
+
+:.of-beer ~"  of beer " ^pr ;
+:.beer ^.bottles .of-beer ;
+:.on-the-wall ~" on the wall " ^pr ;
+:.wall ^.beer .on-the-wall ;
+:.take ~" Take one down, pass it around" ^pr ;
+:.verse ^.wall cr .beer cr
+      1- .take cr .wall cr ;
+:.verses ^cr .verse dup when .verses ;
+~
+
+99 .verses
+
+bye
