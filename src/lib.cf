@@ -1,5 +1,5 @@
 (one line comment)
-:\ ^key 10 = when ; ^\ ;
+:\ ^key 10 = unless \ ;
 
 (boolean constant)
 |true   ^1 ;
