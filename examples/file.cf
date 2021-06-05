@@ -1,0 +1,22 @@
+%
+" examples.cf" file-size
+" examples.cf contains " pr . " bytes." prn
+
+
+" included.cf" load   dup dump
+" --------" prn   dup pr   " --------" prn
+c-free
+
+
+" This is a test" " test.txt" save
+
+:buf ~" test.txt" load ^;
+~
+buf prn
+key A buf cell 2 + + c!
+buf " test2.txt" save
+buf c-free
+
+" test2.txt" load dup prn c-free
+
+bye
