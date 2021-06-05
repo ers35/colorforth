@@ -3,6 +3,8 @@
 #include <string.h>
 #include <colorforth.h>
 
+extern void parse_from_file(struct state *s, char *filename);
+
 void
 parse_command_line(struct state *state, int argc, char *argv[])
 {
@@ -23,9 +25,12 @@ parse_command_line(struct state *state, int argc, char *argv[])
     }
 
     parse_from_string(state, argv[i], 0);
-    parse_from_string(state, " ", 0);
   }
-  parse_from_string(state, "~", 0);
+
+  if (argc == 1)
+  {
+    parse_colorforth(state, '~');
+  }
 }
 
 int

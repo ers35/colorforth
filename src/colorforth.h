@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <conf.h>
 
+#include <cf-stdio.h>
 #include <color.h>
 
 typedef long cell;
@@ -142,9 +143,12 @@ extern void unknow_word (struct state *s, const char *msg);
 
 extern void define_primitive_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s));
 
+extern void quit(struct state *state, char ask);
 extern struct state* colorforth_newstate(void);
 extern void parse_colorforth(struct state *state, int c);
 extern void parse_from_string(struct state *s, char *str, unsigned int len);
-extern void parse_from_file(struct state *s, char *filename);
+extern void parse_space(struct state *s);
+
+#define CFSTRING2C(str) ((char *)(str) + sizeof(cell))
 
 #endif /* __COLORFORTH_H */

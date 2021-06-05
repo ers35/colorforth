@@ -2,6 +2,32 @@
 #include <colorforth.h>
 
 void
+parse_from_file(struct state *s, char *filename)
+{
+  s->tib.len = 0;
+  FILE *old_stream = s->file_stream;
+  s->file_stream = fopen(filename, "r");
+  if (!s->file_stream)
+  {
+    s->file_stream = old_stream;
+    cf_printf(s, "Unable to read '%s'\n", filename);
+    quit(s, 1);
+    return;
+  }
+
+  int c;
+  while((c = cf_getchar(s)) != CF_EOF && !s->done)
+  {
+    parse_colorforth(s, c);
+  }
+
+  fclose(s->file_stream);
+  s->file_stream = old_stream;
+
+  parse_space(s);
+}
+
+void
 echo_set(struct state *s)
 {
   s->echo_on = pop(s->stack);
@@ -25,7 +51,8 @@ save_file(struct state *s)
 void
 included_file(struct state *s)
 {
-
+  char *filename = CFSTRING2C(pop(s->stack));
+  parse_from_file(s, filename);
 }
 
 void

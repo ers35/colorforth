@@ -752,33 +752,39 @@ parse_colorforth(struct state *state, int c)
 }
 
 void
+parse_space(struct state *s)
+{
+  char *old_str_stream = s->str_stream;
+  FILE *old_file_stream = s->file_stream;
+
+  s->str_stream = NULL;
+  s->file_stream = NULL;
+
+  parse_colorforth(s, ' '); parse_colorforth(s, '~');
+
+  s->str_stream = old_str_stream;
+  s->file_stream = old_file_stream;
+}
+
+void
 parse_from_string(struct state *s, char *str, unsigned int len)
 {
   if (!len) len = 0xFFFF;
 
+  char *old_stream = s->str_stream;
+
   s->str_stream = str;
-  for(unsigned int i = 0; i < len && *s->str_stream && !s->done ; i++)
-  {
-    parse_colorforth(s, cf_getchar(s));
-  }
-
-  s->str_stream = NULL;
-}
-
-void
-parse_from_file(struct state *s, char *filename)
-{
-  s->file_stream = fopen(filename, "r");
-  if (!s->file_stream) return;
-
   int c;
-  while((c = cf_getchar(s)) != CF_EOF && !s->done)
+  unsigned int i = 0;
+  while((c = cf_getchar(s)) != 0 && i < len && !s->done)
   {
     parse_colorforth(s, c);
+    i += 1;
   }
 
-  fclose(s->file_stream);
-  s->file_stream = NULL;
+  s->str_stream = old_stream;
+
+  parse_space(s);
 }
 
 struct state*
@@ -807,6 +813,7 @@ colorforth_newstate(void)
   state->echo_on = 0;
 
   state->str_stream = NULL;
+  state->file_stream = NULL;
 
   define_primitive(state, ".", OP_PRINT_TOS);
   define_primitive(state, "dup", OP_DUP);
