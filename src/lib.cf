@@ -52,11 +52,11 @@
 (create null-terminated string)
 :"init ^here @ cell + ;
 :"loop ^dup key dup ~key " ^= when ; swap c! 1 + "loop ;
-:"done ^drop drop here @ - dup (null ^1 + alloc swap over ! ;
+:"done ^drop drop here @ - dup (null ^1 + alloc swap cell - over ! ;
 :" ^"init "loop "done ;
 
 (print string)
-:."init ^dup dup @ + swap cell + ;
+:."init ^dup dup @ + cell + swap cell + ;
 :."loop ^over over = when ; dup c@ emit 1 + ."loop ;
 :pr
 :." ^."init ."loop 2drop ;

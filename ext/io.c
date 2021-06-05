@@ -94,7 +94,7 @@ load_file(struct state *s)
   }
 
   cell *cbuf = (cell *)buf;
-  *cbuf = (cell)size + sizeof(cell);
+  *cbuf = (cell)size;
   push(s->stack, (cell) buf);
 
   fclose(fp);

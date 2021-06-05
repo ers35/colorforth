@@ -17,6 +17,6 @@ key A buf cell 2 + + c!
 buf " test2.txt" save
 buf c-free
 
-" test2.txt" load dup prn c-free
+" test2.txt" load dup dump dup prn c-free
 
 bye
