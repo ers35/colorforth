@@ -64,6 +64,7 @@ enum opcode
   OP_C_ALLOC,
   OP_C_FREE,
   OP_ECHO_SET,
+  OP_INCLUDED,
 
   /* Last non opcode - do not remove! */
   __LAST_NOT_AN_OPCODE__,

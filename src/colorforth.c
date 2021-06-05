@@ -156,6 +156,7 @@ static bool
 tib_to_number(struct state *s, cell *n)
 {
   char *endptr;
+  s->tib.buf[s->tib.len] = '\0';
   *n = strtol(s->tib.buf, &endptr, 10);
   return *s->tib.buf != 0 && *endptr == 0;
 }
