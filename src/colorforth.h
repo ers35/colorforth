@@ -55,16 +55,22 @@ enum opcode
   OP_R_FETCH,
 
   /* Extensions */
+  // dict
   OP_SEE,
   OP_DISASSEMBLE_DICT,
   OP_ROOM,
   OP_FULLROOM,
   OP_SHORTROOM,
   OP_IS,
+
+  // os
   OP_SYSTEM,
   OP_C_ALLOC,
   OP_C_FREE,
+
+  // io
   OP_ECHO_SET,
+  OP_FILE_SIZE,
   OP_INCLUDED,
 
   /* Last non opcode - do not remove! */

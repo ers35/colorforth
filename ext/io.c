@@ -34,8 +34,23 @@ echo_set(struct state *s)
 }
 
 void
-file_length(struct state *s)
+file_size(struct state *s)
 {
+  char *filename = CFSTRING2C(pop(s->stack));
+  FILE *fp = fopen(filename, "r");
+
+  if (!fp)
+  {
+    cf_printf(s, "Unable to read '%s'\n", filename);
+    push(s->stack, -1);
+    return;
+  }
+
+  fseek(fp, 0L, SEEK_END);
+  int size=ftell(fp);
+  fclose(fp);
+
+  push(s->stack, size);
 }
 
 void
@@ -59,6 +74,7 @@ void
 init_io_utils(struct state *state)
 {
   define_primitive_extension(state, "echo!", OP_ECHO_SET, echo_set);
+  define_primitive_extension(state, "file-size", OP_FILE_SIZE, file_size);
   // define_primitive_extension(state, "load", OP_LOAD, load_file);
   // define_primitive_extension(state, "save", OP_SAVE, save_file);
   define_primitive_extension(state, "included", OP_INCLUDED, included_file);
