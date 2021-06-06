@@ -194,16 +194,9 @@ define_inlined(struct state *s)
 static void
 dict_attach_entry_to_code(struct state *s, struct dictionary *dict)
 {
-  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  for (struct entry *entry = dict->latest; entry->code == NULL && entry != dict->entries - 1; entry--)
   {
-    if (entry->code == NULL)
-    {
-      entry->code = s->here;
-    }
-    else
-    {
-      break;
-    }
+    entry->code = s->here;
   }
 }
 
@@ -640,7 +633,7 @@ parse_colorforth(struct state *state, int c)
       if (state->color == execute)
       {
         attach_entry_to_code(state);
-        struct code *code = state->here;
+        struct code *code =  (struct code *)state->here;
         code->opcode = OP_NUMBER;
         code->this = pop(state->stack);
         state->here = (struct code *)state->here + 1;
