@@ -711,6 +711,10 @@ parse_colorforth(struct state *state, int c)
   {
     state->coll = 0; state->line += 1;
   }
+  else if (c == CF_EOF)
+  {
+    state->coll = 0; state->line = 1;
+  }
   else
   {
     state->coll += 1;
