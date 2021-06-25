@@ -1,5 +1,5 @@
 %
-:bottles ~3 cells alloc ^;
+:bottles ~3 cells dalloc ^;
 :bottles! ^over cells bottles + ! 1+ ;
 
 ~0

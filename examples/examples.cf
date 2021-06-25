@@ -20,7 +20,7 @@
 
 ~\ variable: store the address leaved by alloc on my-var
 ~\ with execute/compile pattern
-:my-var ~cell alloc ^;
+:my-var ~cell dalloc ^;
 
 ~'my-var ~see
 100 my-var !
@@ -36,3 +36,6 @@ my-var @ . cr cr
 :hello-count ^dup . hello ;
 :loop2 'hello-count ^5 times ;
 ~loop2 cr
+
+
+~fullroom

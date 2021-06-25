@@ -174,9 +174,7 @@ define_generic(struct state *s, struct dictionary *dict)
   entry->name_len = s->tib.len;
   entry->name = calloc(1, entry->name_len);
   memcpy(entry->name, s->tib.buf, s->tib.len);
-  // code will be attached to entry at the first compile code
-  // this is to allow to manipulate here inside a colon definition
-  entry->code = NULL;
+  entry->code = s->here;
 }
 
 static void
@@ -192,25 +190,8 @@ define_inlined(struct state *s)
 }
 
 static void
-dict_attach_entry_to_code(struct state *s, struct dictionary *dict)
-{
-  for (struct entry *entry = dict->latest; entry->code == NULL && entry != dict->entries - 1; entry--)
-  {
-    entry->code = s->here;
-  }
-}
-
-static void
-attach_entry_to_code(struct state *s)
-{
-  dict_attach_entry_to_code(s, &s->dict);
-  dict_attach_entry_to_code(s, &s->inlined_dict);
-}
-
-static void
 inline_entry(struct state *s, struct entry *entry)
 {
-  attach_entry_to_code(s);
   for (size_t i = 0, done = 0; !done; i++)
   {
     // inline the first OP_RETURN
@@ -239,7 +220,6 @@ compile(struct state *s)
   struct code *code = (struct code *)s->here;
   if (entry)
   {
-    attach_entry_to_code(s);
     code->opcode = entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL;
     code->this = (cell)entry;
     s->here = (struct code *)s->here + 1;
@@ -250,7 +230,6 @@ compile(struct state *s)
     cell n = 0;
     if (tib_to_number(s, &n))
     {
-      attach_entry_to_code(s);
       // compile number
       code->opcode = OP_NUMBER;
       code->this = n;
@@ -583,7 +562,6 @@ compile_tick(struct state *s)
   struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
-    attach_entry_to_code(s);
     struct code *code = (struct code *)s->here;
     code->opcode = OP_TICK_NUMBER;
     code->this = (cell)entry;
@@ -632,7 +610,6 @@ parse_colorforth(struct state *state, int c)
     {
       if (state->color == execute)
       {
-        attach_entry_to_code(state);
         struct code *code =  (struct code *)state->here;
         code->opcode = OP_NUMBER;
         code->this = pop(state->stack);

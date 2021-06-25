@@ -47,12 +47,19 @@
 :<dumpl> ^ 2>R '<dumpc> ^12 times cr 2R> ;
 :dump  (a -) ^ cr '<dumpl> ^10 times drop cr ;
 
+
 :alloc (n - a) ^here @ swap over + here ! ;
 
+~10000 alloc :dataheap ~ ^;
+~cell alloc :dhere ~ ^;
+~dataheap dhere !
+
+:dalloc (n - a) ^dhere @ swap over + dhere ! ;
+
 (create null-terminated string)
-:"init ^here @ cell + ;
+:"init ^dhere @ cell + ;
 :"loop ^dup key dup ~key " ^= when ; swap c! 1 + "loop ;
-:"done ^drop drop here @ - dup (null ^1 + alloc swap cell - over ! ;
+:"done ^drop drop dhere @ - dup (null ^1 + dalloc swap cell - over ! ;
 :" ^"init "loop "done ;
 
 (print string)

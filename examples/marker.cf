@@ -31,7 +31,7 @@ mark-1  forget
 cr shortroom
 
 ~" Allocate more space:" ~nprn
-~30000 alloc shortroom
+~20000 alloc shortroom
 
 ~" 'mark-1' is still the same:" ~nprn
 ~'mark-1 ~see
