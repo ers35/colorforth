@@ -583,13 +583,6 @@ comment(struct state *s)
 void
 parse_colorforth(struct state *state, int c)
 {
-#ifdef __ECHO_COLOR
-  if (state->echo_on && c != '%')
-  {
-    cf_printf(state, "%c", c);
-  }
-#endif
-
   switch (c)
   {
     case ':':
@@ -667,6 +660,7 @@ parse_colorforth(struct state *state, int c)
     case ' ':
     case '\t':
     {
+      echo_color(state, c, NULL);
       if (state->tib.len == 0)
       {
         // Strip leading whitespace.
@@ -704,6 +698,7 @@ parse_colorforth(struct state *state, int c)
 
     default:
     {
+      echo_color(state, c, NULL);
       if (state->tib.len < sizeof(state->tib.buf))
       {
         state->tib.buf[state->tib.len++] = c;
@@ -711,6 +706,7 @@ parse_colorforth(struct state *state, int c)
       break;
     }
   }
+
   if (c == '\n')
   {
     state->coll = 0; state->line += 1;

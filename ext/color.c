@@ -14,9 +14,16 @@ echo_color(struct state *state, int c, char *color)
 {
   if (state->echo_on)
   {
-    cf_printf(state, "\b%s%c", color, c);
+    if (color)
+    {
+      cf_printf(state, "%s%c", color, c);
+    }
+    else
+    {
+      cf_printf(state, "%c", c);
+    }
   }
-  else
+  else if (color)
   {
     cf_printf(state, "%s", color);
   }
