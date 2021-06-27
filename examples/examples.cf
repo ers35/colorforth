@@ -2,12 +2,12 @@
 
 \ one line comment
 
-:msg ~" hello world" >lit ^;
+:msg ~c" hello world" ^;
 
 ~msg ." cr
 ~msg dump
 
-:uname ~" uname -a" >lit ^cmd ;
+:uname ~c" uname -a" ^cmd ;
 ~uname
 
 :square ^dup * ;
@@ -27,7 +27,7 @@
 my-var @ . cr cr
 
 ~\ Loop example
-:hello ~" Hello world!" >lit ^prn ;
+:hello ~c" Hello world!" ^prn ;
 
 :loop1 'hello ^10 times ;
 ~loop1 cr
