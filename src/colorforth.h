@@ -37,6 +37,8 @@ enum opcode
   // call defined word
   OP_CALL,
   OP_TAIL_CALL,
+  OP_COMPILE_LITERAL,
+  OP_GET_ENTRY_CODE,
   OP_EXECUTE,
   OP_NUMBER,
   OP_TICK_NUMBER,

@@ -27,6 +27,13 @@ see(struct state *s, struct entry *entry)
   if (entry)
   {
     char display_next_sc = 0;
+
+    if (!entry->code)
+    {
+      cf_printf(s, "<empty>\n");
+      return;
+    }
+
     cf_printf(s, ":%.*s ", (int)entry->name_len, entry->name);
     for (size_t i = 0, done = 0; !done; i++)
     {

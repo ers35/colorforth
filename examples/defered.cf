@@ -1,6 +1,6 @@
 %
-:first-word ~" I am the FIRST word" ^prn ;
-:second-word ~" I am the SECOND word" ^prn ;
+:first-word ~" I am the FIRST word" >lit ^prn ;
+:second-word ~" I am the SECOND word" >lit ^prn ;
 :wd
 
 ~'wd ~'first-word ~is
@@ -15,8 +15,8 @@ wd
 
 cr
 :ping
-:pong   ~" pong" ^prn 1- dup when ping ;
-:<ping> ~" ping" ^prn 1- dup when pong ;
+:pong   ~" pong" >lit ^prn 1- dup when ping ;
+:<ping> ~" ping" >lit ^prn 1- dup when pong ;
 
 ~'ping ~'<ping> ~is
 
@@ -25,17 +25,15 @@ cr
 cr
 :<doc-on>  ^prn ;; ;
 :<doc-off> ^drop ;
-
 :doc
 :doc-on!  'doc '<doc-on>  ^is ;
 :doc-off! 'doc '<doc-off> ^is ;
 
-:documentation (xt-) ^doc-on!  execute  doc-off! ;
+:documentation (xt-) ^doc-on! code> execute  doc-off! ;
 
-~" I am the word-with-docstring"
 :word-with-docstring
-  ~" DOCSTRING: This is the word-with-docstring word documentation" ^doc
-  ~ ^prn
+  ~" DOCSTRING: This is the word-with-docstring word documentation" >lit ^doc
+  ~" I am the word-with-docstring" >lit ^prn
   2 2 + . cr
   3 5 * . cr ;
 

@@ -2,17 +2,17 @@
 
 \ one line comment
 
-:msg ~" hello world" ^;
+:msg ~" hello world" >lit ^;
 
 ~msg ." cr
 ~msg dump
 
-:uname ~" uname -a" ^cmd ;
+:uname ~" uname -a" >lit ^cmd ;
 ~uname
 
 :square ^dup * ;
 ~\ calculated at compile time
-:25square ~25 square ^;
+:25square ~25 square >lit ^;
 ~25square . cr
 
 
@@ -20,14 +20,14 @@
 
 ~\ variable: store the address leaved by alloc on my-var
 ~\ with execute/compile pattern
-:my-var ~cell dalloc ^;
+:my-var ~cell dalloc >lit ^;
 
 ~'my-var ~see
 100 my-var !
 my-var @ . cr cr
 
 ~\ Loop example
-:hello ~" Hello world!" ^prn ;
+:hello ~" Hello world!" >lit ^prn ;
 
 :loop1 'hello ^10 times ;
 ~loop1 cr

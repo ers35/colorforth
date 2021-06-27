@@ -259,6 +259,15 @@ compile_inline(struct state *s)
 }
 
 static void
+compile_literal(struct state *s)
+{
+  struct code *code =  (struct code *)s->here;
+  code->opcode = OP_NUMBER;
+  code->this = pop(s->stack);
+  s->here = (struct code *)s->here + 1;
+}
+
+static void
 execute_(struct state *s, struct entry *entry)
 {
   // cf_printf(s, "-> %s\n", entry->name);
@@ -383,6 +392,12 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_COMPILE_LITERAL:
+      {
+        compile_literal(s);
+        break;
+      }
+
       case OP_EMIT:
       {
         cf_putchar(s, (char)pop(s->stack));
@@ -451,11 +466,18 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_EXECUTE:
+      case OP_GET_ENTRY_CODE:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
+        push(s->stack, (cell)entry_->code);
+        break;
+      }
+
+      case OP_EXECUTE:
+      {
+        struct code *code_ = (struct code*)pop(s->stack);
         push(s->r_stack, (cell)pc);
-        pc = entry_->code - 1;
+        pc = code_ - 1;
         break;
       }
 
@@ -601,13 +623,6 @@ parse_colorforth(struct state *state, int c)
 
     case '^':
     {
-      if (state->color == execute)
-      {
-        struct code *code =  (struct code *)state->here;
-        code->opcode = OP_NUMBER;
-        code->this = pop(state->stack);
-        state->here = (struct code *)state->here + 1;
-      }
       state->color = compile;
       echo_color(state, c, COLOR_GREEN);
       break;
@@ -807,6 +822,8 @@ colorforth_newstate(void)
   define_primitive(state, "here", OP_HERE);
   define_primitive(state, "latest", OP_LATEST);
   define_primitive(state, "i-latest", OP_I_LATEST);
+  define_primitive(state, ">lit", OP_COMPILE_LITERAL);
+  define_primitive(state, "code>", OP_GET_ENTRY_CODE);
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
 
