@@ -1,12 +1,8 @@
-%
-~3 cells dalloc dup
+%noname> ^dup . ~c" bottles" ^pr ;
+~noname> ~c" 1 bottle" ^pr ;
+~noname> ~c" no more bottles" ^pr ;
+~>! >! >!  here @  3 cells -
 :.bottles ^dup 2 min cells ~>lit ^+ @ execute ;
-:bottles! ^over cells ~>lit ^+ ! 1+ ;
-
-~0
-noname> ~c" no more bottles" ^pr ;  ~bottles!
-noname> ~c" 1 bottle" ^pr ;         ~bottles!
-noname> ~c" bottles" ^over . pr ;   ~bottles!
 
 :.beer ^.bottles ~c"  of beer " ^pr ;
 :.wall ^.beer ~c" on the wall " ^prn ;
@@ -15,7 +11,5 @@ noname> ~c" bottles" ^over . pr ;   ~bottles!
       1- .take cr .wall ;
 :.verses ^cr .verse dup when .verses ;
 ~
-
 99 .verses
-
 bye
