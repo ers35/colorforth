@@ -54,11 +54,17 @@
 
 :alloc (n - a) ^here @ swap over + here ! ;
 
+:>! ^cell alloc ! ;
+:>c! ^1 alloc ! ;
+
 ~10000 alloc :dataheap ~>lit ^;
 ~cell alloc :dhere ~>lit ^;
 ~dataheap dhere !
 
 :dalloc (n - a) ^dhere @ swap over + dhere ! ;
+
+:>d! ^cell dalloc ! ;
+:>dc! ^1 dalloc ! ;
 
 (create null-terminated string)
 :"init ^dhere @ cell + ;
