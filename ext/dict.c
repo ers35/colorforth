@@ -5,23 +5,6 @@
 #include <colorforth.h>
 
 void
-dump_words(struct state *s, struct dictionary *dict)
-{
-  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
-  {
-    cf_printf(s, "%.*s ", (int)entry->name_len, entry->name);
-  }
-}
-
-void
-words(struct state *s)
-{
-  dump_words(s, &s->inlined_dict);
-  dump_words(s, &s->dict);
-  cf_printf(s, "\n");
-}
-
-void
 see(struct state *s, struct entry *entry)
 {
   if (entry)
@@ -181,7 +164,6 @@ is (struct state *s)
 void
 init_dict_utils(struct state *state)
 {
-  define_primitive_extension(state, "words", OP_WORDS, words);
   define_primitive_extension(state, "see", OP_SEE, see_func);
   define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble);
   define_primitive_extension(state, "room", OP_ROOM, room);

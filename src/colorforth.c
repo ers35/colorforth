@@ -80,6 +80,23 @@ pop(struct stack *stack)
   return n;
 }
 
+void
+dump_words(struct state *s, struct dictionary *dict)
+{
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  {
+    cf_printf(s, "%.*s ", (int)entry->name_len, entry->name);
+  }
+}
+
+void
+words(struct state *s)
+{
+  dump_words(s, &s->inlined_dict);
+  dump_words(s, &s->dict);
+  cf_printf(s, "\n");
+}
+
 struct entry*
 find_entry(struct state *s, struct dictionary *dict)
 {
@@ -375,6 +392,12 @@ execute_(struct state *s, struct entry *entry)
       case OP_BYE:
       {
         quit(s, 0);
+        break;
+      }
+
+      case OP_WORDS:
+      {
+        words(s);
         break;
       }
 
@@ -811,6 +834,7 @@ colorforth_newstate(void)
   define_primitive(state, "=", OP_EQUAL);
   define_primitive(state, "<", OP_LESS);
   define_primitive(state, "bye", OP_BYE);
+  define_primitive(state, "words", OP_WORDS);
   define_primitive(state, "words", OP_WORDS);
   define_primitive(state, "emit", OP_EMIT);
   define_primitive(state, "key", OP_KEY);
