@@ -1,3 +1,4 @@
+Makefile
 colorforth
 conf.h
 src/lib.cf

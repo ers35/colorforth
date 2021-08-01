@@ -27,7 +27,7 @@ src/lib.cf.h: src/lib.tmpl.cf
 	cp src/lib.tmpl.cf src/lib.cf
 	xxd -i src/lib.cf src/lib.cf.h
 
-colorforth: build/Makefile.unix $(SRC) $(SRC_H)
+colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -Os -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
 	-I. -Isrc -Iext $(EXTRA_CFLAGS) \
