@@ -131,9 +131,9 @@ included_file(struct state *s)
 void
 init_io_utils(struct state *state)
 {
-  define_primitive_extension(state, "echo!", OP_ECHO_SET, echo_set);
-  define_primitive_extension(state, "file-size", OP_FILE_SIZE, file_size_fn);
-  define_primitive_extension(state, "load", OP_FILE_LOAD, load_file);
-  define_primitive_extension(state, "save", OP_FILE_SAVE, save_file);
-  define_primitive_extension(state, "included", OP_INCLUDED, included_file);
+  define_primitive_extension(state, "echo!", echo_set);
+  define_primitive_extension(state, "file-size", file_size_fn);
+  define_primitive_extension(state, "load", load_file);
+  define_primitive_extension(state, "save", save_file);
+  define_primitive_extension(state, "included", included_file);
 }

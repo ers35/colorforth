@@ -13,6 +13,8 @@ typedef long cell;
 
 #define CELL_FMT "ld"
 
+#define MAX_OP_CODE 100
+
 enum opcode
 {
   OP_PRINT_TOS,
@@ -56,29 +58,8 @@ enum opcode
   OP_R_POP,
   OP_R_FETCH,
 
-  /* Extensions */
-  // dict
-  OP_SEE,
-  OP_DISASSEMBLE_DICT,
-  OP_ROOM,
-  OP_FULLROOM,
-  OP_SHORTROOM,
-  OP_IS,
-
-  // os
-  OP_SYSTEM,
-  OP_C_ALLOC,
-  OP_C_FREE,
-
-  // io
-  OP_ECHO_SET,
-  OP_FILE_SIZE,
-  OP_FILE_LOAD,
-  OP_FILE_SAVE,
-  OP_INCLUDED,
-
-  /* Last non opcode - do not remove! */
-  __LAST_NOT_AN_OPCODE__,
+  /* Last primitive opcode - do not remove! */
+  __LAST_PRIMITIVE_OP_CODE__
 };
 
 // terminal input buffer
@@ -133,6 +114,8 @@ struct state
   int done;
   int echo_on;
 
+  int current_opcode;
+
   // streams
   char *str_stream;
   FILE *file_stream;
@@ -143,7 +126,7 @@ struct primitive_map
   char *name;
   enum opcode opcode;
   void (*func)();
-} primitive_map[__LAST_NOT_AN_OPCODE__];
+} primitive_map[MAX_OP_CODE];
 
 extern void push(struct stack *stack, const cell n);
 extern cell pop(struct stack *stack);
@@ -151,7 +134,7 @@ extern cell pop(struct stack *stack);
 extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern void unknow_word (struct state *s, const char *msg);
 
-extern void define_primitive_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s));
+extern void define_primitive_extension(struct state *s, char name[], void (*func)(struct state *s));
 
 extern void quit(struct state *state, char ask);
 extern struct state* colorforth_newstate(void);

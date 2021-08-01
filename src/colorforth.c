@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <cf-stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include <colorforth.h>
 
@@ -29,6 +30,19 @@ quit(struct state *state, char ask)
     echo_color(state, ' ', COLOR_CLEAR);
   }
   cf_printf(state, "\n");
+}
+
+void
+cf_fatal_error(struct state *state, const char* format, ...)
+{
+  va_list arg;
+
+  va_start (arg, format);
+  vfprintf(stdout, format, arg);
+  va_end (arg);
+  echo_color(state, ' ', COLOR_CLEAR);
+  reset_terminal();
+  exit(1);
 }
 
 void
@@ -163,10 +177,15 @@ define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
 }
 
 void
-define_primitive_extension(struct state *s, char name[], const enum opcode opcode, void (*func)(struct state *s))
+define_primitive_extension(struct state *s, char name[], void (*func)(struct state *s))
 {
-  define_primitive(s, name, opcode);
-  primitive_map[opcode].func = func;
+  if (s->current_opcode >= MAX_OP_CODE)
+  {
+    cf_fatal_error(s, "Too many opcode defined: %d\n", s->current_opcode);
+  }
+  define_primitive(s, name, s->current_opcode);
+  primitive_map[s->current_opcode].func = func;
+  s->current_opcode += 1;
 }
 
 static bool
@@ -815,6 +834,8 @@ colorforth_newstate(void)
 
   state->heap = calloc(1, HEAP_SIZE);
   state->here = state->heap;
+
+  state->current_opcode = __LAST_PRIMITIVE_OP_CODE__;
 
   state->coll = 0; state->line = 1;
   state->done = 0;

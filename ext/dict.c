@@ -164,10 +164,10 @@ is (struct state *s)
 void
 init_dict_utils(struct state *state)
 {
-  define_primitive_extension(state, "see", OP_SEE, see_func);
-  define_primitive_extension(state, "disassemble", OP_DISASSEMBLE_DICT, disassemble);
-  define_primitive_extension(state, "room", OP_ROOM, room);
-  define_primitive_extension(state, "fullroom", OP_FULLROOM, fullroom);
-  define_primitive_extension(state, "shortroom", OP_SHORTROOM, shortroom);
-  define_primitive_extension(state, "is", OP_IS, is);
+  define_primitive_extension(state, "see", see_func);
+  define_primitive_extension(state, "disassemble", disassemble);
+  define_primitive_extension(state, "room", room);
+  define_primitive_extension(state, "fullroom", fullroom);
+  define_primitive_extension(state, "shortroom", shortroom);
+  define_primitive_extension(state, "is", is);
 }
