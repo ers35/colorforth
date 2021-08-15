@@ -43,6 +43,7 @@ void
 reset_terminal()
 {
   tcsetattr(STDIN_FILENO,TCSANOW,&old_tio);
+  printf("%s", COLOR_CLEAR);
 }
 
 #endif /* __ECHO_COLOR */
