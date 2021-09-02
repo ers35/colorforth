@@ -126,7 +126,9 @@ struct primitive_map
   char *name;
   enum opcode opcode;
   void (*func)();
-} primitive_map[MAX_OP_CODE];
+};
+
+extern struct primitive_map primitive_map[];
 
 extern void push(struct stack *stack, const cell n);
 extern cell pop(struct stack *stack);

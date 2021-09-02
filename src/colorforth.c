@@ -14,6 +14,8 @@
 #include <lib.cf.h>
 #endif /* __EMBED_LIB_CF */
 
+struct primitive_map primitive_map[MAX_OP_CODE];
+
 
 void
 quit(struct state *state, char ask)
