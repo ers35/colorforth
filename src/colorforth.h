@@ -17,6 +17,7 @@ typedef long cell;
 
 enum opcode
 {
+  OP_NOP,
   OP_PRINT_TOS,
   OP_DUP,
   OP_OVER,

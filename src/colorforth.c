@@ -318,6 +318,10 @@ execute_(struct state *s, struct entry *entry)
   {
     switch (pc->opcode)
     {
+      case OP_NOP: {
+        break;
+      }
+
       case OP_PRINT_TOS:
       {
         cf_printf(s, "%"CELL_FMT" ", pop(s->stack));
@@ -846,6 +850,7 @@ colorforth_newstate(void)
   state->str_stream = NULL;
   state->file_stream = NULL;
 
+  define_primitive(state, "nop", OP_NOP);
   define_primitive(state, ".", OP_PRINT_TOS);
   define_primitive(state, "dup", OP_DUP);
   define_primitive(state, "over", OP_OVER);
