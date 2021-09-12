@@ -59,12 +59,11 @@ file_size_fn(struct state *s)
   push(s->stack, file_size(filename));
 }
 
-// returns a pointer on a counted buffer of 2 times the size of the file
-// the pointer should be freed manually when used
 void
 load_file(struct state *s)
 {
   char *filename = CFSTRING2C(pop(s->stack));
+  char *buf = (char *) (pop(s->stack));
   int size = file_size(filename);
 
   if (size == -1)
@@ -83,7 +82,6 @@ load_file(struct state *s)
     return;
   }
 
-  char *buf = calloc(1, size * 2);
   int len = fread(buf + sizeof(cell), 1, size, fp);
   if (len != size)
   {
@@ -95,7 +93,6 @@ load_file(struct state *s)
 
   cell *cbuf = (cell *)buf;
   *cbuf = (cell)size;
-  push(s->stack, (cell) buf);
 
   fclose(fp);
 }

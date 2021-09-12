@@ -5,20 +5,20 @@
 
 
 ~\ Load example
-" included.cf" load   dup dump
+" included.cf" aload   dup dump
 " --------" prn   dup pr   " --------" prn
 c-free
 
 ~\ Save and reload example
 " This is a test" " test.txt" save
 
-:buf ~" test.txt" load >_ ^;
+:buf ~" test.txt" aload >_ ^;
 ~
 buf prn
 key A buf cell 2 + + c!
 buf " test2.txt" save
 buf c-free
 
-" test2.txt" load dup dump dup prn c-free
+" test2.txt" aload dup dump dup prn c-free
 
 bye

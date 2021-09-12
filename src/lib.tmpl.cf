@@ -106,3 +106,8 @@
 :min ^over over < when drop; swap drop ;
 :max ^over over < unless drop; swap drop ;
 :> ^swap < ;
+
+~( files )
+:aload ~( filename - buf ) ^
+   dup file-size cell + c-alloc
+   dup rot load ;

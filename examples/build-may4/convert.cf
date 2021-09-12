@@ -1,8 +1,8 @@
 %
 \ Convert the template in expected.txt with numbers in numbers.txt
 
-:expected ~" expected.txt" load >_ ^;
-:numbers ~" numbers.txt" load >_ ^;
+:expected ~" expected.txt" aload >_ ^;
+:numbers ~" numbers.txt" aload >_ ^;
 
 :len# ~expected @ >_ ^;
 
