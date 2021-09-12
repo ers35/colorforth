@@ -12,7 +12,7 @@
 
 :square ^dup * ;
 ~\ calculated at compile time
-:25square ~25 square >lit ^;
+:25square ~25 square >_ ^;
 ~25square . cr
 
 
@@ -20,7 +20,7 @@
 
 ~\ variable: store the address leaved by alloc on my-var
 ~\ with execute/compile pattern
-:my-var ~cell dalloc >lit ^;
+:my-var ~cell dalloc >_ ^;
 
 ~'my-var ~see
 100 my-var !

@@ -2,7 +2,7 @@
 ~noname> ~c" 1 bottle" ^pr ;
 ~noname> ~c" no more bottles" ^pr ;
 ~>! >! >!  here @  3 cells -
-:.bottles ^dup 2 min cells ~>lit ^+ @ execute ;
+:.bottles ^dup 2 min cells ~>_ ^+ @ execute ;
 
 :.beer ^.bottles ~c"  of beer " ^pr ;
 :.wall ^.beer ~c" on the wall " ^prn ;

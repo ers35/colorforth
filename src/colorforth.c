@@ -874,7 +874,7 @@ colorforth_newstate(void)
   define_primitive(state, "here", OP_HERE);
   define_primitive(state, "latest", OP_LATEST);
   define_primitive(state, "i-latest", OP_I_LATEST);
-  define_primitive(state, ">lit", OP_COMPILE_LITERAL);
+  define_primitive(state, ">_", OP_COMPILE_LITERAL);
   define_primitive(state, "code>", OP_GET_ENTRY_CODE);
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
