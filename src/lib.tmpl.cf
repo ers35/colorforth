@@ -1,7 +1,8 @@
-(one line comment)
 :\ ^key 10 = unless \ ;
+:( ^key 41 = unless ( ;
+~( The two lines above defines comments. We do not have them till there )
 
-(boolean constant)
+~( boolean constant )
 |true   ^1 ;
 |false  ^0 ;
 
@@ -13,7 +14,7 @@
 :eon! ^on echo! ;
 :eoff! ^off echo! ;
 
-(helper words)
+~( helper words )
 |2R> ^R> R> ;
 |2>R ^>R >R ;
 
@@ -30,32 +31,32 @@
 
 :noname> ^here @ ;
 
-(loop)
-:<times-loop> (xt n -) ^1- over execute dup when <times-loop> ;
-:times (ent n -) ^swap code> swap
-:ctimes (xt n -) ^<times-loop> 2drop ;
+~( loop )
+:<times-loop> ~( xt n - ) ^1- over execute dup when <times-loop> ;
+:times ~( ent n - ) ^swap code> swap
+:ctimes ~( xt n - ) ^<times-loop> 2drop ;
 
-(another loop form)
+~( another loop form )
 :-done?; ^1 - dup when ;  drop ;; ;
 
-(rendering)
+~( rendering )
 :cr ^10 emit ;
 :tab ^9 emit ;
 :space ^32 emit ;
 
-(dump word)
+~( dump word )
 :emit.; ^ drop 46 emit ;; ;
-:v-emit (c -) ^
+:v-emit ~( c - ) ^
   dup  32 < when emit.;
   dup 128 < unless emit.;
   emit ;
 
 :<dumpc> ^ 2>R dup c@ dup v-emit space . tab 1+ 2R> ;
 :<dumpl> ^ 2>R '<dumpc> ^12 times cr 2R> ;
-:dump  (a -) ^ cr '<dumpl> ^10 times drop cr ;
+:dump  ~( a - ) ^ cr '<dumpl> ^10 times drop cr ;
 
 
-:alloc (n - a) ^here @ swap over + here ! ;
+:alloc ~( n - a ) ^here @ swap over + here ! ;
 
 :>! ^cell alloc ! ;
 :>c! ^1 alloc ! ;
@@ -64,20 +65,20 @@
 ~cell alloc :dhere ~>_ ^;
 ~dataheap dhere !
 
-:dalloc (n - a) ^dhere @ swap over + dhere ! ;
+:dalloc ~( n - a ) ^dhere @ swap over + dhere ! ;
 
 :>d! ^cell dalloc ! ;
 :>dc! ^1 dalloc ! ;
 
-(create null-terminated string)
+~( create null-terminated string )
 :"init ^dhere @ cell + ;
 :"loop ^dup key dup ~key " >_ ^= when ; swap c! 1 + "loop ;
-:"done ^drop drop dhere @ - dup (null ^1 + dalloc swap cell - over ! ;
+:"done ^drop drop dhere @ - dup ^1 + dalloc swap cell - over ! ;
 :" ^"init "loop "done ;
 :c" ^" >_ ;
 
 
-(print string)
+~( print string )
 :."init ^dup dup @ + cell + swap cell + ;
 :."loop ^over over = when ; dup c@ emit 1 + ."loop ;
 :pr
@@ -86,14 +87,14 @@
 :nprn ^cr pr cr ;
 
 
-(system)
+~( system )
 :cmd ^cell + system ;
 
-(marker/forget)
+~( marker/forget )
 :marker ^latest @  i-latest @   here @ 8 cells +   >_ >_ >_ ;
 :forget ^latest !  i-latest !   here ! ;
 
-(math)
+~( math )
 :drop; ^drop ;; ;
 :min ^over over < when drop; swap drop ;
 :max ^over over < unless drop; swap drop ;

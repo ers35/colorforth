@@ -644,12 +644,6 @@ compile_tick(struct state *s)
   }
 }
 
-static void
-comment(struct state *s)
-{
-
-}
-
 void
 parse_colorforth(struct state *state, int c)
 {
@@ -702,13 +696,6 @@ parse_colorforth(struct state *state, int c)
         state->color = compile_tick;
       }
       echo_color(state, c, COLOR_BLUE);
-      break;
-    }
-
-    case '(':
-    {
-      state->color = comment;
-      echo_color(state, c, COLOR_WHITE);
       break;
     }
 

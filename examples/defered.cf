@@ -29,7 +29,7 @@ cr
 :doc-on!  'doc '<doc-on>  ^is ;
 :doc-off! 'doc '<doc-off> ^is ;
 
-:documentation (xt-) ^doc-on! code> execute  doc-off! ;
+:documentation ~( xt- ) ^doc-on! code> execute  doc-off! ;
 
 :word-with-docstring
   ~c" DOCSTRING: This is the word-with-docstring word documentation" ^doc
