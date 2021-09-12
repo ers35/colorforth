@@ -9,7 +9,7 @@
 :.spaces; ~c"       " ^pr ;; ;
 :cr; ^cr ;; ;
 
-:cur ~cell dalloc >_ ^;   ~numbers cell +  cur !
+:cur ~numbers cell + variable ^;
 :cur+! ^cur @ 1 + cur ! ;
 :.cur ^cur @ c@ emit cur+! ;
 

@@ -20,9 +20,10 @@
 
 ~\ variable: store the address leaved by alloc on my-var
 ~\ with execute/compile pattern
-:my-var ~cell dalloc >_ ^;
+:my-var ~10 variable ^;
 
 ~'my-var ~see
+my-var ?
 100 my-var !
 my-var @ . cr cr
 

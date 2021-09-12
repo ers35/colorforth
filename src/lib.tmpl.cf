@@ -70,6 +70,13 @@
 :>d! ^cell dalloc ! ;
 :>dc! ^1 dalloc ! ;
 
+:? ^@ . ;
+:variable ^cell dalloc dup >_ ! ;
+:variables ^cells dalloc >_ ;
+
+|[] ^cells + ;
+:[] ^[] ;
+
 ~( create null-terminated string )
 :"init ^dhere @ cell + ;
 :"loop ^dup key dup ~key " >_ ^= when ; swap c! 1 + "loop ;
