@@ -360,6 +360,36 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_ROT:
+      {
+        const cell n3 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        const cell n1 = pop(s->stack);
+        push(s->stack, n2);
+        push(s->stack, n3);
+        push(s->stack, n1);
+        break;
+      }
+
+      case OP_MINUS_ROT:
+      {
+        const cell n3 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        const cell n1 = pop(s->stack);
+        push(s->stack, n3);
+        push(s->stack, n1);
+        push(s->stack, n2);
+        break;
+      }
+
+      case OP_NIP:
+      {
+        pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n2);
+        break;
+      }
+
       case OP_ADD:
       {
         const cell n1 = pop(s->stack);
@@ -843,6 +873,9 @@ colorforth_newstate(void)
   define_primitive(state, "over", OP_OVER);
   define_primitive(state, "swap", OP_SWAP);
   define_primitive(state, "drop", OP_DROP);
+  define_primitive(state, "rot", OP_ROT);
+  define_primitive(state, "-rot", OP_MINUS_ROT);
+  define_primitive(state, "nip", OP_NIP);
   define_primitive(state, "+", OP_ADD);
   define_primitive(state, "-", OP_SUB);
   define_primitive(state, "*", OP_MUL);
