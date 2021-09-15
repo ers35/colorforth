@@ -23,6 +23,13 @@
 
 |1+ ^1 + ;
 |1- ^1 - ;
+:1+ ^1+ ;
+:1- ^1- ;
+
+:+! ^dup @ rot + swap ! ;
+:1+! ^dup @ 1+ swap ! ;
+:1-! ^dup @ 1- swap ! ;
+:cell+! ^dup @ cell + swap ! ;
 
 |;; ^R> drop ;
 
