@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <conf.h>
 
-#include <cf-stdio.h>
 #include <color.h>
 
 typedef long cell;

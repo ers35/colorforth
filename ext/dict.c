@@ -1,8 +1,8 @@
 // The author disclaims copyright to this source code.
-#include <cf-stdio.h>
 #include <string.h>
 
 #include <colorforth.h>
+#include <cf-stdio.h>
 
 void
 see(struct state *s, struct entry *entry)

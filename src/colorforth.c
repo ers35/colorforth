@@ -4,11 +4,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cf-stdio.h>
 #include <string.h>
 #include <stdarg.h>
 
 #include <colorforth.h>
+#include <cf-stdio.h>
 
 #ifdef __EMBED_LIB_CF
 #include <lib.cf.h>
