@@ -119,3 +119,20 @@
 :aload ~( filename - buf ) ^
    dup file-size cell + c-alloc
    dup rot load ;
+
+~( mem move )
+:-cmove-done?; ^1- dup when ;  2drop drop ;; ;
+:cmove-advance ^ 1+ ;
+:cmove-loop ^
+   >R  swap dup c@ >R cmove-advance
+   swap dup R> swap c! cmove-advance
+   R>  -cmove-done?; cmove-loop
+;
+:cmove ~( src dst n - ) ^
+   'cmove-advance '1+ ^is
+   cmove-loop ;
+
+:cmove> ~( src dst n - ) ^
+  1- >R R@ + swap R@ + swap R> 1+
+  'cmove-advance '1- ^is
+  cmove-loop ;
