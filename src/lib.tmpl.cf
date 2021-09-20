@@ -58,9 +58,10 @@
   dup 128 < unless emit.;
   emit ;
 
-:<dumpc> ^ 2>R dup c@ dup v-emit space . tab 1+ 2R> ;
-:<dumpl> ^ 2>R '<dumpc> ^12 times cr 2R> ;
-:dump  ~( a - ) ^ cr '<dumpl> ^10 times drop cr ;
+:<dumpc> ^swap dup c@ dup v-emit space . tab  1+ swap ;
+:<dumpl> ^<dumpc> -done?; <dumpl> ;
+:<dumpb> ^swap  12 <dumpl>  swap cr -done?; <dumpb> ;
+:dump ~( a - ) ^10 <dumpb> drop ;
 
 
 :alloc ~( n - a ) ^here @ swap over + here ! ;
