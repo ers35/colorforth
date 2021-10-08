@@ -52,6 +52,9 @@ enum opcode
   OP_I_LATEST,
   OP_DOT_S,
 
+  OP_PARSE,
+  OP_CLEAR_TIB,
+
   /* inlined */
   OP_RETURN,
   OP_WHEN,

@@ -97,6 +97,15 @@ pop(struct stack *stack)
 }
 
 void
+clear_tib (struct state *s){
+  for(size_t i = 0; i < s->tib.len; i++)
+  {
+    s->tib.buf[i] = 0;
+  }
+  s->tib.len = 0;
+}
+
+void
 dump_words(struct state *s, struct dictionary *dict)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
@@ -601,6 +610,21 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      // Expose the parser to colorForth
+      // gniark gniark: parsing recursion from colorForth itself!!
+      case OP_PARSE:
+      {
+        const int c = pop(s->stack);
+        parse_colorforth(s, c);
+        break;
+      }
+
+      case OP_CLEAR_TIB:
+      {
+        clear_tib(s);
+        break;
+      }
+
       default:
       {
         if (primitive_map[pc->opcode].func != NULL)
@@ -749,11 +773,7 @@ parse_colorforth(struct state *state, int c)
       {
         // Have word.
         state->color(state);
-        for(size_t i = 0; i < state->tib.len; i++)
-        {
-          state->tib.buf[i] = 0;
-        }
-        state->tib.len = 0;
+        clear_tib(state);
       }
       break;
     }
@@ -898,6 +918,9 @@ colorforth_newstate(void)
   define_primitive(state, "code>", OP_GET_ENTRY_CODE);
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
+
+  define_primitive(state, "parse", OP_PARSE);
+  define_primitive(state, "clear-tib", OP_CLEAR_TIB);
 
   define_primitive_inlined(state, ";", OP_RETURN);
   define_primitive_inlined(state, "when", OP_WHEN);
