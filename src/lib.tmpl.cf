@@ -136,3 +136,9 @@
   1- >R R@ + swap R@ + swap R> 1+
   'cmove-advance '1- ^is
   cmove-loop ;
+
+~( eval )
+:ptr ~0 variable ^;
+:count ~0 variable ^;
+:eval-loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ unless ; eval-loop ;
+:eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  eval-loop  32 parse ;
