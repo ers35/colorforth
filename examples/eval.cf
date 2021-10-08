@@ -1,0 +1,20 @@
+%
+:sum ^2 2 + . ;
+:yes ~c" YES!!!!" ^cr prn ;
+:add9 ^3 3 + + . ;
+
+:str ~c" ~sum sum yes 123 add9 222" ^;
+
+~str prn cr
+
+111 .s cr
+
+str eval
+
+cr cr
+" 2 + 2 = "
+" pr 2 2 + . cr" eval
+
+cr .s
+
+bye
