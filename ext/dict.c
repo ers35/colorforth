@@ -17,7 +17,7 @@ see(struct state *s, struct entry *entry)
       return;
     }
 
-    cf_printf(s, ":%.*s ", (int)entry->name_len, entry->name);
+    cf_printf(s, ":%s ", entry->name == NULL ? "???" : entry->name);
     for (size_t i = 0, done = 0; !done; i++)
     {
       struct entry *entry_ = (struct entry*) entry->code[i].this;
@@ -35,12 +35,12 @@ see(struct state *s, struct entry *entry)
 
         case OP_CALL:
         {
-          cf_printf(s, "%s ", entry_->name);
+          cf_printf(s, "%s ", entry_->name == NULL ? "???" : entry_->name);
           break;
         }
         case OP_TAIL_CALL:
         {
-          cf_printf(s, "%s¬ ", entry->name);
+          cf_printf(s, "%s¬ ", entry->name == NULL ? "???" : entry_->name);
           break;
         }
 
@@ -77,6 +77,8 @@ disassemble_dict(struct state *s, struct dictionary *dict)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
+    if (entry->name_len == 0) continue;
+
     s->tib.len = entry->name_len;
     memcpy(s->tib.buf, entry->name, entry->name_len);
     struct entry *entry_ = find_entry(s, dict);
@@ -162,6 +164,16 @@ is (struct state *s)
 }
 
 void
+hide_entry (struct state *s)
+{
+  struct entry *entry = (struct entry*)pop(s->stack);
+
+  free(entry->name);
+  entry->name = NULL;
+  entry->name_len = 0;
+}
+
+void
 init_dict_utils(struct state *state)
 {
   define_primitive_extension(state, "see", see_func);
@@ -170,4 +182,5 @@ init_dict_utils(struct state *state)
   define_primitive_extension(state, "fullroom", fullroom);
   define_primitive_extension(state, "shortroom", shortroom);
   define_primitive_extension(state, "is", is);
+  define_primitive_extension(state, "hide-entry", hide_entry);
 }

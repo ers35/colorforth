@@ -110,6 +110,8 @@ dump_words(struct state *s, struct dictionary *dict)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
+    if (entry->name == NULL) continue;
+
     cf_printf(s, "%.*s ", (int)entry->name_len, entry->name);
   }
 }

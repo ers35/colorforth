@@ -39,9 +39,10 @@
 :noname> ^here @ ;
 
 ~( loop )
-:<times-loop> ~( xt n - ) ^1- over execute dup when <times-loop> ;
+:times-loop ~( xt n - ) ^1- over execute dup when times-loop ;
 :times ~( ent n - ) ^swap code> swap
-:ctimes ~( xt n - ) ^<times-loop> 2drop ;
+:ctimes ~( xt n - ) ^times-loop 2drop ;
+~'times-loop ~hide-entry
 
 ~( another loop form )
 :-done?; ^1 - dup when ;  drop ;; ;
@@ -58,10 +59,11 @@
   dup 128 < unless emit.;
   emit ;
 
-:<dumpc> ^swap dup c@ dup v-emit space . tab  1+ swap ;
-:<dumpl> ^<dumpc> -done?; <dumpl> ;
-:<dumpb> ^swap  12 <dumpl>  swap cr -done?; <dumpb> ;
-:dump ~( a - ) ^10 <dumpb> drop ;
+:dumpc ^swap dup c@ dup v-emit space . tab  1+ swap ;
+:dumpl ^dumpc -done?; dumpl ;
+:dumpb ^swap  12 dumpl  swap cr -done?; dumpb ;
+:dump ~( a - ) ^10 dumpb drop ;
+~'dumpc ~hide-entry  'dumpl ~hide-entry  'dumpb ~hide-entry
 
 
 :alloc ~( n - a ) ^here @ swap over + here ! ;
@@ -140,5 +142,6 @@
 ~( eval )
 :ptr ~0 variable ^;
 :count ~0 variable ^;
-:eval-loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ unless ; eval-loop ;
+:loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ unless ; eval-loop ;
 :eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  eval-loop  32 parse ;
+~'ptr ~hide-entry  'count ~hide-entry  'loop ~hide-entry
