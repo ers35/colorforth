@@ -610,21 +610,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      // Expose the parser to colorForth
-      // gniark gniark: parsing recursion from colorForth itself!!
-      case OP_PARSE:
-      {
-        const int c = pop(s->stack);
-        parse_colorforth(s, c);
-        break;
-      }
-
-      case OP_CLEAR_TIB:
-      {
-        clear_tib(s);
-        break;
-      }
-
       default:
       {
         if (primitive_map[pc->opcode].func != NULL)
@@ -918,9 +903,6 @@ colorforth_newstate(void)
   define_primitive(state, "code>", OP_GET_ENTRY_CODE);
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
-
-  define_primitive(state, "parse", OP_PARSE);
-  define_primitive(state, "clear-tib", OP_CLEAR_TIB);
 
   define_primitive_inlined(state, ";", OP_RETURN);
   define_primitive_inlined(state, "when", OP_WHEN);

@@ -52,9 +52,6 @@ enum opcode
   OP_I_LATEST,
   OP_DOT_S,
 
-  OP_PARSE,
-  OP_CLEAR_TIB,
-
   /* inlined */
   OP_RETURN,
   OP_WHEN,
@@ -149,6 +146,7 @@ extern struct state* colorforth_newstate(void);
 extern void parse_colorforth(struct state *state, int c);
 extern void parse_from_string(struct state *s, char *str, unsigned int len);
 extern void parse_space(struct state *s);
+extern void clear_tib (struct state *s);
 
 #define CFSTRING2C(str) ((char *)(str) + sizeof(cell))
 

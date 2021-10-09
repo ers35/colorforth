@@ -9,7 +9,8 @@ SRC=src/main.c src/colorforth.c \
 	ext/os.c \
 	ext/dict.c \
 	ext/io.c \
-	ext/color.c
+	ext/color.c \
+	ext/parser.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
