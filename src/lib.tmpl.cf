@@ -142,6 +142,6 @@
 ~( eval )
 :ptr ~0 variable ^;
 :count ~0 variable ^;
-:loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ unless ; eval-loop ;
-:eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  eval-loop  32 parse ;
+:loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ unless ; loop ;
+:eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  loop  32 parse ;
 ~'ptr ~hide-entry  'count ~hide-entry  'loop ~hide-entry
