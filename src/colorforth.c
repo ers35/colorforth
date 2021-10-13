@@ -688,109 +688,139 @@ compile_tick(struct state *s)
 void
 parse_colorforth(struct state *state, int c)
 {
-  switch (c)
-  {
-    case ':':
+  if (state->tib.len == 0) {
+    switch (c)
     {
-      state->color = define;
-      echo_color(state, c, COLOR_RED);
-      break;
-    }
-
-    case '|':
-    {
-      state->color = define_inlined;
-      echo_color(state, c, COLOR_MAGENTA);
-      break;
-    }
-
-    case '^':
-    {
-      state->color = compile;
-      echo_color(state, c, COLOR_GREEN);
-      break;
-    }
-
-    case '%':
-    {
-      state->echo_on = 0;
-      state->color = execute;
-      echo_color(state, c, COLOR_YELLOW);
-      break;
-    }
-
-    case '~':
-    {
-      state->color = execute;
-      echo_color(state, c, COLOR_YELLOW);
-      break;
-    }
-
-    case '\'':
-    {
-      if (state->color == execute)
+      case ':':
       {
-        state->color = tick;
+        state->color = define;
+        echo_color(state, c, COLOR_RED);
+        break;
       }
-      else
+
+      case '|':
       {
-        state->color = compile_tick;
+        state->color = define_inlined;
+        echo_color(state, c, COLOR_MAGENTA);
+        break;
       }
-      echo_color(state, c, COLOR_BLUE);
-      break;
-    }
 
-    case ',':
-    {
-      state->color = compile_inline;
-      echo_color(state, c, COLOR_CYAN);
-      break;
-    }
-
-    case '\n':
-    case ' ':
-    case '\t':
-    {
-      echo_color(state, c, NULL);
-      if (state->tib.len == 0)
+      case '^':
       {
+        state->color = compile;
+        echo_color(state, c, COLOR_GREEN);
+        break;
+      }
+
+      case '%':
+      {
+        state->echo_on = 0;
+        state->color = execute;
+        echo_color(state, c, COLOR_YELLOW);
+        break;
+      }
+
+      case '~':
+      {
+        state->color = execute;
+        echo_color(state, c, COLOR_YELLOW);
+        break;
+      }
+
+      case '\'':
+      {
+        if (state->color == execute)
+        {
+          state->color = tick;
+        }
+        else
+        {
+          state->color = compile_tick;
+        }
+        echo_color(state, c, COLOR_BLUE);
+        break;
+      }
+
+      case ',':
+      {
+        state->color = compile_inline;
+        echo_color(state, c, COLOR_CYAN);
+        break;
+      }
+
+      case '\n':
+      case ' ':
+      case '\t':
+      {
+        echo_color(state, c, NULL);
         // Strip leading whitespace.
+        break;
       }
-      else
+
+      case '\b':
+      case 127:
       {
+        cf_printf(state, "\b \b");
+        break;
+      }
+
+      case CF_EOF:
+      {
+        //~ exit(0);
+        echo_color(state, c, COLOR_CLEAR);
+        break;
+      }
+
+      default:
+      {
+        echo_color(state, c, NULL);
+        if (state->tib.len < sizeof(state->tib.buf))
+        {
+          state->tib.buf[state->tib.len++] = c;
+        }
+        break;
+      }
+    }
+  }
+  else
+  {
+    switch (c)
+    {
+      case '\n':
+      case ' ':
+      case '\t':
+      {
+        echo_color(state, c, NULL);
         // Have word.
         state->color(state);
         clear_tib(state);
+        break;
       }
-      break;
-    }
 
-    case '\b':
-    case 127:
-    {
-      cf_printf(state, "\b \b");
-      if (state->tib.len > 0)
+      case '\b':
+      case 127:
       {
+        cf_printf(state, "\b \b");
         state->tib.len -= 1;
+        break;
       }
-      break;
-    }
 
-    case CF_EOF:
-    {
-      //~ exit(0);
-      echo_color(state, c, COLOR_CLEAR);
-      break;
-    }
-
-    default:
-    {
-      echo_color(state, c, NULL);
-      if (state->tib.len < sizeof(state->tib.buf))
+      case CF_EOF:
       {
-        state->tib.buf[state->tib.len++] = c;
+        //~ exit(0);
+        echo_color(state, c, COLOR_CLEAR);
+        break;
       }
-      break;
+
+      default:
+      {
+        echo_color(state, c, NULL);
+        if (state->tib.len < sizeof(state->tib.buf))
+        {
+          state->tib.buf[state->tib.len++] = c;
+        }
+        break;
+      }
     }
   }
 
