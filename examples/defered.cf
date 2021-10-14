@@ -26,8 +26,8 @@ cr
 :<doc-on>  ^prn ;; ;
 :<doc-off> ^drop ;
 :doc
-:doc-on!  'doc '<doc-on>  ^is ;
-:doc-off! 'doc '<doc-off> ^is ;
+:doc-on!  `doc `<doc-on>  ^is ;
+:doc-off! `doc `<doc-off> ^is ;
 
 :documentation ~( xt- ) ^doc-on! code> execute  doc-off! ;
 

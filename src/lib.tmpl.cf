@@ -132,12 +132,12 @@
    R>  -cmove-done?; cmove-loop
 ;
 :cmove ~( src dst n - ) ^
-   'cmove-advance '1+ ^is
+   `cmove-advance `1+ ^is
    cmove-loop ;
 
 :cmove> ~( src dst n - ) ^
   1- >R R@ + swap R@ + swap R> 1+
-  'cmove-advance '1- ^is
+  `cmove-advance `1- ^is
   cmove-loop ;
 
 ~( eval )
@@ -145,4 +145,4 @@
 :count ~0 variable ^;
 :loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ unless ; loop ;
 :eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  loop  32 parse ;
-~'ptr ~hide-entry  ~'count ~hide-entry  ~'loop ~hide-entry
+'ptr ~hide-entry  'count ~hide-entry  'loop ~hide-entry

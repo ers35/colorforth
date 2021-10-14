@@ -693,18 +693,9 @@ parse_colorforth(struct state *state, int c)
     for (int i = 0; i < MAX_PREFIX; i++)
     {
       if (prefix_map[i].c == c) {
-        if (prefix_map[i].custom_func)
-        {
-          prefix_map[i].custom_func(state);
-        }
-        else
-        {
-          state->color = prefix_map[i].func;
-        }
-
+        state->color = prefix_map[i].func;
         echo_color(state, c, prefix_map[i].color);
         state->coll += 1;
-
         return;
       }
     }
@@ -801,12 +792,11 @@ parse_from_string(struct state *s, char *str, unsigned int len)
 }
 
 void
-define_prefix(char c, void (*fun)(struct state *s), char * color, void (*custom_fun)(struct state *s), int n_prefix)
+define_prefix(char c, void (*fun)(struct state *s), char * color, int n_prefix)
 {
   prefix_map[n_prefix].c = c;
   prefix_map[n_prefix].func = fun;
   prefix_map[n_prefix].color = color;
-  prefix_map[n_prefix].custom_func = custom_fun;
 }
 
 void
@@ -853,12 +843,13 @@ colorforth_newstate(void)
   state->file_stream = NULL;
 
   int n_prefix=0;
-  define_prefix(':', define,         COLOR_RED,     NULL,                          n_prefix++);
-  define_prefix('|', define_inlined, COLOR_MAGENTA, NULL,                          n_prefix++);
-  define_prefix('^', compile,        COLOR_GREEN,   NULL,                          n_prefix++);
-  define_prefix('~', execute,        COLOR_YELLOW,  NULL,                          n_prefix++);
-  define_prefix('\'', NULL,          COLOR_BLUE,    handle_tick_prefix,            n_prefix++);
-  define_prefix(',', compile_inline, COLOR_CYAN,    NULL,                          n_prefix++);
+  define_prefix(':', define,         COLOR_RED,     n_prefix++);
+  define_prefix('|', define_inlined, COLOR_MAGENTA, n_prefix++);
+  define_prefix('^', compile,        COLOR_GREEN,   n_prefix++);
+  define_prefix('~', execute,        COLOR_YELLOW,  n_prefix++);
+  define_prefix('\'', tick,          COLOR_BLUE,    n_prefix++);
+  define_prefix('`', compile_tick,   COLOR_BLUE,    n_prefix++);
+  define_prefix(',', compile_inline, COLOR_CYAN,    n_prefix++);
 
   define_primitive(state, "nop", OP_NOP);
   define_primitive(state, ".", OP_PRINT_TOS);

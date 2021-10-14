@@ -130,7 +130,6 @@ struct prefix_map
   char c;
   void (*func)(struct state *state);
   char *color;
-  void (*custom_func)(struct state *state);
 };
 
 extern struct prefix_map prefix_map[];
