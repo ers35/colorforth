@@ -12,6 +12,7 @@ typedef long cell;
 
 #define CELL_FMT "ld"
 
+#define MAX_PREFIX 7
 #define MAX_OP_CODE 100
 
 enum opcode
@@ -123,6 +124,16 @@ struct state
   char *str_stream;
   FILE *file_stream;
 };
+
+struct prefix_map
+{
+  char c;
+  void (*func)(struct state *state);
+  char *color;
+  void (*custom_func)(struct state *state);
+};
+
+extern struct prefix_map prefix_map[];
 
 struct primitive_map
 {

@@ -14,6 +14,7 @@
 #include <lib.cf.h>
 #endif /* __EMBED_LIB_CF */
 
+struct prefix_map prefix_map[MAX_PREFIX];
 struct primitive_map primitive_map[MAX_OP_CODE];
 
 
@@ -689,151 +690,76 @@ void
 parse_colorforth(struct state *state, int c)
 {
   if (state->tib.len == 0) {
-    switch (c)
+    for (int i = 0; i < MAX_PREFIX; i++)
     {
-      case ':':
-      {
-        state->color = define;
-        echo_color(state, c, COLOR_RED);
-        break;
-      }
-
-      case '|':
-      {
-        state->color = define_inlined;
-        echo_color(state, c, COLOR_MAGENTA);
-        break;
-      }
-
-      case '^':
-      {
-        state->color = compile;
-        echo_color(state, c, COLOR_GREEN);
-        break;
-      }
-
-      case '%':
-      {
-        state->echo_on = 0;
-        state->color = execute;
-        echo_color(state, c, COLOR_YELLOW);
-        break;
-      }
-
-      case '~':
-      {
-        state->color = execute;
-        echo_color(state, c, COLOR_YELLOW);
-        break;
-      }
-
-      case '\'':
-      {
-        if (state->color == execute)
+      if (prefix_map[i].c == c) {
+        if (prefix_map[i].custom_func)
         {
-          state->color = tick;
+          prefix_map[i].custom_func(state);
         }
         else
         {
-          state->color = compile_tick;
+          state->color = prefix_map[i].func;
         }
-        echo_color(state, c, COLOR_BLUE);
-        break;
-      }
 
-      case ',':
-      {
-        state->color = compile_inline;
-        echo_color(state, c, COLOR_CYAN);
-        break;
-      }
+        echo_color(state, c, prefix_map[i].color);
+        state->coll += 1;
 
-      case '\n':
-      case ' ':
-      case '\t':
-      {
-        echo_color(state, c, NULL);
-        // Strip leading whitespace.
-        break;
-      }
-
-      case '\b':
-      case 127:
-      {
-        cf_printf(state, "\b \b");
-        break;
-      }
-
-      case CF_EOF:
-      {
-        //~ exit(0);
-        echo_color(state, c, COLOR_CLEAR);
-        break;
-      }
-
-      default:
-      {
-        echo_color(state, c, NULL);
-        if (state->tib.len < sizeof(state->tib.buf))
-        {
-          state->tib.buf[state->tib.len++] = c;
-        }
-        break;
+        return;
       }
     }
   }
-  else
+
+  if (c == ' ' || c == '\t' || c == '\n')
   {
-    switch (c)
+    echo_color(state, c, NULL);
+    if (state->tib.len == 0)
     {
-      case '\n':
-      case ' ':
-      case '\t':
-      {
-        echo_color(state, c, NULL);
-        // Have word.
-        state->color(state);
-        clear_tib(state);
-        break;
-      }
-
-      case '\b':
-      case 127:
-      {
-        cf_printf(state, "\b \b");
-        state->tib.len -= 1;
-        break;
-      }
-
-      case CF_EOF:
-      {
-        //~ exit(0);
-        echo_color(state, c, COLOR_CLEAR);
-        break;
-      }
-
-      default:
-      {
-        echo_color(state, c, NULL);
-        if (state->tib.len < sizeof(state->tib.buf))
-        {
-          state->tib.buf[state->tib.len++] = c;
-        }
-        break;
-      }
+      // Strip leading whitespace.
     }
+    else
+    {
+      // Have word.
+      state->color(state);
+      for(size_t i = 0; i < state->tib.len; i++)
+      {
+        state->tib.buf[i] = 0;
+      }
+      state->tib.len = 0;
+    }
+
+    if (c == '\n') {
+      state->coll = 0; state->line += 1;
+    } else {
+      state->coll += 1;
+    }
+
+    return;
   }
 
-  if (c == '\n')
-  {
-    state->coll = 0; state->line += 1;
-  }
-  else if (c == CF_EOF)
+  if (c == CF_EOF)
   {
     state->coll = 0; state->line = 1;
+    echo_color(state, c, COLOR_CLEAR);
+    return;
   }
-  else
+
+  if (c == '\b' || c == 127)
   {
+    cf_printf(state, "\b \b");
+    if (state->tib.len > 0)
+    {
+      state->tib.len -= 1;
+      state->coll -= 1;
+    }
+    return;
+  }
+
+
+  echo_color(state, c, NULL);
+  if (state->tib.len < sizeof(state->tib.buf))
+  {
+    state->tib.buf[state->tib.len++] = c;
     state->coll += 1;
   }
 }
@@ -874,6 +800,35 @@ parse_from_string(struct state *s, char *str, unsigned int len)
   parse_space(s);
 }
 
+void
+define_prefix(char c, void (*fun)(struct state *s), char * color, void (*custom_fun)(struct state *s), int n_prefix)
+{
+  prefix_map[n_prefix].c = c;
+  prefix_map[n_prefix].func = fun;
+  prefix_map[n_prefix].color = color;
+  prefix_map[n_prefix].custom_func = custom_fun;
+}
+
+void
+handle_execute_no_echo_prefix (struct state *state)
+{
+  state->echo_on = 0;
+  state->color = execute;
+}
+
+void
+handle_tick_prefix (struct state *state)
+{
+  if (state->color == execute)
+  {
+    state->color = tick;
+  }
+  else
+  {
+    state->color = compile_tick;
+  }
+}
+
 struct state*
 colorforth_newstate(void)
 {
@@ -903,6 +858,15 @@ colorforth_newstate(void)
 
   state->str_stream = NULL;
   state->file_stream = NULL;
+
+  int n_prefix=0;
+  define_prefix(':', define,         COLOR_RED,     NULL,                          n_prefix++);
+  define_prefix('|', define_inlined, COLOR_MAGENTA, NULL,                          n_prefix++);
+  define_prefix('^', compile,        COLOR_GREEN,   NULL,                          n_prefix++);
+  define_prefix('~', execute,        COLOR_YELLOW,  NULL,                          n_prefix++);
+  define_prefix('%', NULL,           COLOR_YELLOW,  handle_execute_no_echo_prefix, n_prefix++);
+  define_prefix('\'', NULL,          COLOR_BLUE,    handle_tick_prefix,            n_prefix++);
+  define_prefix(',', compile_inline, COLOR_CYAN,    NULL,                          n_prefix++);
 
   define_primitive(state, "nop", OP_NOP);
   define_primitive(state, ".", OP_PRINT_TOS);
