@@ -810,13 +810,6 @@ define_prefix(char c, void (*fun)(struct state *s), char * color, void (*custom_
 }
 
 void
-handle_execute_no_echo_prefix (struct state *state)
-{
-  state->echo_on = 0;
-  state->color = execute;
-}
-
-void
 handle_tick_prefix (struct state *state)
 {
   if (state->color == execute)
@@ -864,7 +857,6 @@ colorforth_newstate(void)
   define_prefix('|', define_inlined, COLOR_MAGENTA, NULL,                          n_prefix++);
   define_prefix('^', compile,        COLOR_GREEN,   NULL,                          n_prefix++);
   define_prefix('~', execute,        COLOR_YELLOW,  NULL,                          n_prefix++);
-  define_prefix('%', NULL,           COLOR_YELLOW,  handle_execute_no_echo_prefix, n_prefix++);
   define_prefix('\'', NULL,          COLOR_BLUE,    handle_tick_prefix,            n_prefix++);
   define_prefix(',', compile_inline, COLOR_CYAN,    NULL,                          n_prefix++);
 

@@ -13,6 +13,7 @@
 
 :eon! ^on echo! ;
 :eoff! ^off echo! ;
+:% ^eoff! ;
 
 ~( helper words )
 |2R> ^R> R> ;
