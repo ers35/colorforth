@@ -799,19 +799,6 @@ define_prefix(char c, void (*fun)(struct state *s), char * color, int n_prefix)
   prefix_map[n_prefix].color = color;
 }
 
-void
-handle_tick_prefix (struct state *state)
-{
-  if (state->color == execute)
-  {
-    state->color = tick;
-  }
-  else
-  {
-    state->color = compile_tick;
-  }
-}
-
 struct state*
 colorforth_newstate(void)
 {
