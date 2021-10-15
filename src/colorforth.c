@@ -175,7 +175,7 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[], 
 
   primitive_map[opcode].name = name;
   primitive_map[opcode].opcode = opcode;
-  primitive_map[opcode].func = NULL;
+  primitive_map[opcode].fn = NULL;
 }
 
 static void
@@ -191,14 +191,14 @@ define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
 }
 
 void
-define_primitive_extension(struct state *s, char name[], void (*func)(struct state *s))
+define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s))
 {
   if (s->current_opcode >= MAX_OP_CODE)
   {
     cf_fatal_error(s, "Too many opcode defined: %d\n", s->current_opcode);
   }
   define_primitive(s, name, s->current_opcode);
-  primitive_map[s->current_opcode].func = func;
+  primitive_map[s->current_opcode].fn = fn;
   s->current_opcode += 1;
 }
 
@@ -615,9 +615,9 @@ execute_(struct state *s, struct entry *entry)
 
       default:
       {
-        if (primitive_map[pc->opcode].func != NULL)
+        if (primitive_map[pc->opcode].fn != NULL)
         {
-          primitive_map[pc->opcode].func(s);
+          primitive_map[pc->opcode].fn(s);
         }
         else
         {
@@ -693,7 +693,7 @@ parse_colorforth(struct state *state, int c)
     for (int i = 0; i < MAX_PREFIX; i++)
     {
       if (prefix_map[i].c == c) {
-        state->color = prefix_map[i].func;
+        state->color = prefix_map[i].fn;
         echo_color(state, c, prefix_map[i].color);
         state->coll += 1;
         return;
@@ -792,10 +792,10 @@ parse_from_string(struct state *s, char *str, unsigned int len)
 }
 
 void
-define_prefix(char c, void (*fun)(struct state *s), char * color, int n_prefix)
+define_prefix(char c, void (*fn)(struct state *s), char * color, int n_prefix)
 {
   prefix_map[n_prefix].c = c;
-  prefix_map[n_prefix].func = fun;
+  prefix_map[n_prefix].fn = fn;
   prefix_map[n_prefix].color = color;
 }
 

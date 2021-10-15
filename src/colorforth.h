@@ -128,7 +128,7 @@ struct state
 struct prefix_map
 {
   char c;
-  void (*func)(struct state *state);
+  void (*fn)(struct state *state);
   char *color;
 };
 
@@ -138,7 +138,7 @@ struct primitive_map
 {
   char *name;
   enum opcode opcode;
-  void (*func)();
+  void (*fn)();
 };
 
 extern struct primitive_map primitive_map[];
@@ -149,7 +149,7 @@ extern cell pop(struct stack *stack);
 extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern void unknow_word (struct state *s, const char *msg);
 
-extern void define_primitive_extension(struct state *s, char name[], void (*func)(struct state *s));
+extern void define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s));
 
 extern void quit(struct state *state, char ask);
 extern struct state* colorforth_newstate(void);

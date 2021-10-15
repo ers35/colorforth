@@ -97,7 +97,7 @@ disassemble(struct state *s)
 }
 
 void
-see_func(struct state *s)
+see_fn(struct state *s)
 {
     struct entry *entry_ = (struct entry*)pop(s->stack);
     see(s, entry_);
@@ -176,7 +176,7 @@ hide_entry (struct state *s)
 void
 init_dict_utils(struct state *state)
 {
-  define_primitive_extension(state, "see", see_func);
+  define_primitive_extension(state, "see", see_fn);
   define_primitive_extension(state, "disassemble", disassemble);
   define_primitive_extension(state, "room", room);
   define_primitive_extension(state, "fullroom", fullroom);

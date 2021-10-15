@@ -2,7 +2,7 @@
 #include <colorforth.h>
 
 void
-system_func(struct state *s)
+system_fn(struct state *s)
 {
   push(s->stack, system((char*)pop(s->stack)));
 }
@@ -23,7 +23,7 @@ c_free(struct state *s)
 void
 init_os_utils(struct state *state)
 {
-  define_primitive_extension(state, "system", system_func);
+  define_primitive_extension(state, "system", system_fn);
   define_primitive_extension(state, "c-alloc", c_alloc);
   define_primitive_extension(state, "c-free", c_free);
 }
