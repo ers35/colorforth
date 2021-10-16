@@ -1,0 +1,28 @@
+%
+:yes ~c" YES!" ^prn ;
+:no ~c" NO!" ^prn ;
+:done ~c" done" ^prn ;
+
+:test-yes ^yes ;
+:test-no  ^no  ;
+
+:choose-yes ^1 choose yes no done ;
+:choose-no  ^0 choose yes no done ;
+
+'choose-yes ~see
+
+~test-yes  test-no
+
+" -----" prn
+
+choose-yes  choose-no
+
+" =========" prn
+
+:choose-lit-yes ^1 choose 2 3 .s done ;
+:choose-lit-no  ^0 choose 2 3 .s done ;
+
+~choose-lit-yes
+~choose-lit-no
+
+bye

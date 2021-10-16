@@ -57,6 +57,7 @@ enum opcode
   OP_RETURN,
   OP_WHEN,
   OP_UNLESS,
+  OP_CHOOSE,
 
   OP_R_PUSH,
   OP_R_POP,

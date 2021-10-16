@@ -325,6 +325,8 @@ execute_(struct state *s, struct entry *entry)
 
   push(s->r_stack, 0);
 
+  short choose_state = 0;
+
   // don't forget to compile a return!!!!
   while(1)
   {
@@ -456,6 +458,20 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_CHOOSE:
+      {
+        const cell n = pop(s->stack);
+        if (n)
+        {
+          choose_state = 1;
+        }
+        else
+        {
+          pc++;
+        }
+        break;
+      }
+
       case OP_BYE:
       {
         quit(s, 0);
@@ -537,6 +553,11 @@ execute_(struct state *s, struct entry *entry)
       case OP_CALL:
       {
         struct entry *entry_ = (struct entry*)pc->this;
+        if (choose_state) {
+          choose_state = 0;
+          pc++;
+        }
+
         push(s->r_stack, (cell)pc);
         pc = entry_->code - 1;
         break;
@@ -553,6 +574,11 @@ execute_(struct state *s, struct entry *entry)
       case OP_TICK_NUMBER:
       {
         push(s->stack, pc->this);
+
+        if (choose_state) {
+          choose_state = 0;
+          pc++;
+        }
         break;
       }
 
@@ -873,6 +899,7 @@ colorforth_newstate(void)
   define_primitive_inlined(state, ";", OP_RETURN);
   define_primitive_inlined(state, "when", OP_WHEN);
   define_primitive_inlined(state, "unless", OP_UNLESS);
+  define_primitive_inlined(state, "choose", OP_CHOOSE);
 
   define_primitive_inlined(state, ">R", OP_R_PUSH);
   define_primitive_inlined(state, "R>", OP_R_POP);
