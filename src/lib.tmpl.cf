@@ -72,8 +72,8 @@
 :>! ^cell alloc ! ;
 :>c! ^1 alloc ! ;
 
-~10000 alloc :dataheap ~>_ ^;
-~cell alloc :dhere ~>_ ^;
+~10000 alloc :dataheap ~>> ^;
+~cell alloc :dhere ~>> ^;
 ~dataheap dhere !
 
 :dalloc ~( n - a ) ^dhere @ swap over + dhere ! ;
@@ -82,18 +82,18 @@
 :>dc! ^1 dalloc ! ;
 
 :? ^@ . ;
-:variable ^cell dalloc dup >_ ! ;
-:variables ^cells dalloc >_ ;
+:variable ^cell dalloc dup >> ! ;
+:variables ^cells dalloc >> ;
 
 |[] ^cells + ;
 :[] ^[] ;
 
 ~( create null-terminated string )
 :"init ^dhere @ cell + ;
-:"loop ^dup key dup ~key " >_ ^= when ; swap c! 1 + "loop ;
+:"loop ^dup key dup ~key " >> ^= when ; swap c! 1 + "loop ;
 :"done ^drop drop dhere @ - dup ^1 + dalloc swap cell - over ! ;
 :" ^"init "loop "done ;
-:c" ^" >_ ;
+:c" ^" >> ;
 
 
 ~( print string )
@@ -109,7 +109,7 @@
 :cmd ^cell + system ;
 
 ~( marker/forget )
-:marker ^latest @  i-latest @   here @ 8 cells +   >_ >_ >_ ;
+:marker ^latest @  i-latest @   here @ 8 cells +   >> >> >> ;
 :forget ^latest !  i-latest !   here ! ;
 
 ~( math )
