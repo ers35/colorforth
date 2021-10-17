@@ -46,7 +46,7 @@ see(struct state *s, struct entry *entry)
 
         case OP_TICK_NUMBER:
         {
-          cf_printf(s, "'%s ", entry_->name);
+          cf_printf(s, "`%s ", entry_->name);
           break;
         }
 
