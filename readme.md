@@ -3,3 +3,6 @@
 
 ### Minimal version
 ![](doc/screenshot-minimal.png?raw=true)
+
+### 2 + 2 = 5 joke
+[![asciicast](https://asciinema.org/a/442906.svg)](https://asciinema.org/a/442906)
