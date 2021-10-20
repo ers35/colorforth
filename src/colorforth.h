@@ -139,7 +139,6 @@ struct primitive_map
 {
   char *name;
   enum opcode opcode;
-  void (*fn)();
 };
 
 extern struct primitive_map primitive_map[];

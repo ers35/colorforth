@@ -157,7 +157,8 @@ unknow_word (struct state *s, const char *msg)
 
 // 'name' must be null-terminated.
 static void
-define_primitive_generic(struct state *s, struct dictionary *dict, char name[], const enum opcode opcode)
+define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
+                         const enum opcode opcode, void (*fn)(struct state *s))
 {
   dict->latest++;
   struct entry *entry = dict->latest;
@@ -166,7 +167,7 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[], 
   memcpy(entry->name, name, entry->name_len);
   entry->code = s->here;
   entry->code->opcode = opcode;
-  entry->code->this = 0;
+  entry->code->this = (cell) fn;
 
   (entry->code + 1)->opcode = OP_RETURN;
   (entry->code + 1)->this = 0;
@@ -175,19 +176,18 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[], 
 
   primitive_map[opcode].name = name;
   primitive_map[opcode].opcode = opcode;
-  primitive_map[opcode].fn = NULL;
 }
 
 static void
 define_primitive(struct state *s, char name[], const enum opcode opcode)
 {
-  define_primitive_generic(s, &s->dict, name, opcode);
+  define_primitive_generic(s, &s->dict, name, opcode, NULL);
 }
 
 static void
 define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
 {
-  define_primitive_generic(s, &s->inlined_dict, name, opcode);
+  define_primitive_generic(s, &s->inlined_dict, name, opcode, NULL);
 }
 
 void
@@ -197,8 +197,7 @@ define_primitive_extension(struct state *s, char name[], void (*fn)(struct state
   {
     cf_fatal_error(s, "Too many opcode defined: %d\n", s->current_opcode);
   }
-  define_primitive(s, name, s->current_opcode);
-  primitive_map[s->current_opcode].fn = fn;
+  define_primitive_generic(s, &s->dict, name, s->current_opcode, fn);
   s->current_opcode += 1;
 }
 
@@ -641,15 +640,8 @@ execute_(struct state *s, struct entry *entry)
 
       default:
       {
-        if (primitive_map[pc->opcode].fn != NULL)
-        {
-          primitive_map[pc->opcode].fn(s);
-        }
-        else
-        {
-          cf_printf(s, "unknown opcode");
-          quit(s, 1);
-        }
+        // Call extension function
+        ((void (*)(struct state *s)) pc->this)(s);
       }
     }
     pc++;
