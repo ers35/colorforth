@@ -15,58 +15,6 @@ typedef long cell;
 #define MAX_PREFIX 7
 #define MAX_OP_CODE 100
 
-enum opcode
-{
-  OP_NOP,
-  OP_PRINT_TOS,
-  OP_DUP,
-  OP_OVER,
-  OP_SWAP,
-  OP_DROP,
-  OP_ROT,
-  OP_MINUS_ROT,
-  OP_NIP,
-  OP_ADD,
-  OP_SUB,
-  OP_MUL,
-  OP_EQUAL,
-  OP_LESS,
-  OP_BYE,
-  OP_WORDS,
-  OP_EMIT,
-  OP_KEY,
-  OP_LOAD,
-  OP_STORE,
-  OP_CLOAD,
-  OP_CSTORE,
-  OP_CELL,
-  // call defined word
-  OP_CALL,
-  OP_TAIL_CALL,
-  OP_COMPILE_LITERAL,
-  OP_GET_ENTRY_CODE,
-  OP_EXECUTE,
-  OP_NUMBER,
-  OP_TICK_NUMBER,
-  OP_HERE,
-  OP_LATEST,
-  OP_I_LATEST,
-  OP_DOT_S,
-
-  /* inlined */
-  OP_RETURN,
-  OP_WHEN,
-  OP_UNLESS,
-  OP_CHOOSE,
-
-  OP_R_PUSH,
-  OP_R_POP,
-  OP_R_FETCH,
-
-  /* Last primitive opcode - do not remove! */
-  __LAST_PRIMITIVE_OP_CODE__
-};
-
 // terminal input buffer
 struct tib
 {
@@ -74,10 +22,13 @@ struct tib
   size_t len;
 };
 
+struct state;
+
 struct code;
 struct code
 {
-  enum opcode opcode;
+  // enum opcode opcode;
+  struct code * (*fn)(struct state *state, struct code *pc);
   cell this;
 };
 
@@ -119,7 +70,7 @@ struct state
   int done;
   int echo_on;
 
-  int current_opcode;
+  short choose_state;
 
   // streams
   char *str_stream;
@@ -135,28 +86,20 @@ struct prefix_map
 
 extern struct prefix_map prefix_map[];
 
-struct primitive_map
-{
-  char *name;
-  enum opcode opcode;
-};
-
-extern struct primitive_map primitive_map[];
-
 extern void push(struct stack *stack, const cell n);
 extern cell pop(struct stack *stack);
 
 extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern void unknow_word (struct state *s, const char *msg);
 
-extern void define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s));
+extern void define_primitive(struct state *s, char name[], struct code * (*fn)(struct state *state, struct code *pc));
 
 extern void quit(struct state *state, char ask);
 extern struct state* colorforth_newstate(void);
 extern void parse_colorforth(struct state *state, int c);
 extern void parse_from_string(struct state *s, char *str, unsigned int len);
 extern void parse_space(struct state *s);
-extern void clear_tib (struct state *s);
+extern struct code* clear_tib_fn (struct state *s, struct code *pc);
 
 #define CFSTRING2C(str) ((char *)(str) + sizeof(cell))
 

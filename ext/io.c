@@ -28,10 +28,11 @@ parse_from_file(struct state *s, char *filename)
   parse_space(s);
 }
 
-void
-echo_set(struct state *s)
+struct code*
+echo_set_fn(struct state *s, struct code *pc)
 {
   s->echo_on = pop(s->stack);
+  return pc;
 }
 
 int
@@ -48,8 +49,8 @@ file_size(char *filename)
   return size;
 }
 
-void
-file_size_fn(struct state *s)
+struct code*
+file_size_fn(struct state *s, struct code *pc)
 {
   char *filename = CFSTRING2C(pop(s->stack));
 
@@ -58,10 +59,11 @@ file_size_fn(struct state *s)
   if (size == -1) cf_printf(s, "Unable to read '%s'\n", filename);
 
   push(s->stack, file_size(filename));
+  return pc;
 }
 
-void
-load_file(struct state *s)
+struct code*
+load_file_fn(struct state *s, struct code *pc)
 {
   char *filename = CFSTRING2C(pop(s->stack));
   char *buf = (char *) (pop(s->stack));
@@ -71,7 +73,7 @@ load_file(struct state *s)
   {
     cf_printf(s, "Unable to read '%s'\n", filename);
     push(s->stack, -1);
-    return;
+    return pc;
   }
 
   FILE *fp = fopen(filename, "r");
@@ -80,7 +82,7 @@ load_file(struct state *s)
   {
     cf_printf(s, "Unable to read '%s'\n", filename);
     push(s->stack, -1);
-    return;
+    return pc;
   }
 
   int len = fread(buf + sizeof(cell), 1, size, fp);
@@ -89,17 +91,19 @@ load_file(struct state *s)
     free(buf);
     cf_printf(s, "Unable to read '%s'\n", filename);
     push(s->stack, -1);
-    return;
+    return pc;
   }
 
   cell *cbuf = (cell *)buf;
   *cbuf = (cell)size;
 
   fclose(fp);
+
+  return pc;
 }
 
-void
-save_file(struct state *s)
+struct code*
+save_file_fn(struct state *s, struct code *pc)
 {
   char *filename = CFSTRING2C(pop(s->stack));
   cell value = pop(s->stack);
@@ -111,27 +115,31 @@ save_file(struct state *s)
   {
     cf_printf(s, "Unable to read '%s'\n", filename);
     push(s->stack, -1);
-    return;
+    return pc;
   }
 
   fwrite(str, 1, *(cell *)value, fp);
 
   fclose(fp);
+
+  return pc;
 }
 
-void
-included_file(struct state *s)
+struct code*
+included_file_fn(struct state *s, struct code *pc)
 {
   char *filename = CFSTRING2C(pop(s->stack));
   parse_from_file(s, filename);
+
+  return pc;
 }
 
 void
 init_io_utils(struct state *state)
 {
-  define_primitive_extension(state, "echo!", echo_set);
-  define_primitive_extension(state, "file-size", file_size_fn);
-  define_primitive_extension(state, "load", load_file);
-  define_primitive_extension(state, "save", save_file);
-  define_primitive_extension(state, "included", included_file);
+  define_primitive(state, "echo!", echo_set_fn);
+  define_primitive(state, "file-size", file_size_fn);
+  define_primitive(state, "load", load_file_fn);
+  define_primitive(state, "save", save_file_fn);
+  define_primitive(state, "included", included_file_fn);
 }

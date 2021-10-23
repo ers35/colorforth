@@ -3,16 +3,18 @@
 
 // Expose the parser to colorForth
 // gniark gniark: parsing recursion from colorForth itself!!
-void
-parse(struct state *s)
+struct code*
+parse_fn(struct state *s, struct code *pc)
 {
   const int c = pop(s->stack);
   parse_colorforth(s, c);
+
+  return pc;
 }
 
 void
 init_parser_utils(struct state *state)
 {
-  define_primitive_extension(state, "parse", parse);
-  define_primitive_extension(state, "clear-tib", clear_tib);
+  define_primitive(state, "parse", parse_fn);
+  define_primitive(state, "clear-tib", clear_tib_fn);
 }

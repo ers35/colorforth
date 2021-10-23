@@ -15,7 +15,6 @@
 #endif /* __EMBED_LIB_CF */
 
 struct prefix_map prefix_map[MAX_PREFIX];
-struct primitive_map primitive_map[MAX_OP_CODE];
 
 
 void
@@ -56,18 +55,7 @@ init_stack(struct stack *stack, int len)
   stack->lim = len - 1;
 }
 
-static void
-dot_s(struct state *state, struct stack *stack)
-{
-  for (int i = 0, p = stack->sp + 1; i <= stack->lim; i++, p++)
-  {
-    if (p > stack->lim) p = 0;
-    cf_printf(state, "%"CELL_FMT" ", stack->cells[p]);
-  }
-  cf_printf(state, " <tos\n");
-}
-
-void
+inline void
 push(struct stack *stack, const cell n)
 {
   if (stack->sp == stack->lim)
@@ -81,7 +69,7 @@ push(struct stack *stack, const cell n)
   stack->cells[stack->sp] = n;
 }
 
-cell
+inline cell
 pop(struct stack *stack)
 {
   const cell n = stack->cells[stack->sp];
@@ -93,17 +81,18 @@ pop(struct stack *stack)
   {
     stack->sp -= 1;
   }
-
   return n;
 }
 
-void
-clear_tib (struct state *s){
+struct code*
+clear_tib_fn (struct state *s, struct code *pc){
   for(size_t i = 0; i < s->tib.len; i++)
   {
     s->tib.buf[i] = 0;
   }
   s->tib.len = 0;
+
+  return pc;
 }
 
 void
@@ -155,10 +144,61 @@ unknow_word (struct state *s, const char *msg)
   cf_printf(s, "': unknown word at line %u, column %u\n", s->line, s->coll);
 }
 
+struct code*
+return_fn (struct state *s, struct code *pc)
+{
+  return pc;
+}
+
+struct code*
+call_fn (struct state *s, struct code *pc)
+{
+  struct entry *entry_ = (struct entry*)pc->this;
+  if (s->choose_state) {
+    s->choose_state = 0;
+    pc++;
+  }
+
+  push(s->r_stack, (cell)pc);
+  return entry_->code - 1;
+}
+
+struct code*
+tail_call_fn (struct state *s, struct code *pc)
+{
+  struct entry *entry_ = (struct entry*)pc->this;
+  return entry_->code - 1;
+}
+
+struct code*
+number_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, pc->this);
+
+  if (s->choose_state) {
+    s->choose_state = 0;
+    pc++;
+  }
+  return pc;
+}
+
+struct code*
+tick_number_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, pc->this);
+
+  if (s->choose_state) {
+    s->choose_state = 0;
+    pc++;
+  }
+  return pc;
+}
+
+
 // 'name' must be null-terminated.
 static void
 define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
-                         const enum opcode opcode, void (*fn)(struct state *s))
+                         struct code * (*fn)(struct state *state, struct code *pc))
 {
   dict->latest++;
   struct entry *entry = dict->latest;
@@ -166,39 +206,25 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
   entry->name = calloc(1, entry->name_len);
   memcpy(entry->name, name, entry->name_len);
   entry->code = s->here;
-  entry->code->opcode = opcode;
-  entry->code->this = (cell) fn;
+  entry->code->fn = fn;
+  entry->code->this = 0;
 
-  (entry->code + 1)->opcode = OP_RETURN;
+  (entry->code + 1)->fn = return_fn;
   (entry->code + 1)->this = 0;
 
   s->here = (struct code *)s->here + 2;
-
-  primitive_map[opcode].name = name;
-  primitive_map[opcode].opcode = opcode;
-}
-
-static void
-define_primitive(struct state *s, char name[], const enum opcode opcode)
-{
-  define_primitive_generic(s, &s->dict, name, opcode, NULL);
-}
-
-static void
-define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
-{
-  define_primitive_generic(s, &s->inlined_dict, name, opcode, NULL);
 }
 
 void
-define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s))
+define_primitive(struct state *s, char name[], struct code * (*fn)(struct state *state, struct code *pc))
 {
-  if (s->current_opcode >= MAX_OP_CODE)
-  {
-    cf_fatal_error(s, "Too many opcode defined: %d\n", s->current_opcode);
-  }
-  define_primitive_generic(s, &s->dict, name, s->current_opcode, fn);
-  s->current_opcode += 1;
+  define_primitive_generic(s, &s->dict, name, fn);
+}
+
+void
+define_primitive_inlined(struct state *s, char name[], struct code * (*fn)(struct state *state, struct code *pc))
+{
+  define_primitive_generic(s, &s->inlined_dict, name, fn);
 }
 
 static bool
@@ -238,19 +264,323 @@ define_inlined(struct state *s)
   define_generic(s, &s->inlined_dict);
 }
 
+struct code*
+nop_fn (struct state *s, struct code *pc)
+{
+  return pc;
+}
+
+struct code*
+print_tos_fn (struct state *s, struct code *pc)
+{
+  cf_printf(s, "%"CELL_FMT" ", pop(s->stack));
+  cf_fflush();
+  return pc;
+}
+
+struct code*
+dup_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, s->stack->cells[s->stack->sp]);
+  return pc;
+}
+
+struct code*
+over_fn (struct state *s, struct code *pc)
+{
+  const cell n1 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  push(s->stack, n2);
+  push(s->stack, n1);
+  push(s->stack, n2);
+  return pc;
+}
+
+struct code*
+swap_fn (struct state *s, struct code *pc)
+{
+  const cell n1 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  push(s->stack, n1);
+  push(s->stack, n2);
+  return pc;
+}
+
+struct code*
+drop_fn (struct state *s, struct code *pc)
+{
+  pop(s->stack);
+  return pc;
+}
+
+struct code*
+rot_fn (struct state *s, struct code *pc)
+{
+  const cell n3 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  const cell n1 = pop(s->stack);
+  push(s->stack, n2);
+  push(s->stack, n3);
+  push(s->stack, n1);
+  return pc;
+}
+
+struct code*
+minus_rot_fn (struct state *s, struct code *pc)
+{
+  const cell n3 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  const cell n1 = pop(s->stack);
+  push(s->stack, n3);
+  push(s->stack, n1);
+  push(s->stack, n2);
+  return pc;
+}
+
+struct code*
+nip_fn (struct state *s, struct code *pc)
+{
+  const cell n2 = pop(s->stack);
+  pop(s->stack);
+  push(s->stack, n2);
+  return pc;
+}
+
+struct code*
+add_fn (struct state *s, struct code *pc)
+{
+  const cell n1 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  push(s->stack, n1 + n2);
+  return pc;
+}
+
+struct code*
+sub_fn (struct state *s, struct code *pc)
+{
+  const cell n1 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  push(s->stack, n2 - n1);
+  return pc;
+}
+
+struct code*
+mul_fn (struct state *s, struct code *pc)
+{
+  const cell n1 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  push(s->stack, n1 * n2);
+  return pc;
+}
+
+struct code*
+equal_fn (struct state *s, struct code *pc)
+{
+  const cell n1 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  push(s->stack, n1 == n2);
+  return pc;
+}
+
+struct code*
+less_fn (struct state *s, struct code *pc)
+{
+  const cell n1 = pop(s->stack);
+  const cell n2 = pop(s->stack);
+  push(s->stack, n2 < n1);
+  return pc;
+}
+
+struct code*
+bye_fn (struct state *s, struct code *pc)
+{
+  quit(s, 0);
+  return pc;
+}
+
+struct code*
+words_fn (struct state *s, struct code *pc)
+{
+  words(s);
+  return pc;
+}
+
+struct code*
+emit_fn (struct state *s, struct code *pc)
+{
+  cf_putchar(s, (char)pop(s->stack));
+  return pc;
+}
+
+struct code*
+key_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, (char)cf_getchar(s));
+  return pc;
+}
+
+struct code*
+load_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, *(cell*)pop(s->stack));
+  return pc;
+}
+
+struct code*
+store_fn (struct state *s, struct code *pc)
+{
+  cell *ptr = (cell*)pop(s->stack);
+  cell n = pop(s->stack);
+  *ptr = n;
+  return pc;
+}
+
+struct code*
+cload_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, *(char*)pop(s->stack));
+  return pc;
+}
+
+struct code*
+cstore_fn (struct state *s, struct code *pc)
+{
+  char *ptr = (char*)pop(s->stack);
+  char n = pop(s->stack);
+  *ptr = n;
+  return pc;
+}
+
+struct code*
+cell_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, sizeof(cell));
+  return pc;
+}
+
+struct code*
+get_entry_code_fn (struct state *s, struct code *pc)
+{
+  struct entry *entry_ = (struct entry*)pop(s->stack);
+  push(s->stack, (cell)entry_->code);
+  return pc;
+}
+
+struct code*
+execute_fn (struct state *s, struct code *pc)
+{
+  struct code *code_ = (struct code*)pop(s->stack);
+  push(s->r_stack, (cell)pc);
+  return code_ - 1;
+}
+
+struct code*
+here_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, (cell)&s->here);
+  return pc;
+}
+
+struct code*
+latest_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, (cell)&s->dict.latest);
+  return pc;
+}
+
+struct code*
+i_latest_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, (cell)&s->inlined_dict.latest);
+  return pc;
+}
+
+struct code*
+compile_literal_fn (struct state *s, struct code *pc)
+{
+  // compile_literal(s);
+  struct code *code =  (struct code *)s->here;
+  code->fn = number_fn;
+  code->this = pop(s->stack);
+  s->here = (struct code *)s->here + 1;
+  return pc;
+}
+
+struct code*
+dot_s_fn (struct state *s, struct code *pc)
+{
+    for (int i = 0, p = s->stack->sp + 1; i <= s->stack->lim; i++, p++)
+  {
+    if (p > s->stack->lim) p = 0;
+    cf_printf(s, "%"CELL_FMT" ", s->stack->cells[p]);
+  }
+  cf_printf(s, " <tos\n");
+  return pc;
+}
+
+struct code*
+when_fn (struct state *s, struct code *pc)
+{
+  const cell n = pop(s->stack);
+  return n ? pc : pc + 1;
+}
+
+struct code*
+unless_fn (struct state *s, struct code *pc)
+{
+  const cell n = pop(s->stack);
+  return n ? pc + 1 : pc;
+}
+
+struct code*
+choose_fn (struct state *s, struct code *pc)
+{
+  const cell n = pop(s->stack);
+  if (n)
+  {
+    s->choose_state = 1;
+  }
+  else
+  {
+    pc++;
+  }
+  return pc;
+}
+
+struct code*
+r_push_fn (struct state *s, struct code *pc)
+{
+  push(s->r_stack, pop(s->stack));
+  return pc;
+}
+
+struct code*
+r_pop_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, pop(s->r_stack));
+  return pc;
+}
+
+struct code*
+r_fetch_fn (struct state *s, struct code *pc)
+{
+  push(s->stack, s->r_stack->cells[s->r_stack->sp]);
+  return pc;
+}
+
 static void
 inline_entry(struct state *s, struct entry *entry)
 {
   for (size_t i = 0, done = 0; !done; i++)
   {
     // inline the first OP_RETURN
-    if (entry->code[i].opcode == OP_RETURN && i > 0)
+    if (entry->code[i].fn == return_fn && i > 0)
     {
       break;
     }
     struct code *code = (struct code *)s->here;
-    code->opcode = entry->code[i].opcode;
     code->this = entry->code[i].this;
+    code->fn = entry->code[i].fn;
     s->here = (struct code *)s->here + 1;
   }
 }
@@ -269,7 +599,7 @@ compile(struct state *s)
   struct code *code = (struct code *)s->here;
   if (entry)
   {
-    code->opcode = entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL;
+    code->fn = entry == s->dict.latest ? tail_call_fn : call_fn;
     code->this = (cell)entry;
     s->here = (struct code *)s->here + 1;
   }
@@ -280,7 +610,7 @@ compile(struct state *s)
     if (tib_to_number(s, &n))
     {
       // compile number
-      code->opcode = OP_NUMBER;
+      code->fn = number_fn;
       code->this = n;
       s->here = (struct code *)s->here + 1;
     }
@@ -308,343 +638,35 @@ compile_inline(struct state *s)
 }
 
 static void
-compile_literal(struct state *s)
-{
-  struct code *code =  (struct code *)s->here;
-  code->opcode = OP_NUMBER;
-  code->this = pop(s->stack);
-  s->here = (struct code *)s->here + 1;
-}
-
-static void
 execute_(struct state *s, struct entry *entry)
 {
   // cf_printf(s, "-> %s\n", entry->name);
-  struct code *pc = entry->code;
+  register struct code *pc = entry->code;
 
   push(s->r_stack, 0);
 
-  short choose_state = 0;
+  s->choose_state = 0;
 
   // don't forget to compile a return!!!!
   while(1)
   {
-    switch (pc->opcode)
+    if (pc->fn == return_fn)
     {
-      case OP_NOP: {
-        break;
-      }
-
-      case OP_PRINT_TOS:
+      struct code *code = (struct code *)pop(s->r_stack);
+      if (code)
       {
-        cf_printf(s, "%"CELL_FMT" ", pop(s->stack));
-        cf_fflush();
-        break;
+        pc = code + 1;
       }
-
-      case OP_DUP:
+      else
       {
-        push(s->stack, s->stack->cells[s->stack->sp]);
-        break;
-      }
-
-      case OP_OVER:
-      {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2);
-        push(s->stack, n1);
-        push(s->stack, n2);
-        break;
-      }
-
-      case OP_SWAP:
-      {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1);
-        push(s->stack, n2);
-        break;
-      }
-
-      case OP_DROP:
-      {
-        pop(s->stack);
-        break;
-      }
-
-      case OP_ROT:
-      {
-        const cell n3 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        const cell n1 = pop(s->stack);
-        push(s->stack, n2);
-        push(s->stack, n3);
-        push(s->stack, n1);
-        break;
-      }
-
-      case OP_MINUS_ROT:
-      {
-        const cell n3 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        const cell n1 = pop(s->stack);
-        push(s->stack, n3);
-        push(s->stack, n1);
-        push(s->stack, n2);
-        break;
-      }
-
-      case OP_NIP:
-      {
-        pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2);
-        break;
-      }
-
-      case OP_ADD:
-      {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1 + n2);
-        break;
-      }
-
-      case OP_SUB:
-      {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2 - n1);
-        break;
-      }
-
-      case OP_MUL:
-      {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1 * n2);
-        break;
-      }
-
-      case OP_EQUAL:
-      {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1 == n2);
-        break;
-      }
-
-      case OP_LESS:
-      {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2 < n1);
-        break;
-      }
-
-      case OP_WHEN:
-      {
-        const cell n = pop(s->stack);
-        if (!n) pc++;
-        break;
-      }
-
-      case OP_UNLESS:
-      {
-        const cell n = pop(s->stack);
-        if (n) pc++;
-        break;
-      }
-
-      case OP_CHOOSE:
-      {
-        const cell n = pop(s->stack);
-        if (n)
-        {
-          choose_state = 1;
-        }
-        else
-        {
-          pc++;
-        }
-        break;
-      }
-
-      case OP_BYE:
-      {
-        quit(s, 0);
-        break;
-      }
-
-      case OP_WORDS:
-      {
-        words(s);
-        break;
-      }
-
-      case OP_RETURN:
-      {
-        struct code *code = (struct code *)pop(s->r_stack);
-        if (code)
-        {
-          pc = code;
-        }
-        else
-        {
-          return;
-        }
-        break;
-      }
-
-      case OP_COMPILE_LITERAL:
-      {
-        compile_literal(s);
-        break;
-      }
-
-      case OP_EMIT:
-      {
-        cf_putchar(s, (char)pop(s->stack));
-        break;
-      }
-
-      case OP_KEY:
-      {
-        push(s->stack, (char)cf_getchar(s));
-        break;
-      }
-
-      case OP_LOAD:
-      {
-        push(s->stack, *(cell*)pop(s->stack));
-        break;
-      }
-
-      case OP_STORE:
-      {
-        cell *ptr = (cell*)pop(s->stack);
-        cell n = pop(s->stack);
-        *ptr = n;
-        break;
-      }
-
-      case OP_CLOAD:
-      {
-        push(s->stack, *(char*)pop(s->stack));
-        break;
-      }
-
-      case OP_CSTORE:
-      {
-        char *ptr = (char*)pop(s->stack);
-        char n = pop(s->stack);
-        *ptr = n;
-        break;
-      }
-
-      case OP_CELL:
-      {
-        push(s->stack, sizeof(cell));
-        break;
-      }
-
-      case OP_CALL:
-      {
-        struct entry *entry_ = (struct entry*)pc->this;
-        if (choose_state) {
-          choose_state = 0;
-          pc++;
-        }
-
-        push(s->r_stack, (cell)pc);
-        pc = entry_->code - 1;
-        break;
-      }
-
-      case OP_TAIL_CALL:
-      {
-        struct entry *entry_ = (struct entry*)pc->this;
-        pc = entry_->code - 1;
-        break;
-      }
-
-      case OP_NUMBER:
-      case OP_TICK_NUMBER:
-      {
-        push(s->stack, pc->this);
-
-        if (choose_state) {
-          choose_state = 0;
-          pc++;
-        }
-        break;
-      }
-
-      case OP_GET_ENTRY_CODE:
-      {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        push(s->stack, (cell)entry_->code);
-        break;
-      }
-
-      case OP_EXECUTE:
-      {
-        struct code *code_ = (struct code*)pop(s->stack);
-        push(s->r_stack, (cell)pc);
-        pc = code_ - 1;
-        break;
-      }
-
-      case OP_HERE:
-      {
-        push(s->stack, (cell)&s->here);
-        break;
-      }
-
-      case OP_LATEST:
-      {
-        push(s->stack, (cell)&s->dict.latest);
-        break;
-      }
-
-      case OP_I_LATEST:
-      {
-        push(s->stack, (cell)&s->inlined_dict.latest);
-        break;
-      }
-
-      case OP_R_PUSH:
-      {
-        push(s->r_stack, pop(s->stack));
-        break;
-      }
-
-      case OP_R_POP:
-      {
-        push(s->stack, pop(s->r_stack));
-        break;
-      }
-
-      case OP_R_FETCH:
-      {
-        push(s->stack, s->r_stack->cells[s->r_stack->sp]);
-        break;
-      }
-
-      case OP_DOT_S:
-      {
-        dot_s(s, s->stack);
-        break;
-      }
-
-      default:
-      {
-        // Call extension function
-        ((void (*)(struct state *s)) pc->this)(s);
+        return;
       }
     }
-    pc++;
+    else
+    {
+      pc = pc->fn(s, pc);
+      pc++;
+    }
   }
   // cf_printf(s, "   %s(done) <-\n", entry->name);
 }
@@ -693,7 +715,7 @@ compile_tick(struct state *s)
   if (entry)
   {
     struct code *code = (struct code *)s->here;
-    code->opcode = OP_TICK_NUMBER;
+    code->fn = tick_number_fn;
     code->this = (cell)entry;
     s->here = (struct code *)s->here + 1;
   }
@@ -838,8 +860,6 @@ colorforth_newstate(void)
   state->heap = calloc(1, HEAP_SIZE);
   state->here = state->heap;
 
-  state->current_opcode = __LAST_PRIMITIVE_OP_CODE__;
-
   state->coll = 0; state->line = 1;
   state->done = 0;
   state->echo_on = 0;
@@ -856,46 +876,45 @@ colorforth_newstate(void)
   define_prefix('`', compile_tick,   COLOR_BLUE,    n_prefix++);
   define_prefix(',', compile_inline, COLOR_CYAN,    n_prefix++);
 
-  define_primitive(state, "nop", OP_NOP);
-  define_primitive(state, ".", OP_PRINT_TOS);
-  define_primitive(state, "dup", OP_DUP);
-  define_primitive(state, "over", OP_OVER);
-  define_primitive(state, "swap", OP_SWAP);
-  define_primitive(state, "drop", OP_DROP);
-  define_primitive(state, "rot", OP_ROT);
-  define_primitive(state, "-rot", OP_MINUS_ROT);
-  define_primitive(state, "nip", OP_NIP);
-  define_primitive(state, "+", OP_ADD);
-  define_primitive(state, "-", OP_SUB);
-  define_primitive(state, "*", OP_MUL);
-  define_primitive(state, "=", OP_EQUAL);
-  define_primitive(state, "<", OP_LESS);
-  define_primitive(state, "bye", OP_BYE);
-  define_primitive(state, "words", OP_WORDS);
-  define_primitive(state, "words", OP_WORDS);
-  define_primitive(state, "emit", OP_EMIT);
-  define_primitive(state, "key", OP_KEY);
-  define_primitive(state, "@", OP_LOAD);
-  define_primitive(state, "!", OP_STORE);
-  define_primitive(state, "c@", OP_CLOAD);
-  define_primitive(state, "c!", OP_CSTORE);
-  define_primitive(state, "cell", OP_CELL);
-  define_primitive(state, "here", OP_HERE);
-  define_primitive(state, "latest", OP_LATEST);
-  define_primitive(state, "i-latest", OP_I_LATEST);
-  define_primitive(state, ">>", OP_COMPILE_LITERAL);
-  define_primitive(state, "code>", OP_GET_ENTRY_CODE);
-  define_primitive(state, "execute", OP_EXECUTE);
-  define_primitive(state, ".s", OP_DOT_S);
+  define_primitive(state, "nop", nop_fn);
+  define_primitive(state, ".", print_tos_fn);
+  define_primitive(state, "dup", dup_fn);
+  define_primitive(state, "over", over_fn);
+  define_primitive(state, "swap", swap_fn);
+  define_primitive(state, "drop", drop_fn);
+  define_primitive(state, "rot", rot_fn);
+  define_primitive(state, "-rot", minus_rot_fn);
+  define_primitive(state, "nip", nip_fn);
+  define_primitive(state, "+", add_fn);
+  define_primitive(state, "-", sub_fn);
+  define_primitive(state, "*", mul_fn);
+  define_primitive(state, "=", equal_fn);
+  define_primitive(state, "<", less_fn);
+  define_primitive(state, "bye", bye_fn);
+  define_primitive(state, "words", words_fn);
+  define_primitive(state, "emit", emit_fn);
+  define_primitive(state, "key", key_fn);
+  define_primitive(state, "@", load_fn);
+  define_primitive(state, "!", store_fn);
+  define_primitive(state, "c@", cload_fn);
+  define_primitive(state, "c!", cstore_fn);
+  define_primitive(state, "cell", cell_fn);
+  define_primitive(state, "here", here_fn);
+  define_primitive(state, "latest", latest_fn);
+  define_primitive(state, "i-latest", i_latest_fn);
+  define_primitive(state, ">>", compile_literal_fn);
+  define_primitive(state, "code>", get_entry_code_fn);
+  define_primitive(state, "execute", execute_fn);
+  define_primitive(state, ".s", dot_s_fn);
 
-  define_primitive_inlined(state, ";", OP_RETURN);
-  define_primitive_inlined(state, "when", OP_WHEN);
-  define_primitive_inlined(state, "unless", OP_UNLESS);
-  define_primitive_inlined(state, "choose", OP_CHOOSE);
+  define_primitive_inlined(state, ";", return_fn);
+  define_primitive_inlined(state, "when", when_fn);
+  define_primitive_inlined(state, "unless", unless_fn);
+  define_primitive_inlined(state, "choose", choose_fn);
 
-  define_primitive_inlined(state, ">R", OP_R_PUSH);
-  define_primitive_inlined(state, "R>", OP_R_POP);
-  define_primitive_inlined(state, "R@", OP_R_FETCH);
+  define_primitive_inlined(state, ">R", r_push_fn);
+  define_primitive_inlined(state, "R>", r_pop_fn);
+  define_primitive_inlined(state, "R@", r_fetch_fn);
 
   LOAD_EXTENTIONS;
 
