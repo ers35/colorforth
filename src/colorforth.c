@@ -106,6 +106,14 @@ dump_words(struct state *s, struct dictionary *dict)
   }
 }
 
+void
+words(struct state *s)
+{
+  dump_words(s, &s->inlined_dict);
+  dump_words(s, &s->dict);
+  cf_printf(s, "\n");
+}
+
 struct entry*
 find_entry(struct state *s, struct dictionary *dict)
 {
@@ -393,10 +401,7 @@ bye_fn (struct state *s, struct code *pc)
 struct code*
 words_fn (struct state *s, struct code *pc)
 {
-  dump_words(s, &s->inlined_dict);
-  dump_words(s, &s->dict);
-  cf_printf(s, "\n");
-
+  words(s);
   return pc;
 }
 
