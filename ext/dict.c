@@ -58,7 +58,20 @@ see(struct state *s, struct entry *entry)
 
         default:
         {
-          cf_printf(s, "%s ", primitive_map[entry->code[i].opcode].name);
+          struct entry *entry_by_code = find_entry_by_code(s, &s->inlined_dict, &entry->code[i]);
+          if (!entry_by_code)
+          {
+            entry_by_code = find_entry_by_code(s, &s->dict, &entry->code[i]);
+          }
+
+          if (entry_by_code)
+          {
+            cf_printf(s, "%s ", entry_by_code->name);
+          }
+          else
+          {
+            printf("\nError: Entry not found\n");
+          }
         }
       }
 

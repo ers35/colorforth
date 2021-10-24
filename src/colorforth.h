@@ -13,7 +13,6 @@ typedef long cell;
 #define CELL_FMT "ld"
 
 #define MAX_PREFIX 7
-#define MAX_OP_CODE 100
 
 enum opcode
 {
@@ -135,18 +134,11 @@ struct prefix_map
 
 extern struct prefix_map prefix_map[];
 
-struct primitive_map
-{
-  char *name;
-  enum opcode opcode;
-};
-
-extern struct primitive_map primitive_map[];
-
 extern void push(struct stack *stack, const cell n);
 extern cell pop(struct stack *stack);
 
 extern struct entry* find_entry(struct state *state, struct dictionary *dict);
+extern struct entry* find_entry_by_code(struct state *s, struct dictionary *dict, struct code *code);
 extern void unknow_word (struct state *s, const char *msg);
 
 extern void define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s));

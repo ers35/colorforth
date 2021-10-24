@@ -15,7 +15,6 @@
 #endif /* __EMBED_LIB_CF */
 
 struct prefix_map prefix_map[MAX_PREFIX];
-struct primitive_map primitive_map[MAX_OP_CODE];
 
 
 void
@@ -138,6 +137,19 @@ find_entry(struct state *s, struct dictionary *dict)
   return NULL;
 }
 
+struct entry*
+find_entry_by_code(struct state *s, struct dictionary *dict, struct code *code)
+{
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  {
+    if (entry->code->opcode == code->opcode)
+    {
+      return entry;
+    }
+  }
+  return NULL;
+}
+
 void
 print_tib(struct state *s)
 {
@@ -173,9 +185,6 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
   (entry->code + 1)->this = 0;
 
   s->here = (struct code *)s->here + 2;
-
-  primitive_map[opcode].name = name;
-  primitive_map[opcode].opcode = opcode;
 }
 
 static void
@@ -193,12 +202,7 @@ define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
 void
 define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s))
 {
-  if (s->current_opcode >= MAX_OP_CODE)
-  {
-    cf_fatal_error(s, "Too many opcode defined: %d\n", s->current_opcode);
-  }
   define_primitive_generic(s, &s->dict, name, s->current_opcode, fn);
-  s->current_opcode += 1;
 }
 
 static bool
