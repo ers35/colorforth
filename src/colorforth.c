@@ -202,7 +202,7 @@ define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
 void
 define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s))
 {
-  define_primitive_generic(s, &s->dict, name, s->current_opcode, fn);
+  define_primitive_generic(s, &s->dict, name, OP_FUNCTION_CALL, fn);
 }
 
 static bool
@@ -475,6 +475,12 @@ execute_(struct state *s, struct entry *entry)
         pc = entry_->code - 1;
         break;
       }
+      case OP_FUNCTION_CALL:
+      {
+        // Call extension function
+        ((void (*)(struct state *s)) pc->this)(s);
+        break;
+      }
 
       case OP_NUMBER:
       case OP_TICK_NUMBER:
@@ -644,8 +650,8 @@ execute_(struct state *s, struct entry *entry)
 
       default:
       {
-        // Call extension function
-        ((void (*)(struct state *s)) pc->this)(s);
+        cf_printf(s, "unknown opcode");
+        quit(s, 1);
       }
     }
     pc++;
@@ -841,8 +847,6 @@ colorforth_newstate(void)
 
   state->heap = calloc(1, HEAP_SIZE);
   state->here = state->heap;
-
-  state->current_opcode = __LAST_PRIMITIVE_OP_CODE__;
 
   state->coll = 0; state->line = 1;
   state->done = 0;

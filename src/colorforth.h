@@ -17,6 +17,7 @@ typedef long cell;
 enum opcode
 {
   OP_NOP,
+  OP_FUNCTION_CALL,
   OP_PRINT_TOS,
   OP_DUP,
   OP_OVER,
@@ -117,8 +118,6 @@ struct state
   unsigned int line, coll;
   int done;
   int echo_on;
-
-  int current_opcode;
 
   // streams
   char *str_stream;
