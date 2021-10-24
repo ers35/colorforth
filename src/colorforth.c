@@ -335,14 +335,35 @@ execute_(struct state *s, struct entry *entry)
   {
     switch (pc->opcode)
     {
-      case OP_NOP: {
+      case OP_RETURN:
+      {
+        struct code *code = (struct code *)pop(s->r_stack);
+        if (code)
+        {
+          pc = code;
+        }
+        else
+        {
+          return;
+        }
         break;
       }
 
-      case OP_PRINT_TOS:
+      case OP_R_PUSH:
       {
-        cf_printf(s, "%"CELL_FMT" ", pop(s->stack));
-        cf_fflush();
+        push(s->r_stack, pop(s->stack));
+        break;
+      }
+
+      case OP_R_POP:
+      {
+        push(s->stack, pop(s->r_stack));
+        break;
+      }
+
+      case OP_R_FETCH:
+      {
+        push(s->stack, s->r_stack->cells[s->r_stack->sp]);
         break;
       }
 
@@ -352,13 +373,9 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_OVER:
+      case OP_DROP:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2);
-        push(s->stack, n1);
-        push(s->stack, n2);
+        pop(s->stack);
         break;
       }
 
@@ -371,9 +388,13 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_DROP:
+      case OP_OVER:
       {
-        pop(s->stack);
+        const cell n1 = pop(s->stack);
+        const cell n2 = pop(s->stack);
+        push(s->stack, n2);
+        push(s->stack, n1);
+        push(s->stack, n2);
         break;
       }
 
@@ -404,6 +425,66 @@ execute_(struct state *s, struct entry *entry)
         pop(s->stack);
         const cell n2 = pop(s->stack);
         push(s->stack, n2);
+        break;
+      }
+
+      case OP_LOAD:
+      {
+        push(s->stack, *(cell*)pop(s->stack));
+        break;
+      }
+
+      case OP_STORE:
+      {
+        cell *ptr = (cell*)pop(s->stack);
+        cell n = pop(s->stack);
+        *ptr = n;
+        break;
+      }
+
+      case OP_CLOAD:
+      {
+        push(s->stack, *(char*)pop(s->stack));
+        break;
+      }
+
+      case OP_CSTORE:
+      {
+        char *ptr = (char*)pop(s->stack);
+        char n = pop(s->stack);
+        *ptr = n;
+        break;
+      }
+
+      case OP_CALL:
+      {
+        struct entry *entry_ = (struct entry*)pc->this;
+        if (choose_state) {
+          choose_state = 0;
+          pc++;
+        }
+
+        push(s->r_stack, (cell)pc);
+        pc = entry_->code - 1;
+        break;
+      }
+
+      case OP_TAIL_CALL:
+      {
+        struct entry *entry_ = (struct entry*)pc->this;
+        pc = entry_->code - 1;
+        break;
+      }
+
+      case OP_NUMBER:
+      case OP_TICK_NUMBER:
+      {
+        push(s->stack, pc->this);
+
+        if (choose_state) {
+          choose_state = 0;
+          pc++;
+        }
         break;
       }
 
@@ -475,32 +556,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_BYE:
-      {
-        quit(s, 0);
-        break;
-      }
-
-      case OP_WORDS:
-      {
-        words(s);
-        break;
-      }
-
-      case OP_RETURN:
-      {
-        struct code *code = (struct code *)pop(s->r_stack);
-        if (code)
-        {
-          pc = code;
-        }
-        else
-        {
-          return;
-        }
-        break;
-      }
-
       case OP_COMPILE_LITERAL:
       {
         compile_literal(s);
@@ -519,69 +574,9 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_LOAD:
-      {
-        push(s->stack, *(cell*)pop(s->stack));
-        break;
-      }
-
-      case OP_STORE:
-      {
-        cell *ptr = (cell*)pop(s->stack);
-        cell n = pop(s->stack);
-        *ptr = n;
-        break;
-      }
-
-      case OP_CLOAD:
-      {
-        push(s->stack, *(char*)pop(s->stack));
-        break;
-      }
-
-      case OP_CSTORE:
-      {
-        char *ptr = (char*)pop(s->stack);
-        char n = pop(s->stack);
-        *ptr = n;
-        break;
-      }
-
       case OP_CELL:
       {
         push(s->stack, sizeof(cell));
-        break;
-      }
-
-      case OP_CALL:
-      {
-        struct entry *entry_ = (struct entry*)pc->this;
-        if (choose_state) {
-          choose_state = 0;
-          pc++;
-        }
-
-        push(s->r_stack, (cell)pc);
-        pc = entry_->code - 1;
-        break;
-      }
-
-      case OP_TAIL_CALL:
-      {
-        struct entry *entry_ = (struct entry*)pc->this;
-        pc = entry_->code - 1;
-        break;
-      }
-
-      case OP_NUMBER:
-      case OP_TICK_NUMBER:
-      {
-        push(s->stack, pc->this);
-
-        if (choose_state) {
-          choose_state = 0;
-          pc++;
-        }
         break;
       }
 
@@ -618,21 +613,26 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_R_PUSH:
+      case OP_BYE:
       {
-        push(s->r_stack, pop(s->stack));
+        quit(s, 0);
         break;
       }
 
-      case OP_R_POP:
+      case OP_WORDS:
       {
-        push(s->stack, pop(s->r_stack));
+        words(s);
         break;
       }
 
-      case OP_R_FETCH:
+      case OP_NOP: {
+        break;
+      }
+
+      case OP_PRINT_TOS:
       {
-        push(s->stack, s->r_stack->cells[s->r_stack->sp]);
+        cf_printf(s, "%"CELL_FMT" ", pop(s->stack));
+        cf_fflush();
         break;
       }
 
