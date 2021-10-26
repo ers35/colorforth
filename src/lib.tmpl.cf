@@ -114,12 +114,6 @@
 :marker ^latest @  i-latest @   here @ 8 cells +   >> >> >> ;
 :forget ^latest !  i-latest !   here ! ;
 
-~( math )
-:drop; ^drop ;; ;
-:min ^over over < when drop; swap drop ;
-:max ^over over < unless drop; swap drop ;
-:> ^swap < ;
-
 ~( files )
 :aload ~( filename - buf ) ^
    dup file-size cell + c-alloc
