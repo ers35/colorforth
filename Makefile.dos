@@ -9,7 +9,8 @@ SRC=src\main.c src\colorf~1.c \
 	ext\dict.c \
 	ext\io.c \
 	ext\color.c \
-	ext\parser.c
+	ext\parser.c \
+	ext/math.c
 
 SRC_H=src\colorf~1.h \
 	src\cf-stdio.h \

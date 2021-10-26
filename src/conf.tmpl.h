@@ -27,12 +27,14 @@ extern void init_os_utils(struct state *s);
 extern void init_dict_utils(struct state *s);
 extern void init_io_utils(struct state *s);
 extern void init_parser_utils(struct state *s);
+extern void init_math_utils(struct state *s);
 
 #define LOAD_EXTENTIONS                         \
   init_os_utils(state);                         \
   init_dict_utils(state);                       \
   init_io_utils(state);                         \
-  init_parser_utils(state);
+  init_parser_utils(state);                     \
+  init_math_utils(state);
 
 
 #endif /* __CONF_H */
