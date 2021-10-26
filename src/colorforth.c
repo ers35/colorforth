@@ -422,8 +422,8 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_NIP:
       {
-        pop(s->stack);
         const cell n2 = pop(s->stack);
+        pop(s->stack);
         push(s->stack, n2);
         break;
       }
