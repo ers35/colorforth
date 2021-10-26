@@ -1,0 +1,40 @@
+%
+:rules ~c"
+JRFD: JRFD (Jeu de Rôle Fantaisiste et Démocratique - Fantasy and Democratic Role Playing Game)
+
+Rules
+  You ask a question
+  You choose a difficulty
+  If there is more than one player, you can adjust the difficulty
+  following the other players remarks (the democratic part).
+  You roll the dices:
+      if the dices are greater or equal than the difficulty the answer
+      to the question is YES
+      else the answer is NO
+  And so on for the next player (or you)
+
+  The difficulty system can be done with a random number generator
+  between 0 - 100 or 0 - 10 or 1 - 6 for standard dice or ...
+  1 is easy. 100 is impossible.
+
+Syntax:
+  q: <your question> ? <difficulty 0 - 100> ??
+
+Example:
+  q: I'm on the moon ? 50 ??
+    62 / 50 Yes :-)
+" ^prn ;
+
+~time srand
+
+:q: ^key dup emit 63 = unless q: ;
+
+:.OK  ~c" Yes :-)" ^pr ;
+:.KO  ~c" No :-("  ^pr ;
+
+:.??  ^2dup  ~c"    " ^pr  .  ~c" / " ^pr  . ;
+:check? ^<= choose .OK .KO ;
+
+:?? ~( n -) ^100 random .?? check? cr ;
+
+~rules eon!
