@@ -1,6 +1,7 @@
 // The author disclaims copyright to this source code.
 #include <colorforth.h>
 #include <cf-stdio.h>
+#include <time.h>
 
 void
 div_fn(struct state *s)
@@ -136,6 +137,13 @@ random_fn(struct state *s)
 }
 
 void
+time_fn(struct state *s)
+{
+  time_t t;
+  push(s->stack, (unsigned) time(&t));
+}
+
+void
 init_math_utils(struct state *state)
 {
   define_primitive_extension(state, "/", div_fn);
@@ -155,4 +163,5 @@ init_math_utils(struct state *state)
   define_primitive_extension(state, "rand", rand_fn);
   define_primitive_extension(state, "srand", srand_fn);
   define_primitive_extension(state, "random", random_fn);
+  define_primitive_extension(state, "time", time_fn);
 }
