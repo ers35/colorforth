@@ -1,0 +1,45 @@
+%
+:N ~0 variable ^;
+:n ~-1 variable ^;
+:time-in-alt ~0 variable ^;
+:max-alt ~0 variable ^;
+
+:time-in-alt?! ^
+   time-in-alt @ when ;
+   dup N @ < unless ;
+   n @ time-in-alt ! ;
+
+:max-alt?! ^
+   dup max-alt @ < when ;
+   dup max-alt ! ;
+
+:record ^dup .  time-in-alt?!  max-alt?!  n 1+! ;
+
+:resume ^
+   cr cr
+   ~c"   Flying time: " ^pr  n @ .
+   ~c"  |  Time in altitude: " ^pr  time-in-alt @ .
+   ~c"  |  Maximum altitude: " ^pr  max-alt @ .
+   ~c" -----------------------" ^cr pr
+   cr cr
+;
+
+
+:even ^2 / ;
+:odd  ^3 * 1+ ;
+
+:next ^dup 2 mod choose odd even ;
+
+:loop ~( n - ) ^record dup 1 = when ;  next loop ;
+
+:init ^N !  -1 n !  0 time-in-alt !  0 max-alt ! ;
+
+:sy
+:syracuse ~( n - ) ^init  N @ loop  resume ;
+
+~
+" Usage: <N> sy(racuse)" nprn cr
+eon!
+127 syracuse
+15 syracuse
+703 sy
