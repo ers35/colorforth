@@ -1,4 +1,11 @@
 %
+\ Syracuse sequences
+\   On an arbitrary positive integer:
+\     If the number is even, divide it by two.
+\     If the number is odd, triple it and add one.
+\     Repeat...
+\  This process will eventually reach the number 1
+
 :N ~0 variable ^;
 :n ~-1 variable ^;
 :time-in-alt ~0 variable ^;
