@@ -132,8 +132,8 @@ srand_fn(struct state *s)
 void
 random_fn(struct state *s)
 {
-  const cell n = pop(s->stack) | 100;
-  push(s->stack, rand() % n);
+  const cell n = pop(s->stack);
+  push(s->stack, n != 0 ? rand() % n : 0);
 }
 
 void
