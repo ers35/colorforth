@@ -1,0 +1,7 @@
+%
+:fib-loop ^
+   >R   swap over + dup .  R> 1- dup 1 = unless fib-loop drop ;
+:fib ^>R  0 . 1 .  0 1  R> fib-loop ;
+
+~92 fib cr cr . cr
+bye
