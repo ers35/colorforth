@@ -820,11 +820,16 @@ parse_from_string(struct state *s, char *str, unsigned int len)
 }
 
 void
-define_prefix(char c, void (*fn)(struct state *s), char * color, int n_prefix)
+define_prefix(char c, void (*fn)(struct state *s), char * color, short reset)
 {
+  static int n_prefix = 0;
+
+  if (reset) n_prefix = 0;
+
   prefix_map[n_prefix].c = c;
   prefix_map[n_prefix].fn = fn;
   prefix_map[n_prefix].color = color;
+  n_prefix += 1;
 }
 
 struct state*
@@ -855,14 +860,13 @@ colorforth_newstate(void)
   state->str_stream = NULL;
   state->file_stream = NULL;
 
-  int n_prefix=0;
-  define_prefix(':', define,         COLOR_RED,     n_prefix++);
-  define_prefix('|', define_inlined, COLOR_MAGENTA, n_prefix++);
-  define_prefix('^', compile,        COLOR_GREEN,   n_prefix++);
-  define_prefix('~', execute,        COLOR_YELLOW,  n_prefix++);
-  define_prefix('\'', tick,          COLOR_BLUE,    n_prefix++);
-  define_prefix('`', compile_tick,   COLOR_BLUE,    n_prefix++);
-  define_prefix(',', compile_inline, COLOR_CYAN,    n_prefix++);
+  define_prefix(':', define,         COLOR_RED,     1);
+  define_prefix('|', define_inlined, COLOR_MAGENTA, 0);
+  define_prefix('^', compile,        COLOR_GREEN,   0);
+  define_prefix('~', execute,        COLOR_YELLOW,  0);
+  define_prefix('\'', tick,          COLOR_BLUE,    0);
+  define_prefix('`', compile_tick,   COLOR_BLUE,    0);
+  define_prefix(',', compile_inline, COLOR_CYAN,    0);
 
   define_primitive(state, "nop", OP_NOP);
   define_primitive(state, ".", OP_PRINT_TOS);
