@@ -219,13 +219,6 @@ fcompile_literal(struct state *s)
 }
 
 void
-funbox(struct state *s)
-{
-  const number_t *ptr = (number_t *)pop(s->stack);
-  fpush(&s->fstack, *ptr);
-}
-
-void
 init_ext_math_utils(struct state *state)
 {
   printf("Init\n");
@@ -257,7 +250,6 @@ init_ext_math_utils(struct state *state)
   define_primitive_extension(state, "f!", fstore);
 
   define_primitive_extension(state, "f>>", fcompile_literal);
-  define_primitive_extension(state, "f-unbox", funbox);
 }
 
 #else

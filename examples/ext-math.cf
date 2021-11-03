@@ -22,7 +22,7 @@ f@ f.s
 
 ~test test
 
-:test-add ~$12.3 ~f>> $2.5 ~f>> ^f-unbox f-unbox f+ f. ;
+:test-add ~$12.3 ~f>> $2.5 ~f>> ^f@ f@ f+ f. ;
 
 ~test-add test-add
 
