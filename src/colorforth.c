@@ -42,7 +42,10 @@ cf_fatal_error(struct state *state, const char* format, ...)
   va_start (arg, format);
   vfprintf(stdout, format, arg);
   va_end (arg);
-  echo_color(state, ' ', COLOR_CLEAR);
+  if (state)
+  {
+    echo_color(state, ' ', COLOR_CLEAR);
+  }
   reset_terminal();
   exit(1);
 }
@@ -475,6 +478,7 @@ execute_(struct state *s, struct entry *entry)
         pc = entry_->code - 1;
         break;
       }
+
       case OP_FUNCTION_CALL:
       {
         // Call extension function
@@ -825,6 +829,11 @@ define_prefix(char c, void (*fn)(struct state *s), char * color, short reset)
   static int n_prefix = 0;
 
   if (reset) n_prefix = 0;
+
+  if (n_prefix >= MAX_PREFIX)
+  {
+    cf_fatal_error(NULL, "Too many prefix. Exiting!\n");
+  }
 
   prefix_map[n_prefix].c = c;
   prefix_map[n_prefix].fn = fn;

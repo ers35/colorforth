@@ -7,12 +7,13 @@
 #include <conf.h>
 
 #include <color.h>
+#include <ext-math.h>
 
 typedef long cell;
 
 #define CELL_FMT "ld"
 
-#define MAX_PREFIX 7
+#define MAX_PREFIX 10
 
 enum opcode
 {
@@ -122,6 +123,11 @@ struct state
   // streams
   char *str_stream;
   FILE *file_stream;
+
+  // extended math extension
+#ifdef __EXTENDED_MATH
+  struct fstack fstack;
+#endif
 };
 
 struct prefix_map
@@ -140,6 +146,7 @@ extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern struct entry* find_entry_by_code(struct state *s, struct dictionary *dict, struct code *code);
 extern void unknow_word (struct state *s, const char *msg);
 
+extern void define_prefix(char c, void (*fn)(struct state *s), char * color, short reset);
 extern void define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s));
 
 extern void quit(struct state *state, char ask);

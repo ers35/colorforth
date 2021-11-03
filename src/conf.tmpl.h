@@ -8,6 +8,13 @@
 // Embed lib.cf
 #define __EMBED_LIB_CF
 
+// Extended math
+#define __EXTENDED_MATH
+
+#define FSTACK_SIZE 30
+typedef double number_t;
+
+
 // Various sizes
 #define STACK_SIZE 30
 #define R_STACK_SIZE 30
@@ -28,13 +35,15 @@ extern void init_dict_utils(struct state *s);
 extern void init_io_utils(struct state *s);
 extern void init_parser_utils(struct state *s);
 extern void init_math_utils(struct state *s);
+extern void init_ext_math_utils(struct state *state);
 
 #define LOAD_EXTENTIONS                         \
   init_os_utils(state);                         \
   init_dict_utils(state);                       \
   init_io_utils(state);                         \
   init_parser_utils(state);                     \
-  init_math_utils(state);
+  init_math_utils(state);                       \
+  init_ext_math_utils(state);
 
 
 #endif /* __CONF_H */

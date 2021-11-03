@@ -11,7 +11,8 @@ SRC=src/main.c src/colorforth.c \
 	ext/io.c \
 	ext/color.c \
 	ext/parser.c \
-	ext/math.c
+	ext/math.c \
+	ext/ext-math.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
