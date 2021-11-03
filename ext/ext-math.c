@@ -175,6 +175,24 @@ fdiv(struct state *s)
 }
 
 void
+fsup(struct state *s)
+{
+  const number_t n1 = fpop(&s->fstack);
+  const number_t n2 = fpop(&s->fstack);
+
+  push(s->stack, n2 > n1);
+}
+
+void
+finf(struct state *s)
+{
+  const number_t n1 = fpop(&s->fstack);
+  const number_t n2 = fpop(&s->fstack);
+
+  push(s->stack, n2 < n1);
+}
+
+void
 fload(struct state *s)
 {
   fpush(&s->fstack, *(number_t*)pop(s->stack));
@@ -231,6 +249,9 @@ init_ext_math_utils(struct state *state)
   define_primitive_extension(state, "f-", fsub);
   define_primitive_extension(state, "f*", fmul);
   define_primitive_extension(state, "f/", fdiv);
+
+  define_primitive_extension(state, "f>", fsup);
+  define_primitive_extension(state, "f<", finf);
 
   define_primitive_extension(state, "f@", fload);
   define_primitive_extension(state, "f!", fstore);
