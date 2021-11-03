@@ -18,7 +18,7 @@ fnip f.s
 ~fsize alloc dup $11.11 ~swap f! f.s
 f@ f.s
 
-:test ~$13.3 ~f>> ^f-unbox f. ;
+:test ~$13.3 ~f>> ^f@ f. ;
 
 ~test test
 
