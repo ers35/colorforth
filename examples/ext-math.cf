@@ -15,7 +15,7 @@ $1.1 $2.2 $3.3 ~f.s frot f.s f-rot f.s
 fnip f.s
 
 
-~fsize alloc dup $11.11 ~swap f! f.s
+~float alloc dup $11.11 ~swap f! f.s
 f@ f.s
 
 :test ~$13.3 ~f>> ^f@ f. ;

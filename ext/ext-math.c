@@ -221,11 +221,10 @@ fcompile_literal(struct state *s)
 void
 init_ext_math_utils(struct state *state)
 {
-  printf("Init\n");
   init_fstack(&state->fstack, FSTACK_SIZE);
   define_prefix('$', define_float,  COLOR_YELLOW,     0);
 
-  define_primitive_extension(state, "fsize", fsize);
+  define_primitive_extension(state, "float", fsize);
 
   define_primitive_extension(state, "f.s", fdot_s);
   define_primitive_extension(state, "f.", print_ftos);
