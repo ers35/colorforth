@@ -23,9 +23,10 @@ fdot_s(struct state *state)
 {
   for (int i = 0, p = state->fstack.sp + 1; i <= state->fstack.lim; i++, p++)
   {
+    if (p > state->fstack.lim) p = 0;
+
     if (i <= state->fstack.lim - 8) continue;
 
-    if (p > state->fstack.lim) p = 0;
     cf_printf(state, "%lf ", state->fstack.cells[p]);
   }
   cf_printf(state, " <ftos\n");
