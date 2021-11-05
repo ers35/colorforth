@@ -1,0 +1,47 @@
+~
+#10 #15 ~ m.s m. m. m. 
+m.s
+
+#11 #12 ~m.s mdrop m.s
+
+#16 ~mdup m.s
+
+#32 ~m.s mswap m.s
+
+m+ m.s
+
+mswap  m.s m- m.s
+
+#2 ~m* m.s
+
+#3 ~m/ m.s
+
+mover m.s
+
+
+1 2 3 rot .s
+#1 #2 #3 ~mrot m.s
+
+1 2 3 -rot .s
+#1 #2 #3 ~m-rot m.s
+
+4 5 .s nip .s
+#4 #5 ~m.s mnip m.s
+
+#10 #6 ~mover mover m> m< .s
+
+
+~mpz alloc dup #33 ~swap m! m.s
+m@ m.s
+
+
+:test ~#46 ~m>> ^m@ m. ;
+
+~test test
+
+
+:test-add ~#12 ~m>> #2 ~m>> ^m@ m@ m+ m. ;
+
+~test-add test-add
+
+bye

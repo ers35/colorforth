@@ -12,13 +12,16 @@ SRC=src/main.c src/colorforth.c \
 	ext/color.c \
 	ext/parser.c \
 	ext/math.c \
-	ext/ext-math.c
+	ext/ext-math.c \
+	ext/mp-math.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
 	src/lib.cf.h \
 	src/cf-stdio.h \
 	ext/color.h
+
+EXTRA_CLIBS=-lgmp
 
 optim_cpl:
 	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)
@@ -34,7 +37,7 @@ colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=c99 -O3 -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
 	-I. -Isrc -Iext $(EXTRA_CFLAGS) \
-	-o colorforth $(SRC)
+	-o colorforth $(SRC) $(EXTRA_CLIBS)
 
 optimize: colorforth
 	@#readelf -l colorforth

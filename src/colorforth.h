@@ -8,6 +8,7 @@
 
 #include <color.h>
 #include <ext-math.h>
+#include <mp-math.h>
 
 typedef long cell;
 
@@ -127,6 +128,11 @@ struct state
   // extended math extension
 #ifdef __EXTENDED_MATH
   struct fstack fstack;
+#endif
+
+  // mp math extension
+#ifdef __MP_MATH
+  struct mpstack mpstack;
 #endif
 };
 

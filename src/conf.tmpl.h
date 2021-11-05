@@ -14,6 +14,11 @@
 #define FSTACK_SIZE 30
 typedef double number_t;
 
+// MP_MATH
+#define __MP_MATH
+
+#define MPSTACK_SIZE 30
+
 
 // Various sizes
 #define STACK_SIZE 30
