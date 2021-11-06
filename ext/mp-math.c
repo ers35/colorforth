@@ -231,7 +231,6 @@ mcompile_literal(struct state *s)
 void
 init_mp_math_utils(struct state *state)
 {
-  printf("Init\n");
   init_mpstack(&state->mpstack, MPSTACK_SIZE);
   define_prefix('#', define_mpz,  COLOR_YELLOW,     0);
 
