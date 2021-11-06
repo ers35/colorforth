@@ -47,6 +47,8 @@ main(int argc, char *argv[])
     parse_colorforth(state, cf_getchar(state));
   }
 
+  free_state(state);
+
   reset_terminal();
 
   return 0;

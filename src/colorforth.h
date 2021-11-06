@@ -157,6 +157,8 @@ extern void define_primitive_extension(struct state *s, char name[], void (*fn)(
 
 extern void quit(struct state *state, char ask);
 extern struct state* colorforth_newstate(void);
+extern void free_state(struct state* state);
+
 extern void parse_colorforth(struct state *state, int c);
 extern void parse_from_string(struct state *s, char *str, unsigned int len);
 extern void parse_space(struct state *s);

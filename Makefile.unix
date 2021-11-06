@@ -13,7 +13,8 @@ SRC=src/main.c src/colorforth.c \
 	ext/parser.c \
 	ext/math.c \
 	ext/ext-math.c \
-	ext/mp-math.c
+	ext/mp-math.c \
+	ext/threads.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
@@ -21,7 +22,7 @@ SRC_H=src/colorforth.h \
 	src/cf-stdio.h \
 	ext/color.h
 
-EXTRA_CLIBS=-lgmp
+EXTRA_CLIBS=-lgmp -lpthread
 
 optim_cpl:
 	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)

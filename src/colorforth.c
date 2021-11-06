@@ -323,7 +323,7 @@ compile_literal(struct state *s)
   s->here = (struct code *)s->here + 1;
 }
 
-static void
+void
 execute_(struct state *s, struct entry *entry)
 {
   // cf_printf(s, "-> %s\n", entry->name);
@@ -663,7 +663,7 @@ execute_(struct state *s, struct entry *entry)
   // cf_printf(s, "   %s(done) <-\n", entry->name);
 }
 
-static void
+void
 execute(struct state *s)
 {
   struct entry *entry = find_entry(s, &s->dict);
@@ -930,4 +930,15 @@ colorforth_newstate(void)
   state->echo_on = 1;
 
   return state;
+}
+
+void
+free_state(struct state* state)
+{
+  free(state->heap);
+  free(state->inlined_dict.entries);
+  free(state->dict.entries);
+  free(state->r_stack);
+  free(state->stack);
+  free(state);
 }
