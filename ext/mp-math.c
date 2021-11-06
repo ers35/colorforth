@@ -44,7 +44,7 @@ mdot_s(struct state *state)
     cf_printf(state, "%s ", out);
     free(out);
   }
-  cf_printf(state, " <ftos\n");
+  cf_printf(state, " <mtos\n");
 }
 
 void
