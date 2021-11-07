@@ -1,0 +1,57 @@
+%
+:v ~0 variable ^;
+
+:work ^1 v +! -done?; work ;
+
+:th0 ^10000 work ;
+:th1 ^10000 work ;
+:th2 ^10000 work ;
+:th3 ^10000 work ;
+:th4 ^10000 work ;
+
+~v ?
+'th0 ~0 thread/run
+'th1 ~1 thread/run
+'th2 ~2 thread/run
+'th3 ~3 thread/run
+'th4 ~4 thread/run
+
+thread/join-all
+
+\ v is less than 50000 because of parallel concurent access
+v ? cr
+
+\ Should count exactly 50000 because access to v is protected by lock
+:sem-work ^  1 v    0 thread/lock  +!   0 thread/unlock  -done?; sem-work ;
+
+:th0 ^10000 sem-work ;
+:th1 ^10000 sem-work ;
+:th2 ^10000 sem-work ;
+:th3 ^10000 sem-work ;
+:th4 ^10000 sem-work ;
+
+~0 v !  v ?
+'th0 ~0 thread/run
+'th1 ~1 thread/run
+'th2 ~2 thread/run
+'th3 ~3 thread/run
+'th4 ~4 thread/run
+
+thread/join-all
+
+v ? cr
+
+
+~0 v !  v ?
+
+'th0 ~0 thread/run
+'th1 ~1 thread/run
+'th2 ~2 thread/run
+'th3 ~3 thread/run
+'th4 ~4 thread/run
+
+thread/join-all
+
+v ? cr
+
+bye

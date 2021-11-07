@@ -5,6 +5,7 @@
 #ifdef __THREADS
 
 #include <pthread.h>
+#include <semaphore.h>
 
 struct thread_args
 {
@@ -14,6 +15,7 @@ struct thread_args
 };
 
 struct thread_args thread_args[MAX_THREAD];
+sem_t locks[MAX_LOCK];
 
 extern void init_stack(struct stack *stack, int len);
 extern void execute(struct state *s);
@@ -121,12 +123,35 @@ thread_cancel(struct state *state)
 }
 
 void
+thread_lock(struct state *state)
+{
+  cell n = pop(state->stack);
+
+  sem_wait(&locks[n]);
+}
+
+void
+thread_unlock(struct state *state)
+{
+  cell n = pop(state->stack);
+
+  sem_post(&locks[n]);
+}
+
+void
 init_threads_utils(struct state *state)
 {
+  for (int i = 0; i < MAX_LOCK; i++)
+  {
+    sem_init(&locks[i], 0, 1);
+  }
+
   define_primitive_extension(state, "thread/run", thread_run);
   define_primitive_extension(state, "thread/join-all", thread_join_all);
   define_primitive_extension(state, "thread/join", thread_join);
   define_primitive_extension(state, "thread/cancel", thread_cancel);
+  define_primitive_extension(state, "thread/lock", thread_lock);
+  define_primitive_extension(state, "thread/unlock", thread_unlock);
 }
 
 #else

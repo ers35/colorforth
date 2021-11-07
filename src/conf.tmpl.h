@@ -23,6 +23,7 @@ typedef double number_t;
 #define __THREADS
 
 #define MAX_THREAD 10
+#define MAX_LOCK 10
 
 
 // Various sizes
