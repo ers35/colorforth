@@ -15,17 +15,17 @@
 #define get_s_nsp(s) get_nsp(s_sp(s), s_lim(s))
 
 
- void
- init_mpstack(struct mpstack *stack, int len)
- {
-   stack->cells = calloc(len, sizeof(mpz_t));
-   for (int i = 0; i < MPSTACK_SIZE; i++)
-   {
-     mpz_init(stack->cells[i]);
-   }
-   stack->sp = 0;
-   stack->lim = len - 1;
- }
+void
+init_mpstack(struct mpstack *stack, int len)
+{
+  stack->cells = calloc(len, sizeof(mpz_t));
+  for (int i = 0; i < MPSTACK_SIZE; i++)
+  {
+    mpz_init(stack->cells[i]);
+  }
+  stack->sp = 0;
+  stack->lim = len - 1;
+}
 
 void
 mpsize(struct state *state)
@@ -203,6 +203,14 @@ minf(struct state *s)
 }
 
 void
+mequal(struct state *s)
+{
+  const int psp = get_s_psp(s);
+  push(s->stack, mpz_cmp(s_cells(s, psp), s_cells(s, s_sp(s))) == 0);
+  s_sp(s) = get_psp(psp, s_lim(s));
+}
+
+void
 mload(struct state *s)
 {
   s_sp(s) = get_s_nsp(s);
@@ -258,6 +266,7 @@ init_mp_math_utils(struct state *state)
 
   define_primitive_extension(state, "m>", msup);
   define_primitive_extension(state, "m<", minf);
+  define_primitive_extension(state, "m=", mequal);
 
   define_primitive_extension(state, "m@", mload);
   define_primitive_extension(state, "m!", mstore);

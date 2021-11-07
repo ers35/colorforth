@@ -7,6 +7,10 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+#ifdef __MP_MATH
+extern void init_mpstack(struct mpstack *stack, int len);
+#endif
+
 struct thread_args
 {
   pthread_t pthread;
@@ -49,6 +53,11 @@ clone_state(struct state *state)
 
   clone->str_stream = NULL;
   clone->file_stream = NULL;
+
+
+#ifdef __MP_MATH
+  init_mpstack(&clone->mpstack, MPSTACK_SIZE);
+#endif
 
   return clone;
 }
