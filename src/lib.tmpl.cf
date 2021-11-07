@@ -142,3 +142,7 @@
 :loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ unless ; loop ;
 :eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  loop  32 parse ;
 'ptr ~hide-entry  'count ~hide-entry  'loop ~hide-entry
+
+~( time )
+:time/start ^utime >> ;
+:time/end ^utime swap - 1000 / . ~c" ms elapsed" ^prn ;

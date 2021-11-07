@@ -1,0 +1,13 @@
+%
+:tm ~time/start ^;
+~
+500 mssleep
+tm time/end
+
+2 sleep
+tm time/end
+
+1 sleep
+tm time/end
+
+bye
