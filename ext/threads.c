@@ -96,7 +96,7 @@ thread_run(struct state *state)
 void
 init_threads_utils(struct state *state)
 {
-  define_primitive_extension(state, "thread-run", thread_run);
+  define_primitive_extension(state, "thread/run", thread_run);
 }
 
 #else
