@@ -8,6 +8,7 @@
 
 struct thread_args
 {
+  pthread_t pthread;
   struct state *clone;
   struct entry *entry;
 };
@@ -77,26 +78,35 @@ thread_run(struct state *state)
   struct entry *entry = (struct entry *) pop(state->stack);
 
   if (n >= MAX_THREAD) {
-    cf_printf(state, "Too many thread. At most %d allowed\n", MAX_THREAD);
+    cf_printf(state, "Too many threads. At most %d allowed\n", MAX_THREAD);
     push(state->stack, -1);
     return;
   }
 
-  pthread_t thread;
   struct state *clone = clone_state(state);
 
   thread_args[n].clone = clone;
   thread_args[n].entry = entry;
 
-  pthread_create(&thread, NULL, perform_thread, (void *) &thread_args[n]);
+  pthread_create(&thread_args[n].pthread, NULL, perform_thread, (void *) &thread_args[n]);
 
   push(state->stack, n);
+}
+
+void
+thread_join_all(struct state *state)
+{
+  for (int i = 0; i < MAX_THREAD; i++)
+  {
+    pthread_join(thread_args[i].pthread, NULL);
+  }
 }
 
 void
 init_threads_utils(struct state *state)
 {
   define_primitive_extension(state, "thread/run", thread_run);
+  define_primitive_extension(state, "thread/join-all", thread_join_all);
 }
 
 #else
