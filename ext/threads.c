@@ -111,11 +111,22 @@ thread_join(struct state *state)
 }
 
 void
+thread_cancel(struct state *state)
+{
+  cell n = pop(state->stack);
+
+  pthread_cancel(thread_args[n].pthread);
+
+  free_clone_state(thread_args[n].clone);
+}
+
+void
 init_threads_utils(struct state *state)
 {
   define_primitive_extension(state, "thread/run", thread_run);
   define_primitive_extension(state, "thread/join-all", thread_join_all);
   define_primitive_extension(state, "thread/join", thread_join);
+  define_primitive_extension(state, "thread/cancel", thread_cancel);
 }
 
 #else
