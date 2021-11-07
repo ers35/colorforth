@@ -11,7 +11,9 @@
 thread/join-all
 
 'th0 ~0 thread/run
+0 thread/join
 
+'th0 ~0 thread/run
 thread/join-all
 
 thread/join-all

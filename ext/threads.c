@@ -103,10 +103,19 @@ thread_join_all(struct state *state)
 }
 
 void
+thread_join(struct state *state)
+{
+  cell n = pop(state->stack);
+
+  pthread_join(thread_args[n].pthread, NULL);
+}
+
+void
 init_threads_utils(struct state *state)
 {
   define_primitive_extension(state, "thread/run", thread_run);
   define_primitive_extension(state, "thread/join-all", thread_join_all);
+  define_primitive_extension(state, "thread/join", thread_join);
 }
 
 #else
