@@ -11,6 +11,7 @@ SRC=src/main.c src/colorforth.c \
 	ext/io.c \
 	ext/color.c \
 	ext/parser.c \
+	ext/time.c \
 	ext/math.c \
 	ext/ext-math.c \
 	ext/mp-math.c \
@@ -35,7 +36,7 @@ src/lib.cf.h: src/lib.tmpl.cf
 	xxd -i src/lib.cf src/lib.cf.h
 
 colorforth: Makefile $(SRC) $(SRC_H)
-	gcc -fPIE -std=c99 -O3 -Wall -Werror -Wextra -pedantic \
+	gcc -fPIE -std=gnu99 -O3 -Wall -Werror -Wextra -pedantic \
 	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
 	-I. -Isrc -Iext $(EXTRA_CFLAGS) \
 	-o colorforth $(SRC) $(EXTRA_CLIBS)
