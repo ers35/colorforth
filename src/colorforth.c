@@ -153,6 +153,19 @@ find_entry_by_code(struct state *s, struct dictionary *dict, struct code *code)
   return NULL;
 }
 
+struct entry*
+find_entry_by_fn(struct state *s, struct dictionary *dict, struct code *code)
+{
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  {
+    if (entry->code->this == code->this)
+    {
+      return entry;
+    }
+  }
+  return NULL;
+}
+
 void
 print_tib(struct state *s)
 {

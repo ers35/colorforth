@@ -150,6 +150,7 @@ extern cell pop(struct stack *stack);
 
 extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern struct entry* find_entry_by_code(struct state *s, struct dictionary *dict, struct code *code);
+extern struct entry* find_entry_by_fn(struct state *s, struct dictionary *dict, struct code *code);
 extern void unknow_word (struct state *s, const char *msg);
 
 extern void define_prefix(char c, void (*fn)(struct state *s), char * color, short reset);

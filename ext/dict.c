@@ -56,6 +56,20 @@ see(struct state *s, struct entry *entry)
           break;
         }
 
+        case OP_FUNCTION_CALL:
+        {
+          struct entry *entry_by_fn = find_entry_by_fn(s, &s->dict, &entry->code[i]);
+          if (entry_by_fn)
+          {
+            cf_printf(s, "%s ", entry_by_fn->name);
+          }
+          else
+          {
+            printf("\nError: Entry not found\n");
+          }
+          break;
+        }
+
         default:
         {
           struct entry *entry_by_code = find_entry_by_code(s, &s->inlined_dict, &entry->code[i]);
