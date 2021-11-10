@@ -6,6 +6,7 @@
 
 #include <pthread.h>
 #include <semaphore.h>
+#include <signal.h>
 
 #ifdef __MP_MATH
 extern void init_mpstack(struct mpstack *stack, int len);
@@ -122,11 +123,11 @@ thread_join(struct state *state)
 }
 
 void
-thread_cancel(struct state *state)
+thread_kill(struct state *state)
 {
   cell n = pop(state->stack);
 
-  pthread_cancel(thread_args[n].pthread);
+  pthread_kill(thread_args[n].pthread, 0);
 
   free_clone_state(thread_args[n].clone);
 }
@@ -158,7 +159,7 @@ init_threads_utils(struct state *state)
   define_primitive_extension(state, "thread/run", thread_run);
   define_primitive_extension(state, "thread/join-all", thread_join_all);
   define_primitive_extension(state, "thread/join", thread_join);
-  define_primitive_extension(state, "thread/cancel", thread_cancel);
+  define_primitive_extension(state, "thread/kill", thread_kill);
   define_primitive_extension(state, "thread/lock", thread_lock);
   define_primitive_extension(state, "thread/unlock", thread_unlock);
 }

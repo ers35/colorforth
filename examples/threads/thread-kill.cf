@@ -8,8 +8,8 @@
 
 2 sleep
 
-0 thread/cancel
-" Thread 0 canceled" prn
+0 thread/kill
+" Thread 0 killed" prn
 
 thread/join-all
 bye
