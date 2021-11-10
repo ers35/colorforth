@@ -30,7 +30,7 @@ typedef double number_t;
 #define STACK_SIZE 30
 #define R_STACK_SIZE 30
 
-#define DICT_SIZE 200
+#define DICT_SIZE 400
 #define INLINED_DICT_SIZE 100
 
 #define HEAP_SIZE 40960
