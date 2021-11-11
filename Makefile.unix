@@ -56,6 +56,9 @@ dump: colorforth
 dumpelf: colorforth
 	readelf -a colorforth | less
 
+cleanelf: colorforth
+	termux-elf-cleaner colorforth
+
 clean:
 	rm -f colorforth
 
