@@ -4,9 +4,11 @@
 
 #ifdef __THREADS
 
+
 #include <pthread.h>
 #include <semaphore.h>
 #include <signal.h>
+#include <string.h>
 
 #ifdef __MP_MATH
 extern void init_mpstack(struct mpstack *stack, int len);
@@ -71,10 +73,23 @@ free_clone_state(struct state *clone)
   free(clone);
 }
 
+void
+thread_exit_handler(int sig)
+{
+  pthread_exit(0);
+}
+
 void *
 perform_thread(void *arg)
 {
   struct thread_args *thread_args = (struct thread_args *) arg;
+
+  struct sigaction actions;
+  memset(&actions, 0, sizeof(actions));
+  sigemptyset(&actions.sa_mask);
+  actions.sa_flags = 0;
+  actions.sa_handler = thread_exit_handler;
+  sigaction(SIGUSR1,&actions,NULL);
 
   execute_(thread_args->clone, thread_args->entry);
 
@@ -127,7 +142,11 @@ thread_kill(struct state *state)
 {
   cell n = pop(state->stack);
 
+  pthread_kill(thread_args[n].pthread, SIGUSR1);
+  pthread_join(thread_args[n].pthread, NULL);
+
   pthread_kill(thread_args[n].pthread, 0);
+  pthread_join(thread_args[n].pthread, NULL);
 
   free_clone_state(thread_args[n].clone);
 }
