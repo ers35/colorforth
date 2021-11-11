@@ -19,7 +19,7 @@ parse_command_line(struct state *state, int argc, char *argv[])
 
     if (nextIsEval)
     {
-      parse_from_string(state, argv[i], 0);
+      parse_from_string(state, argv[i]);
       nextIsEval = 0;
       continue;
     }

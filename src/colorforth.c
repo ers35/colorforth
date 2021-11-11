@@ -816,19 +816,15 @@ parse_space(struct state *s)
 }
 
 void
-parse_from_string(struct state *s, char *str, unsigned int len)
+parse_from_string(struct state *s, char *str)
 {
-  if (!len) len = 0xFFFF;
-
   char *old_stream = s->str_stream;
 
   s->str_stream = str;
   int c;
-  unsigned int i = 0;
-  while((c = cf_getchar(s)) != 0 && i < len && !s->done)
+  while((c = (char) cf_getchar(s)) != 0 && !s->done)
   {
     parse_colorforth(s, c);
-    i += 1;
   }
 
   s->str_stream = old_stream;
@@ -852,6 +848,19 @@ define_prefix(char c, void (*fn)(struct state *s), char * color, short reset)
   prefix_map[n_prefix].fn = fn;
   prefix_map[n_prefix].color = color;
   n_prefix += 1;
+}
+
+void
+parse_from_embed_lib_cf(struct state *state)
+{
+  char* str = malloc(src_lib_cf_len + 1);
+  if (str)
+  {
+    strncpy(str, (char *)src_lib_cf, src_lib_cf_len);
+    str[src_lib_cf_len] = 0;
+    parse_from_string(state, str);
+    free(str);
+  }
 }
 
 struct state*
@@ -934,7 +943,7 @@ colorforth_newstate(void)
   LOAD_EXTENTIONS;
 
 #ifdef __EMBED_LIB_CF
-  parse_from_string(state, (char *)src_lib_cf, src_lib_cf_len);
+  parse_from_embed_lib_cf(state);
 #endif /* __EMBED_LIB_CF */
 
   state->color = execute;

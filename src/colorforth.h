@@ -161,7 +161,7 @@ extern struct state* colorforth_newstate(void);
 extern void free_state(struct state* state);
 
 extern void parse_colorforth(struct state *state, int c);
-extern void parse_from_string(struct state *s, char *str, unsigned int len);
+extern void parse_from_string(struct state *s, char *str);
 extern void parse_space(struct state *s);
 extern void clear_tib (struct state *s);
 
