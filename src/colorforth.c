@@ -850,6 +850,7 @@ define_prefix(char c, void (*fn)(struct state *s), char * color, short reset)
   n_prefix += 1;
 }
 
+#ifdef __EMBED_LIB_CF
 void
 parse_from_embed_lib_cf(struct state *state)
 {
@@ -862,6 +863,7 @@ parse_from_embed_lib_cf(struct state *state)
     free(str);
   }
 }
+#endif /* __EMBED_LIB_CF */
 
 struct state*
 colorforth_newstate(void)
