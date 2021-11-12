@@ -1,0 +1,43 @@
+#-*- Makefile -*-
+
+default: wasm/colorforth.html
+
+SRC=wasm/main-wasm.c src/colorforth.c \
+	wasm/cf-stdio-wasm.c \
+	ext/color.c
+
+#	ext/os.c \
+#	ext/dict.c \
+#	ext/io.c \
+#	ext/parser.c \
+#	ext/time.c \
+#	ext/math.c \
+#	ext/ext-math.c \
+#	ext/mp-math.c \
+#	ext/threads.c
+
+SRC_WASM=wasm/html_template/shell.html wasm/html_template/shell.js wasm/html_template/shell.css
+
+SRC_H=src/colorforth.h \
+	wasm/conf.h \
+	src/lib.cf.h \
+	src/cf-stdio.h \
+	ext/color.h
+
+#EXTRA_CLIBS=-lgmp -lpthread
+
+wasm/conf.h: src/conf.tmpl.h
+	cp src/conf.tmpl.h wasm/conf.h
+
+src/lib.cf.h: src/lib.tmpl.cf
+	cp src/lib.tmpl.cf src/lib.cf
+	xxd -i src/lib.cf src/lib.cf.h
+
+wasm/colorforth.html: Makefile.wasm $(SRC) $(SRC_H) $(SRC_WASM)
+	emcc.sh -o wasm/colorforth.html $(SRC) -O3 -s WASM=1 -s NO_EXIT_RUNTIME=1 --shell-file wasm/html_template/shell.html -Isrc -Iext -Iwasm
+
+clean:
+	rm -f colorforth
+
+mrproper: clean
+	rm -f conf.h src/lib.cf src/lib.cf.h
