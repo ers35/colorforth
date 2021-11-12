@@ -746,7 +746,7 @@ parse_colorforth(struct state *state, int c)
     }
   }
 
-  if (c == ' ' || c == '\t' || c == '\n')
+  if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
   {
     echo_color(state, c, NULL);
     if (state->tib.len == 0)
