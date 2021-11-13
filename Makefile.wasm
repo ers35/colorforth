@@ -4,7 +4,7 @@ default: wasm/colorforth.html
 
 SRC=wasm/main-wasm.c src/colorforth.c \
 	wasm/cf-stdio-wasm.c \
-	ext/color.c
+	src/color.c
 
 #	ext/os.c \
 #	ext/dict.c \
@@ -22,7 +22,7 @@ SRC_H=src/colorforth.h \
 	wasm/conf.h \
 	src/lib.cf.h \
 	src/cf-stdio.h \
-	ext/color.h
+	src/color.h
 
 #EXTRA_CLIBS=-lgmp -lpthread
 

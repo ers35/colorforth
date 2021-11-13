@@ -6,10 +6,10 @@ default: colorforth
 
 SRC=src/main.c src/colorforth.c \
 	src/cf-stdio.c \
+	src/color.c \
 	ext/os.c \
 	ext/dict.c \
 	ext/io.c \
-	ext/color.c \
 	ext/parser.c \
 	ext/time.c \
 	ext/math.c \
@@ -21,7 +21,7 @@ SRC_H=src/colorforth.h \
 	conf.h \
 	src/lib.cf.h \
 	src/cf-stdio.h \
-	ext/color.h
+	src/color.h
 
 EXTRA_CLIBS=-lgmp -lpthread
 

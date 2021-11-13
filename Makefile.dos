@@ -5,10 +5,10 @@ default: cf.exe
 
 SRC=src\main.c src\colorf~1.c \
 	src\cf-stdio.c \
+	src\color.c \
 	ext\os.c \
 	ext\dict.c \
 	ext\io.c \
-	ext\color.c \
 	ext\parser.c \
 	ext/math.c
 
@@ -16,7 +16,7 @@ SRC_H=src\colorf~1.h \
 	src\cf-stdio.h \
 	conf.h \
 	src\libcf~1.h \
-	ext\color.h
+	src\color.h
 
 conf.h: src\conftm~1.h
 	copy src\conftm~1.h conf.h
