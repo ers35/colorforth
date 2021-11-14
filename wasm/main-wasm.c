@@ -16,6 +16,5 @@ int
 main(int argc, char *argv[])
 {
   state = colorforth_newstate();
-
-  printf("colorForth loaded!\n");
+  parse_colorforth(state, '~');
 }
