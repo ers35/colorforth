@@ -4,17 +4,16 @@ default: wasm/colorforth.html
 
 SRC=wasm/main-wasm.c src/colorforth.c \
 	wasm/cf-stdio-wasm.c \
-	src/color.c
-
-#	ext/os.c \
-#	ext/dict.c \
-#	ext/io.c \
-#	ext/parser.c \
-#	ext/time.c \
-#	ext/math.c \
-#	ext/ext-math.c \
-#	ext/mp-math.c \
-#	ext/threads.c
+	src/color.c \
+	ext/os.c \
+	ext/dict.c \
+	ext/io.c \
+	ext/parser.c \
+	ext/time.c \
+	ext/math.c \
+	ext/ext-math.c
+#	ext/mp-math.c
+#   ext/threads.c
 
 SRC_WASM=wasm/html_template/shell.html wasm/html_template/shell.js wasm/html_template/shell.css
 
@@ -24,10 +23,8 @@ SRC_H=src/colorforth.h \
 	src/cf-stdio.h \
 	src/color.h
 
-#EXTRA_CLIBS=-lgmp -lpthread
-
-wasm/conf.h: src/conf.tmpl.h
-	cp src/conf.tmpl.h wasm/conf.h
+wasm/conf.h: wasm/conf.tmpl.h
+	cp wasm/conf.tmpl.h wasm/conf.h
 
 src/lib.cf.h: src/lib.tmpl.cf
 	cp src/lib.tmpl.cf src/lib.cf
