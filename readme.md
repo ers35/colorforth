@@ -1,3 +1,5 @@
+![Example](https://pbrochard.github.io/colorforth-pbr/wasm/colorforth.html)
+
 ![](doc/screenshot.png?raw=true)
 ![](doc/screenshot-colorize.png?raw=true)
 
