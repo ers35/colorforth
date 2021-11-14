@@ -917,7 +917,6 @@ colorforth_newstate(void)
   define_primitive(state, "<", OP_LESS);
   define_primitive(state, "bye", OP_BYE);
   define_primitive(state, "words", OP_WORDS);
-  define_primitive(state, "words", OP_WORDS);
   define_primitive(state, "emit", OP_EMIT);
   define_primitive(state, "key", OP_KEY);
   define_primitive(state, "@", OP_LOAD);
