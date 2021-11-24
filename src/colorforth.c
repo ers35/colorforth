@@ -346,6 +346,10 @@ execute_(struct state *s, struct entry *entry)
 
   short choose_state = 0;
 
+  register cell A = 0;
+  register cell B = 0;
+  register cell C = 0;
+
   // don't forget to compile a return!!!!
   while(1)
   {
@@ -382,6 +386,24 @@ execute_(struct state *s, struct entry *entry)
         push(s->stack, s->r_stack->cells[s->r_stack->sp]);
         break;
       }
+
+      case OP_A_STORE: { A = pop(s->stack); break; }
+      case OP_A_LOAD: { push(s->stack, A); break; }
+      case OP_A_ADD: { A += pop(s->stack); break; }
+      case OP_A_INC: { A += 1; break; }
+      case OP_A_DEC: { A -= 1; break; }
+
+      case OP_B_STORE: { B = pop(s->stack); break; }
+      case OP_B_LOAD: { push(s->stack, B); break; }
+      case OP_B_ADD: { B += pop(s->stack); break; }
+      case OP_B_INC: { B += 1; break; }
+      case OP_B_DEC: { B -= 1; break; }
+
+      case OP_C_STORE: { C = pop(s->stack); break; }
+      case OP_C_LOAD: { push(s->stack, C); break; }
+      case OP_C_ADD: { C += pop(s->stack); break; }
+      case OP_C_INC: { C += 1; break; }
+      case OP_C_DEC: { C -= 1; break; }
 
       case OP_DUP:
       {
@@ -940,6 +962,25 @@ colorforth_newstate(void)
   define_primitive_inlined(state, ">R", OP_R_PUSH);
   define_primitive_inlined(state, "R>", OP_R_POP);
   define_primitive_inlined(state, "R@", OP_R_FETCH);
+
+  // A, B and C registers are state global
+  define_primitive_inlined(state, "A@", OP_A_LOAD);
+  define_primitive_inlined(state, "A!", OP_A_STORE);
+  define_primitive_inlined(state, "A+!", OP_A_ADD);
+  define_primitive_inlined(state, "A++!", OP_A_INC);
+  define_primitive_inlined(state, "A--!", OP_A_DEC);
+
+  define_primitive_inlined(state, "B@", OP_B_LOAD);
+  define_primitive_inlined(state, "B!", OP_B_STORE);
+  define_primitive_inlined(state, "B+!", OP_B_ADD);
+  define_primitive_inlined(state, "B++!", OP_B_INC);
+  define_primitive_inlined(state, "B--!", OP_B_DEC);
+
+  define_primitive_inlined(state, "C@", OP_C_LOAD);
+  define_primitive_inlined(state, "C!", OP_C_STORE);
+  define_primitive_inlined(state, "C+!", OP_C_ADD);
+  define_primitive_inlined(state, "C++!", OP_C_INC);
+  define_primitive_inlined(state, "C--!", OP_C_DEC);
 
   LOAD_EXTENTIONS;
 
