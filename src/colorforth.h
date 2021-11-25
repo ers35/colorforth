@@ -16,6 +16,9 @@ typedef long cell;
 
 #define MAX_PREFIX 10
 
+#define define_register_OP(N) OP_##N##_LOAD, OP_##N##_STORE, OP_##N##_ADD, \
+    OP_##N##_INC, OP_##N##_DEC, OP_##N##_R_PUSH, OP_##N##_R_POP
+
 enum opcode
 {
   OP_NOP,
@@ -65,9 +68,11 @@ enum opcode
   OP_R_POP,
   OP_R_FETCH,
 
-  OP_A_LOAD, OP_A_STORE, OP_A_ADD, OP_A_INC, OP_A_DEC,
-  OP_B_LOAD, OP_B_STORE, OP_B_ADD, OP_B_INC, OP_B_DEC,
-  OP_C_LOAD, OP_C_STORE, OP_C_ADD, OP_C_INC, OP_C_DEC,
+  define_register_OP(A),
+  define_register_OP(B),
+  define_register_OP(C),
+  define_register_OP(I),
+  define_register_OP(J),
 
   /* Last primitive opcode - do not remove! */
   __LAST_PRIMITIVE_OP_CODE__

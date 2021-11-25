@@ -16,6 +16,22 @@
 
 struct prefix_map prefix_map[MAX_PREFIX];
 
+#define define_register(N) case OP_##N##_STORE: { N = pop(s->stack); break; } \
+  case OP_##N##_LOAD: { push(s->stack, N); break; }                         \
+  case OP_##N##_ADD: { N += pop(s->stack); break; }                         \
+  case OP_##N##_INC: { N += 1; break; }                                     \
+  case OP_##N##_DEC: { N -= 1; break; }                                     \
+  case OP_##N##_R_POP: { N = pop(s->r_stack); break; }                      \
+  case OP_##N##_R_PUSH: { push(s->r_stack, N); break; }
+
+#define define_register_primitive(N) define_primitive_inlined(state, #N"@", OP_##N##_LOAD); \
+  define_primitive_inlined(state, #N"!", OP_##N##_STORE);            \
+  define_primitive_inlined(state, #N"+!", OP_##N##_ADD);             \
+  define_primitive_inlined(state, #N"++!", OP_##N##_INC);            \
+  define_primitive_inlined(state, #N"--!", OP_##N##_DEC);            \
+  define_primitive_inlined(state, #N">R", OP_##N##_R_PUSH);          \
+  define_primitive_inlined(state, "R>"#N, OP_##N##_R_POP);
+
 
 void
 quit(struct state *state, char ask)
@@ -349,6 +365,8 @@ execute_(struct state *s, struct entry *entry)
   register cell A = 0;
   register cell B = 0;
   register cell C = 0;
+  register cell I = 0;
+  register cell J = 0;
 
   // don't forget to compile a return!!!!
   while(1)
@@ -387,23 +405,11 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_A_STORE: { A = pop(s->stack); break; }
-      case OP_A_LOAD: { push(s->stack, A); break; }
-      case OP_A_ADD: { A += pop(s->stack); break; }
-      case OP_A_INC: { A += 1; break; }
-      case OP_A_DEC: { A -= 1; break; }
-
-      case OP_B_STORE: { B = pop(s->stack); break; }
-      case OP_B_LOAD: { push(s->stack, B); break; }
-      case OP_B_ADD: { B += pop(s->stack); break; }
-      case OP_B_INC: { B += 1; break; }
-      case OP_B_DEC: { B -= 1; break; }
-
-      case OP_C_STORE: { C = pop(s->stack); break; }
-      case OP_C_LOAD: { push(s->stack, C); break; }
-      case OP_C_ADD: { C += pop(s->stack); break; }
-      case OP_C_INC: { C += 1; break; }
-      case OP_C_DEC: { C -= 1; break; }
+      define_register(A);
+      define_register(B);
+      define_register(C);
+      define_register(I);
+      define_register(J);
 
       case OP_DUP:
       {
@@ -963,24 +969,12 @@ colorforth_newstate(void)
   define_primitive_inlined(state, "R>", OP_R_POP);
   define_primitive_inlined(state, "R@", OP_R_FETCH);
 
-  // A, B and C registers are state global
-  define_primitive_inlined(state, "A@", OP_A_LOAD);
-  define_primitive_inlined(state, "A!", OP_A_STORE);
-  define_primitive_inlined(state, "A+!", OP_A_ADD);
-  define_primitive_inlined(state, "A++!", OP_A_INC);
-  define_primitive_inlined(state, "A--!", OP_A_DEC);
-
-  define_primitive_inlined(state, "B@", OP_B_LOAD);
-  define_primitive_inlined(state, "B!", OP_B_STORE);
-  define_primitive_inlined(state, "B+!", OP_B_ADD);
-  define_primitive_inlined(state, "B++!", OP_B_INC);
-  define_primitive_inlined(state, "B--!", OP_B_DEC);
-
-  define_primitive_inlined(state, "C@", OP_C_LOAD);
-  define_primitive_inlined(state, "C!", OP_C_STORE);
-  define_primitive_inlined(state, "C+!", OP_C_ADD);
-  define_primitive_inlined(state, "C++!", OP_C_INC);
-  define_primitive_inlined(state, "C--!", OP_C_DEC);
+  // A, B, C, I and J registers are state global
+  define_register_primitive(A);
+  define_register_primitive(B);
+  define_register_primitive(C);
+  define_register_primitive(I);
+  define_register_primitive(J);
 
   LOAD_EXTENTIONS;
 
