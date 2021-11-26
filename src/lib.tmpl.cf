@@ -54,6 +54,7 @@
 :cr ^10 emit ;
 :tab ^9 emit ;
 :space ^32 emit ;
+:spaces ^space -done?;  spaces ;
 
 ~( dump word )
 :emit.; ^ drop 46 emit ;; ;
@@ -104,7 +105,9 @@
 :pr
 :." ^."init ."loop 2drop ;
 :prn ^pr cr ;
+:npr ^cr pr ;
 :nprn ^cr pr cr ;
+
 
 
 ~( system )

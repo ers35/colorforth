@@ -3,7 +3,6 @@
 
 :star ~key # >> ^emit ;
 
-:spaces ^space -done?;  spaces ;
 :stars  ^star  -done?;  stars ;
 :lines  ^cr    -done?;  lines ;
 
