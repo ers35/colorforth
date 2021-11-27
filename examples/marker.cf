@@ -13,7 +13,7 @@
 ~20000 alloc
 :second-word ~c" The second word" ^prn ;
 
-%cr first-word second-word
+~cr first-word second-word
 cr shortroom
 
 ~" Forget all above mark-1:" ~nprn
@@ -26,7 +26,7 @@ mark-1  forget
 
 :a-word ^and-another ;
 
-%first-word second-word third-word
+~first-word second-word third-word
 
 cr shortroom
 
