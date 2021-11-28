@@ -201,6 +201,47 @@ hide_entry (struct state *s)
 }
 
 void
+patch_entry (struct state *s)
+{
+  struct entry *entry = (struct entry*)pop(s->stack);
+  struct entry *to = (struct entry*)pop(s->stack);
+  struct entry *from = (struct entry*)pop(s->stack);
+
+  char is_test = 0;
+
+  for (size_t i = 0, done = 0; !done; i++)
+  {
+    struct entry *entry_ = (struct entry*) entry->code[i].this;
+    switch(entry->code[i].opcode)
+    {
+      case OP_RETURN:
+      {
+        if (!is_test)
+        {
+          done = 1;
+        }
+        break;
+      }
+
+      case OP_CALL:
+      {
+        if ((struct entry *)entry->code[i].this == from)
+        {
+          entry->code[i].this = (cell) to;
+        }
+        break;
+      }
+
+      default:
+      {
+      }
+    }
+
+    is_test = (entry->code[i].opcode == OP_WHEN || entry->code[i].opcode == OP_UNLESS) ? 1 : 0;
+  }
+}
+
+void
 init_dict_utils(struct state *state)
 {
   define_primitive_extension(state, "see", see_fn);
@@ -208,6 +249,7 @@ init_dict_utils(struct state *state)
   define_primitive_extension(state, "room", room);
   define_primitive_extension(state, "fullroom", fullroom);
   define_primitive_extension(state, "shortroom", shortroom);
-  define_primitive_extension(state, "is", is);
-  define_primitive_extension(state, "hide-entry", hide_entry);
+  define_primitive_extension(state, "entry/is", is);
+  define_primitive_extension(state, "entry/hide", hide_entry);
+  define_primitive_extension(state, "entry/patch", patch_entry);
 }
