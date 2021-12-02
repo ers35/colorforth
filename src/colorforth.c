@@ -17,19 +17,19 @@
 struct prefix_map prefix_map[MAX_PREFIX];
 
 #define define_register(N) case OP_##N##_STORE: { N = pop(s->stack); break; } \
-  case OP_##N##_LOAD: { push(s->stack, N); break; }                         \
-  case OP_##N##_ADD: { N += pop(s->stack); break; }                         \
-  case OP_##N##_INC: { N += 1; break; }                                     \
-  case OP_##N##_DEC: { N -= 1; break; }                                     \
-  case OP_##N##_R_POP: { N = pop(s->r_stack); break; }                      \
+  case OP_##N##_LOAD: { push(s->stack, N); break; }                     \
+  case OP_##N##_ADD: { N += pop(s->stack); break; }                     \
+  case OP_##N##_INC: { N += 1; break; }                                 \
+  case OP_##N##_DEC: { N -= 1; break; }                                 \
+  case OP_##N##_R_POP: { N = pop(s->r_stack); break; }                  \
   case OP_##N##_R_PUSH: { push(s->r_stack, N); break; }
 
 #define define_register_primitive(N) define_primitive_inlined(state, #N"@", OP_##N##_LOAD); \
-  define_primitive_inlined(state, #N"!", OP_##N##_STORE);            \
-  define_primitive_inlined(state, #N"+!", OP_##N##_ADD);             \
-  define_primitive_inlined(state, #N"++!", OP_##N##_INC);            \
-  define_primitive_inlined(state, #N"--!", OP_##N##_DEC);            \
-  define_primitive_inlined(state, #N">R", OP_##N##_R_PUSH);          \
+  define_primitive_inlined(state, #N"!", OP_##N##_STORE);               \
+  define_primitive_inlined(state, #N"+!", OP_##N##_ADD);                \
+  define_primitive_inlined(state, #N"++", OP_##N##_INC);                \
+  define_primitive_inlined(state, #N"--", OP_##N##_DEC);                \
+  define_primitive_inlined(state, #N">R", OP_##N##_R_PUSH);             \
   define_primitive_inlined(state, "R>"#N, OP_##N##_R_POP);
 
 void
