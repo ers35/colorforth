@@ -2,9 +2,13 @@
 #ifndef __CF_STDIO_H
 #define __CF_STDIO_H
 
-#include <conf.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
-#include <colorforth.h>
+#include "conf.h"
+#include "colorforth.h"
 
 #define CF_EOF EOF
 
@@ -14,5 +18,9 @@ extern int cf_getchar(struct state *s);
 extern void cf_printf(struct state *s, const char* format, ...);
 
 extern void cf_fflush();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __CF_STDIO_H */

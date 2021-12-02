@@ -2,13 +2,23 @@
 #ifndef __COLORFORTH_H
 #define __COLORFORTH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
-#include <conf.h>
+#include "conf.h"
 
-#include <color.h>
+#include "color.h"
+
+#ifdef __EXTENDED_MATH
 #include <ext-math.h>
+#endif
+
+#ifdef __MP_MATH
 #include <mp-math.h>
+#endif
 
 typedef long cell;
 
@@ -68,11 +78,13 @@ enum opcode
   OP_R_POP,
   OP_R_FETCH,
 
+#ifdef __USE_REGISTER
   define_register_OP(A),
   define_register_OP(B),
   define_register_OP(C),
   define_register_OP(I),
   define_register_OP(J),
+#endif
 
   /* Last primitive opcode - do not remove! */
   __LAST_PRIMITIVE_OP_CODE__
@@ -89,7 +101,7 @@ struct code;
 struct code
 {
   enum opcode opcode;
-  cell this;
+  cell value;
 };
 
 struct entry;
@@ -175,5 +187,9 @@ extern void parse_space(struct state *s);
 extern void clear_tib (struct state *s);
 
 #define CFSTRING2C(str) ((char *)(str) + sizeof(cell))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __COLORFORTH_H */

@@ -1,7 +1,7 @@
 // The author disclaims copyright to this source code.
 #include <string.h>
-#include <colorforth.h>
-#include <cf-stdio.h>
+#include "colorforth.h"
+#include "cf-stdio.h"
 
 #include <emscripten/emscripten.h>
 

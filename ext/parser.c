@@ -1,5 +1,5 @@
 // The author disclaims copyright to this source code.
-#include <colorforth.h>
+#include "colorforth.h"
 
 // Expose the parser to colorForth
 // gniark gniark: parsing recursion from colorForth itself!!

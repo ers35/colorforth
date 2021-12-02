@@ -7,8 +7,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include <colorforth.h>
-#include <cf-stdio.h>
+#include "colorforth.h"
+#include "cf-stdio.h"
 
 #ifdef __EMBED_LIB_CF
 #include <lib.cf.h>
@@ -31,7 +31,6 @@ struct prefix_map prefix_map[MAX_PREFIX];
   define_primitive_inlined(state, #N"--!", OP_##N##_DEC);            \
   define_primitive_inlined(state, #N">R", OP_##N##_R_PUSH);          \
   define_primitive_inlined(state, "R>"#N, OP_##N##_R_POP);
-
 
 void
 quit(struct state *state, char ask)
@@ -131,7 +130,10 @@ dump_words(struct state *s, struct dictionary *dict)
   {
     if (entry->name == NULL) continue;
 
-    cf_printf(s, "%.*s ", (int)entry->name_len, entry->name);
+    s->tib.len = entry->name_len;
+    memcpy(s->tib.buf, entry->name, entry->name_len);
+    s->tib.buf[s->tib.len] = '\0';
+    cf_printf(s, "%s ", s->tib.buf);
   }
 }
 
@@ -174,7 +176,7 @@ find_entry_by_fn(struct state *s, struct dictionary *dict, struct code *code)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
-    if (entry->code->this == code->this)
+    if (entry->code->value == code->value)
     {
       return entry;
     }
@@ -211,10 +213,10 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
   memcpy(entry->name, name, entry->name_len);
   entry->code = s->here;
   entry->code->opcode = opcode;
-  entry->code->this = (cell) fn;
+  entry->code->value = (cell) fn;
 
   (entry->code + 1)->opcode = OP_RETURN;
-  (entry->code + 1)->this = 0;
+  (entry->code + 1)->value = 0;
 
   s->here = (struct code *)s->here + 2;
 }
@@ -286,7 +288,7 @@ inline_entry(struct state *s, struct entry *entry)
     }
     struct code *code = (struct code *)s->here;
     code->opcode = entry->code[i].opcode;
-    code->this = entry->code[i].this;
+    code->value = entry->code[i].value;
     s->here = (struct code *)s->here + 1;
   }
 }
@@ -306,7 +308,7 @@ compile(struct state *s)
   if (entry)
   {
     code->opcode = entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL;
-    code->this = (cell)entry;
+    code->value = (cell)entry;
     s->here = (struct code *)s->here + 1;
   }
   else
@@ -317,7 +319,7 @@ compile(struct state *s)
     {
       // compile number
       code->opcode = OP_NUMBER;
-      code->this = n;
+      code->value = n;
       s->here = (struct code *)s->here + 1;
     }
     else
@@ -348,7 +350,7 @@ compile_literal(struct state *s)
 {
   struct code *code =  (struct code *)s->here;
   code->opcode = OP_NUMBER;
-  code->this = pop(s->stack);
+  code->value = pop(s->stack);
   s->here = (struct code *)s->here + 1;
 }
 
@@ -362,11 +364,13 @@ execute_(struct state *s, struct entry *entry)
 
   short choose_state = 0;
 
+#ifdef __USE_REGISTER
   register cell A = 0;
   register cell B = 0;
   register cell C = 0;
   register cell I = 0;
   register cell J = 0;
+#endif
 
   // don't forget to compile a return!!!!
   while(1)
@@ -405,11 +409,13 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+#ifdef __USE_REGISTER
       define_register(A);
       define_register(B);
       define_register(C);
       define_register(I);
       define_register(J);
+#endif
 
       case OP_DUP:
       {
@@ -502,7 +508,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_CALL:
       {
-        struct entry *entry_ = (struct entry*)pc->this;
+        struct entry *entry_ = (struct entry*)pc->value;
         if (choose_state) {
           choose_state = 0;
           pc++;
@@ -515,7 +521,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_TAIL_CALL:
       {
-        struct entry *entry_ = (struct entry*)pc->this;
+        struct entry *entry_ = (struct entry*)pc->value;
         pc = entry_->code - 1;
         break;
       }
@@ -523,14 +529,14 @@ execute_(struct state *s, struct entry *entry)
       case OP_FUNCTION_CALL:
       {
         // Call extension function
-        ((void (*)(struct state *s)) pc->this)(s);
+        ((void (*)(struct state *s)) pc->value)(s);
         break;
       }
 
       case OP_NUMBER:
       case OP_TICK_NUMBER:
       {
-        push(s->stack, pc->this);
+        push(s->stack, pc->value);
 
         if (choose_state) {
           choose_state = 0;
@@ -749,7 +755,7 @@ compile_tick(struct state *s)
   {
     struct code *code = (struct code *)s->here;
     code->opcode = OP_TICK_NUMBER;
-    code->this = (cell)entry;
+    code->value = (cell)entry;
     s->here = (struct code *)s->here + 1;
   }
   else
@@ -969,12 +975,14 @@ colorforth_newstate(void)
   define_primitive_inlined(state, "R>", OP_R_POP);
   define_primitive_inlined(state, "R@", OP_R_FETCH);
 
+#ifdef __USE_REGISTER
   // A, B, C, I and J registers are state global
   define_register_primitive(A);
   define_register_primitive(B);
   define_register_primitive(C);
   define_register_primitive(I);
   define_register_primitive(J);
+#endif
 
   LOAD_EXTENTIONS;
 

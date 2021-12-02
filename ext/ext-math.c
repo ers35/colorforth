@@ -1,6 +1,6 @@
 // The author disclaims copyright to this source code.
-#include <colorforth.h>
-#include <cf-stdio.h>
+#include "colorforth.h"
+#include "cf-stdio.h"
 
 #ifdef __EXTENDED_MATH
 
@@ -215,7 +215,7 @@ fcompile_literal(struct state *s)
 
   struct code *code =  (struct code *)s->here;
   code->opcode = OP_NUMBER;
-  code->this = (cell)ptr;
+  code->value = (cell)ptr;
   s->here = (struct code *)s->here + 1;
 }
 

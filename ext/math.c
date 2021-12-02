@@ -1,6 +1,6 @@
 // The author disclaims copyright to this source code.
-#include <colorforth.h>
-#include <cf-stdio.h>
+#include "colorforth.h"
+#include "cf-stdio.h"
 
 void
 div_fn(struct state *s)

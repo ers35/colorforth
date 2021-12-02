@@ -1,9 +1,9 @@
 // The author disclaims copyright to this source code.
-#include <colorforth.h>
+#include "colorforth.h"
 
 #ifdef __ECHO_COLOR
 
-#include <cf-stdio.h>
+#include "cf-stdio.h"
 #include <unistd.h>
 #include <termios.h>
 

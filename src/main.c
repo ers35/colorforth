@@ -1,7 +1,7 @@
 // The author disclaims copyright to this source code.
 #include <string.h>
-#include <colorforth.h>
-#include <cf-stdio.h>
+#include "colorforth.h"
+#include "cf-stdio.h"
 
 extern void parse_from_file(struct state *s, char *filename);
 

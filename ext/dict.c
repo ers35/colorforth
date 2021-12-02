@@ -1,8 +1,8 @@
 // The author disclaims copyright to this source code.
 #include <string.h>
 
-#include <colorforth.h>
-#include <cf-stdio.h>
+#include "colorforth.h"
+#include "cf-stdio.h"
 
 void
 see(struct state *s, struct entry *entry)
@@ -20,7 +20,7 @@ see(struct state *s, struct entry *entry)
     cf_printf(s, ":%s ", entry->name == NULL ? "???" : entry->name);
     for (size_t i = 0, done = 0; !done; i++)
     {
-      struct entry *entry_ = (struct entry*) entry->code[i].this;
+      struct entry *entry_ = (struct entry*) entry->code[i].value;
       switch(entry->code[i].opcode)
       {
         case OP_RETURN:
@@ -52,7 +52,7 @@ see(struct state *s, struct entry *entry)
 
         case OP_NUMBER:
         {
-          cf_printf(s, "%"CELL_FMT" ", entry->code[i].this);
+          cf_printf(s, "%"CELL_FMT" ", entry->code[i].value);
           break;
         }
 
@@ -211,7 +211,6 @@ patch_entry (struct state *s)
 
   for (size_t i = 0, done = 0; !done; i++)
   {
-    struct entry *entry_ = (struct entry*) entry->code[i].this;
     switch(entry->code[i].opcode)
     {
       case OP_RETURN:
@@ -225,9 +224,9 @@ patch_entry (struct state *s)
 
       case OP_CALL:
       {
-        if ((struct entry *)entry->code[i].this == from)
+        if ((struct entry *)entry->code[i].value == from)
         {
-          entry->code[i].this = (cell) to;
+          entry->code[i].value = (cell) to;
         }
         break;
       }

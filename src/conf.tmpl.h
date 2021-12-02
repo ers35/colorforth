@@ -2,6 +2,9 @@
 #ifndef __CONF_H
 #define __CONF_H
 
+// Enable register variable
+#define __USE_REGISTER
+
 // Enable colors in the terminal
 #define __ECHO_COLOR
 
