@@ -182,25 +182,6 @@ shortroom(struct state *s)
 }
 
 void
-is (struct state *s)
-{
-  struct entry *entry_to = (struct entry*)pop(s->stack);
-  struct entry *entry_from = (struct entry*)pop(s->stack);
-
-  entry_from->code = entry_to->code;
-}
-
-void
-hide_entry (struct state *s)
-{
-  struct entry *entry = (struct entry*)pop(s->stack);
-
-  free(entry->name);
-  entry->name = NULL;
-  entry->name_len = 0;
-}
-
-void
 patch_entry (struct state *s)
 {
   struct entry *entry = (struct entry*)pop(s->stack);
@@ -248,7 +229,5 @@ init_dict_utils(struct state *state)
   define_primitive_extension(state, "room", room);
   define_primitive_extension(state, "fullroom", fullroom);
   define_primitive_extension(state, "shortroom", shortroom);
-  define_primitive_extension(state, "entry/is", is);
-  define_primitive_extension(state, "entry/hide", hide_entry);
   define_primitive_extension(state, "entry/patch", patch_entry);
 }

@@ -6,6 +6,7 @@ default: cf.exe
 SRC=src\main.c src\colorf~1.c \
 	src\cf-stdio.c \
 	src\color.c \
+	src/lib.c \
 	ext\os.c \
 	ext\dict.c \
 	ext\io.c \

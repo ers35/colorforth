@@ -7,6 +7,7 @@ default: colorforth
 SRC=src/main.c src/colorforth.c \
 	src/cf-stdio.c \
 	src/color.c \
+	src/lib.c \
 	ext/os.c \
 	ext/dict.c \
 	ext/io.c \

@@ -37,6 +37,8 @@ typedef double number_t;
 
 #define TIB_SIZE 32
 
+// Number of bits in a char
+#define CHAR_BIT 8
 
 // Extensions to load
 struct state;

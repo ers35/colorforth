@@ -736,18 +736,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_BASE_SET:
-      {
-        s->base = pop(s->stack);
-        break;
-      }
-
-      case OP_BASE_FETCH:
-      {
-        push(s->stack, s->base);
-        break;
-      }
-
       default:
       {
         cf_printf(s, "unknown opcode");
@@ -1016,8 +1004,6 @@ colorforth_newstate(void)
   define_primitive(state, "code>", OP_GET_ENTRY_CODE);
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
-  define_primitive(state, "base!", OP_BASE_SET);
-  define_primitive(state, "base@", OP_BASE_FETCH);
 
   define_primitive_inlined(state, ";", OP_RETURN);
   define_primitive_inlined(state, "when", OP_WHEN);
@@ -1027,6 +1013,8 @@ colorforth_newstate(void)
   define_primitive_inlined(state, ">R", OP_R_PUSH);
   define_primitive_inlined(state, "R>", OP_R_POP);
   define_primitive_inlined(state, "R@", OP_R_FETCH);
+
+  init_lib(state);
 
 #ifdef __USE_REGISTER
   // A, B, C, I and J registers are state global
