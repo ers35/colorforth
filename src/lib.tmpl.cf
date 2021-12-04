@@ -11,6 +11,10 @@
 :on  ^on ;
 :off ^off ;
 
+:hex ^16 base! ;
+:dec ^10 base! ;
+:bin ^2 base! ;
+
 :eon! ^on echo! ;
 :eoff! ^off echo! ;
 :% ^eoff! ;

@@ -67,6 +67,8 @@ enum opcode
   OP_LATEST,
   OP_I_LATEST,
   OP_DOT_S,
+  OP_BASE_SET,
+  OP_BASE_FETCH,
 
   /* inlined */
   OP_RETURN,
@@ -137,6 +139,9 @@ struct state
   struct dictionary inlined_dict;
   void *heap;
   void *here;
+
+  char base;
+
   // track stream position for debugging compilation
   unsigned int line, coll;
   int done;
@@ -165,6 +170,8 @@ struct prefix_map
 };
 
 extern struct prefix_map prefix_map[];
+
+extern void cf_print_cell(struct state *state, cell cell);
 
 extern void push(struct stack *stack, const cell n);
 extern cell pop(struct stack *stack);

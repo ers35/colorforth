@@ -33,6 +33,43 @@ struct prefix_map prefix_map[MAX_PREFIX];
   define_primitive_inlined(state, "R>"#N, OP_##N##_R_POP);
 
 void
+cf_print_cell(struct state *state, cell cell)
+{
+  switch (state->base)
+  {
+    case 16:
+    {
+      cf_printf(state, "$%X ", cell);
+      break;
+    }
+    case 2:
+    {
+      cf_putchar(state, '#');
+      if (cell == 0)
+      {
+        cf_printf(state, "0 ");
+      } else {
+        int i = CHAR_BIT * sizeof cell;
+        char output = 0;
+        while(i--)
+        {
+          const char n = ((cell >> i) & 1);
+          if (n) output = 1;
+          if (output) cf_putchar(state, '0' + n);
+        }
+        cf_putchar(state, ' ');
+      }
+      break;
+    }
+    default:
+    {
+      cf_printf(state, "%ld ", cell);
+      break;
+    }
+  }
+}
+
+void
 quit(struct state *state, char ask)
 {
   char c = 'n';
@@ -79,7 +116,7 @@ dot_s(struct state *state, struct stack *stack)
   for (int i = 0, p = stack->sp + 1; i <= stack->lim; i++, p++)
   {
     if (p > stack->lim) p = 0;
-    cf_printf(state, "%"CELL_FMT" ", stack->cells[p]);
+    cf_print_cell(state, stack->cells[p]);
   }
   cf_printf(state, " <tos\n");
 }
@@ -244,7 +281,7 @@ tib_to_number(struct state *s, cell *n)
 {
   char *endptr;
   s->tib.buf[s->tib.len] = '\0';
-  *n = strtol(s->tib.buf, &endptr, 10);
+  *n = strtol(s->tib.buf, &endptr, s->base);
   return *s->tib.buf != 0 && *endptr == 0;
 }
 
@@ -688,7 +725,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_PRINT_TOS:
       {
-        cf_printf(s, "%"CELL_FMT" ", pop(s->stack));
+        cf_print_cell(s,pop(s->stack));
         cf_fflush();
         break;
       }
@@ -696,6 +733,18 @@ execute_(struct state *s, struct entry *entry)
       case OP_DOT_S:
       {
         dot_s(s, s->stack);
+        break;
+      }
+
+      case OP_BASE_SET:
+      {
+        s->base = pop(s->stack);
+        break;
+      }
+
+      case OP_BASE_FETCH:
+      {
+        push(s->stack, s->base);
         break;
       }
 
@@ -905,6 +954,8 @@ colorforth_newstate(void)
   struct state *state = calloc(1, sizeof(*state));
   state->color = execute;
 
+  state->base = 10;
+
   state->stack = calloc(1, sizeof(struct stack));
   init_stack(state->stack, STACK_SIZE);
 
@@ -965,6 +1016,8 @@ colorforth_newstate(void)
   define_primitive(state, "code>", OP_GET_ENTRY_CODE);
   define_primitive(state, "execute", OP_EXECUTE);
   define_primitive(state, ".s", OP_DOT_S);
+  define_primitive(state, "base!", OP_BASE_SET);
+  define_primitive(state, "base@", OP_BASE_FETCH);
 
   define_primitive_inlined(state, ";", OP_RETURN);
   define_primitive_inlined(state, "when", OP_WHEN);

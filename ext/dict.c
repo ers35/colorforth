@@ -52,7 +52,7 @@ see(struct state *s, struct entry *entry)
 
         case OP_NUMBER:
         {
-          cf_printf(s, "%"CELL_FMT" ", entry->code[i].value);
+          cf_print_cell(s, entry->code[i].value);
           break;
         }
 
