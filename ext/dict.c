@@ -131,8 +131,17 @@ see_fn(struct state *s)
 }
 
 void
-commonroom(struct state *s)
+fullroom(struct state *s)
 {
+  cf_printf(s, "-------- ROOM -------------------------------------------\n");
+  cf_printf(s, "Cell size is %u bytes / %u bits\n", (unsigned int) sizeof(cell), (unsigned int) sizeof(cell) * 8);
+
+  cf_printf(s, "The circular stack size is %d cells\n", s->stack->lim + 1);
+  cf_printf(s, "The circular return stack size is %d cells\n", s->r_stack->lim + 1);
+  cf_printf(s, "Maximm length of a word is %d chars\n", TIB_SIZE);
+
+  cf_printf(s, "--\n");
+
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
   cf_printf(s, "There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
@@ -145,40 +154,6 @@ commonroom(struct state *s)
   cf_printf(s, "There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,
          (used*100/HEAP_SIZE));
   cf_printf(s, "---------------------------------------------------------\n");
-}
-
-void
-fullroom(struct state *s)
-{
-  cf_printf(s, "-------- ROOM -------------------------------------------\n");
-  cf_printf(s, "Cell size is %u bytes / %u bits\n", (unsigned int) sizeof(cell), (unsigned int) sizeof(cell) * 8);
-
-  cf_printf(s, "The circular stack size is %d cells\n", s->stack->lim + 1);
-  cf_printf(s, "The circular return stack size is %d cells\n", s->r_stack->lim + 1);
-  cf_printf(s, "Maximm length of a word is %d chars\n", TIB_SIZE);
-
-  cf_printf(s, "--\n");
-
-  commonroom(s);
-}
-
-void
-room(struct state *s)
-{
-  cf_printf(s, "-------- ROOM -------------------------------------------\n");
-  commonroom(s);
-}
-
-void
-shortroom(struct state *s)
-{
-  const unsigned int defined = s->dict.latest - s->dict.entries + 1;
-  const unsigned int defined_inlined = s->inlined_dict.latest - s->inlined_dict.entries + 1;
-  const unsigned int used = (char *)s->here - (char *)s->heap;
-  cf_printf(s, "ROOM: Entries: %u / %d (%u%%) | Inlined: %u / %d (%u%%) | Heap (bytes): %u / %d (%u%%)\n",
-            defined, DICT_SIZE, (defined*100/DICT_SIZE),
-            defined_inlined, INLINED_DICT_SIZE, (defined_inlined*100/INLINED_DICT_SIZE),
-            used, HEAP_SIZE,(used*100/HEAP_SIZE));
 }
 
 void
@@ -226,8 +201,6 @@ init_dict_utils(struct state *state)
 {
   define_primitive_extension(state, "see", see_fn);
   define_primitive_extension(state, "disassemble", disassemble);
-  define_primitive_extension(state, "room", room);
   define_primitive_extension(state, "fullroom", fullroom);
-  define_primitive_extension(state, "shortroom", shortroom);
   define_primitive_extension(state, "entry/patch", patch_entry);
 }

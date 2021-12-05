@@ -4,7 +4,7 @@
 ~\ Store the current state in a 3 cells word
 :mark-1 ~marker ^;
 
-~shortroom
+~room
 
 ~" See what 'mark-1' looks like:" ~nprn
 ~'mark-1 ~see
@@ -14,7 +14,7 @@
 :second-word ~c" The second word" ^prn ;
 
 ~cr first-word second-word
-cr shortroom
+cr room
 
 ~" Forget all above mark-1:" ~nprn
 mark-1  forget
@@ -28,10 +28,10 @@ mark-1  forget
 
 ~first-word second-word third-word
 
-cr shortroom
+cr room
 
 ~" Allocate more space:" ~nprn
-~20000 alloc shortroom
+~20000 alloc room
 
 ~" 'mark-1' is still the same:" ~nprn
 ~'mark-1 ~see
@@ -40,7 +40,7 @@ cr shortroom
 mark-1 forget
 ~first-word second-word third-word
 
-cr shortroom
+cr room
 
 ~" The heap and the dictionaries has been reset to their original state" nprn
 
