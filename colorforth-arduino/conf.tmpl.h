@@ -38,12 +38,14 @@
 
 #define TIB_SIZE 32
 
+// Number of bits in a char
+#define CHAR_BIT 8
 
 // Extensions to load
 struct state;
 
 // extern void init_os_utils(struct state *s);
-extern void init_dict_utils(struct state *s);
+// extern void init_dict_utils(struct state *s);
 // extern void init_io_utils(struct state *s);
 // extern void init_parser_utils(struct state *s);
 // extern void init_time_utils(struct state *s);
@@ -52,9 +54,9 @@ extern void init_dict_utils(struct state *s);
 // extern void init_mp_math_utils(struct state *state);
 // extern void init_threads_utils(struct state *state);
 
-#define LOAD_EXTENTIONS \
-  init_dict_utils(state);
+#define LOAD_EXTENTIONS
 
+//   init_dict_utils(state);
 //   init_os_utils(state);                         \
 //   init_io_utils(state);                         \
 //   init_parser_utils(state);                     \
