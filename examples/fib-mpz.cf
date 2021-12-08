@@ -1,5 +1,5 @@
 %
-:fib-loop ^mswap mover m+  I--! I@ 1 = unless fib-loop ;
+:fib-loop ^mswap mover m+  I-- I@ 1 = unless fib-loop ;
 :fib ~( n -- fib ) ~#0 ~m>> ^m@ ~#1 ~m>> ^m@  I>R I! fib-loop R>I ;
 
 ~
