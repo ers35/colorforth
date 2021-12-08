@@ -38,22 +38,25 @@ int cf_getchar(struct state *s)
   return Serial.read();
 }
 
+char str[BUF_SIZE];
+
 void cf_printf(struct state *s, const char* format, ...)
 {
   va_list arg;
 
-  char str[1024];
-
   va_start (arg, format);
-  vsnprintf(str, 1024, format, arg);
+  vsnprintf(str, BUF_SIZE, format, arg);
   va_end (arg);
 
-  for(int i = 0; i < 1024 && str[i]; i++) {
+  for(int i = 0; i < BUF_SIZE && str[i]; i++) {
     cf_putchar(s, str[i]);
   }
 }
 
 void cf_fflush()
 {
-  fflush(stdout);
+  delay(200);
+  while (Serial.available()) {
+    delay(200);  //delay to allow byte to arrive in input buffer
+  }
 }

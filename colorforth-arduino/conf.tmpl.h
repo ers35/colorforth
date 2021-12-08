@@ -34,9 +34,10 @@
 #define DICT_SIZE 80
 #define INLINED_DICT_SIZE 10
 
-#define HEAP_SIZE 800
+#define HEAP_SIZE 3000
 
 #define TIB_SIZE 32
+#define BUF_SIZE 128
 
 // Number of bits in a char
 #define CHAR_BIT 8
