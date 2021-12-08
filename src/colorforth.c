@@ -108,6 +108,20 @@ cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned char id)
   return ptr;
 }
 
+hash_t
+hash(char *str)
+{
+  hash_t hash = 5381;
+  int c;
+
+  while ((c = *str++))
+  {
+    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+  }
+
+  return hash;
+}
+
 void
 init_stack(struct stack *stack, int len, unsigned char id)
 {
@@ -169,6 +183,7 @@ clear_tib (struct state *s){
 void
 dump_words(struct state *s, struct dictionary *dict)
 {
+#ifndef __HASH_NAMES
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
     if (entry->name == NULL) continue;
@@ -178,6 +193,9 @@ dump_words(struct state *s, struct dictionary *dict)
     s->tib.buf[s->tib.len] = '\0';
     cf_printf(s, "%s ", s->tib.buf);
   }
+#else
+  cf_printf(s, "Hashed names. Nothing to see!\n");
+#endif
 }
 
 void
@@ -191,9 +209,17 @@ words(struct state *s)
 struct entry*
 find_entry(struct state *s, struct dictionary *dict)
 {
+#ifdef __HASH_NAMES
+  const hash_t tib_hash = hash(s->tib.buf);
+#endif
+
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
+#ifdef __HASH_NAMES
+    if (entry->name_hash == tib_hash)
+#else
     if (entry->name_len == s->tib.len && memcmp(entry->name, s->tib.buf, s->tib.len) == 0)
+#endif
     {
       return entry;
     }
@@ -251,9 +277,15 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
 {
   dict->latest++;
   struct entry *entry = dict->latest;
+
+#ifdef __HASH_NAMES
+  entry->name_hash = hash(name);
+#else
   entry->name_len = strlen(name);
   entry->name = cf_calloc(s, 1, entry->name_len, 11);
   memcpy(entry->name, name, entry->name_len);
+#endif
+
   entry->code = s->here;
   entry->code->opcode = opcode;
   entry->code->value = (cell) fn;
@@ -301,9 +333,15 @@ define_generic(struct state *s, struct dictionary *dict)
 {
   dict->latest++;
   struct entry *entry = dict->latest;
+
+#ifdef __HASH_NAMES
+  entry->name_hash = hash(s->tib.buf);
+#else
   entry->name_len = s->tib.len;
   entry->name = cf_calloc(s, 1, entry->name_len, 12);
   memcpy(entry->name, s->tib.buf, s->tib.len);
+#endif
+
   entry->code = s->here;
 }
 

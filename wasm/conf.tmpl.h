@@ -2,6 +2,9 @@
 #ifndef __CONF_H
 #define __CONF_H
 
+// Enable hashed names: reduce memory size but break words/see/disasemble
+// #define __HASH_NAMES
+
 // Enable colors in the terminal
 #define __ECHO_COLOR
 

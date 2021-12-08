@@ -7,6 +7,7 @@
 void
 see(struct state *s, struct entry *entry)
 {
+#ifndef __HASH_NAMES
   if (entry)
   {
     char display_next_sc = 0;
@@ -97,11 +98,15 @@ see(struct state *s, struct entry *entry)
   {
     unknow_word(s, "with");
   }
+#else
+  cf_printf(s, "Hashed names. Nothing to see!\n");
+#endif
 }
 
 void
 disassemble_dict(struct state *s, struct dictionary *dict)
 {
+#ifndef __HASH_NAMES
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
     if (entry->name_len == 0) continue;
@@ -111,6 +116,9 @@ disassemble_dict(struct state *s, struct dictionary *dict)
     struct entry *entry_ = find_entry(s, dict);
     see(s, entry_);
   }
+#else
+  cf_printf(s, "Hashed names. Nothing to see!\n");
+#endif
 }
 
 void

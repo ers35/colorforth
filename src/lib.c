@@ -30,9 +30,13 @@ hide_entry (struct state *s)
 {
   struct entry *entry = (struct entry*)pop(s->stack);
 
+#ifdef __HASH_NAMES
+  entry->name_hash = 0;
+#else
   free(entry->name);
   entry->name = NULL;
   entry->name_len = 0;
+#endif
 }
 
 void

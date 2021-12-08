@@ -2,6 +2,9 @@
 #ifndef __CONF_H
 #define __CONF_H
 
+// Enable hashed names: reduce memory size but break words/see/disasemble
+// #define __HASH_NAMES
+
 // Enable register variable
 #define __USE_REGISTER
 

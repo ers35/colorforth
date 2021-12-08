@@ -21,6 +21,8 @@ extern "C" {
 #endif
 
 typedef long cell;
+typedef unsigned long hash_t;
+
 
 #define CELL_FMT "ld"
 
@@ -107,8 +109,12 @@ struct code
 struct entry;
 struct entry
 {
+#ifdef __HASH_NAMES
+  hash_t name_hash;
+#else
   char *name;
   size_t name_len;
+#endif
   struct code *code;
 };
 
