@@ -11,7 +11,7 @@ void
 c_alloc(struct state *s)
 {
   const unsigned int size = (unsigned int)pop(s->stack);
-  push(s->stack, (cell)calloc(1, size));
+  push(s->stack, (cell)cf_calloc(s, 1, size, 100));
 }
 
 void

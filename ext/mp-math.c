@@ -18,7 +18,7 @@
 void
 init_mpstack(struct mpstack *stack, int len)
 {
-  stack->cells = calloc(len, sizeof(mpz_t));
+  stack->cells = cf_calloc(NULL, len, sizeof(mpz_t), 110);
   for (int i = 0; i < MPSTACK_SIZE; i++)
   {
     mpz_init(stack->cells[i]);
@@ -229,7 +229,7 @@ mstore(struct state *s)
 void
 mcompile_literal(struct state *s)
 {
-  mpz_t *ptr = calloc(1, sizeof(mpz_t));
+  mpz_t *ptr = cf_calloc(s, 1, sizeof(mpz_t), 111);
   mpz_init(*ptr);
   mpz_set(*ptr, s_cells(s, s_sp(s)));;
   s_sp(s) = get_s_psp(s);

@@ -11,7 +11,7 @@
 #include <string.h>
 
 #ifdef __MP_MATH
-extern void init_mpstack(struct mpstack *stack, int len);
+extern void init_mpstack(struct mpstack *stack, int len, unsigned char id);
 #endif
 
 struct thread_args
@@ -24,14 +24,14 @@ struct thread_args
 struct thread_args thread_args[MAX_THREAD];
 sem_t locks[MAX_LOCK];
 
-extern void init_stack(struct stack *stack, int len);
+extern void init_stack(struct stack *stack, int len, unsigned char id);
 extern void execute(struct state *s);
 extern void execute_(struct state *s, struct entry *entry);
 
 struct state *
 clone_state(struct state *state)
 {
-  struct state *clone = calloc(1, sizeof(*state));
+  struct state *clone = cf_calloc(state, 1, sizeof(*state), 130);
   clone->color = execute;
 
   clone->dict.entries = state->dict.entries;
@@ -40,11 +40,11 @@ clone_state(struct state *state)
   clone->inlined_dict.entries = state->inlined_dict.entries;
   clone->inlined_dict.latest = state->inlined_dict.latest;
 
-  clone->stack = calloc(1, sizeof(struct stack));
-  init_stack(clone->stack, STACK_SIZE);
+  clone->stack = cf_calloc(state, 1, sizeof(struct stack), 131);
+  init_stack(clone->stack, STACK_SIZE, 132);
 
-  clone->r_stack = calloc(1, sizeof(struct stack));
-  init_stack(clone->r_stack, R_STACK_SIZE);
+  clone->r_stack = cf_calloc(state, 1, sizeof(struct stack), 133);
+  init_stack(clone->r_stack, R_STACK_SIZE, 134);
 
   clone->heap = state->heap;
   clone->here = state->here;
@@ -59,7 +59,7 @@ clone_state(struct state *state)
 
 
 #ifdef __MP_MATH
-  init_mpstack(&clone->mpstack, MPSTACK_SIZE);
+  init_mpstack(&clone->mpstack, MPSTACK_SIZE, 135);
 #endif
 
   return clone;

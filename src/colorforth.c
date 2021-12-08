@@ -87,25 +87,31 @@ quit(struct state *state, char ask)
 }
 
 void
-cf_fatal_error(struct state *state, const char* format, ...)
+cf_fatal_error(struct state *state, char id)
 {
-  va_list arg;
-
-  va_start (arg, format);
-  vfprintf(stdout, format, arg);
-  va_end (arg);
+  cf_printf(state, "E%d\n", id);
   if (state)
   {
     echo_color(state, ' ', COLOR_CLEAR);
   }
+  cf_fflush();
   reset_terminal();
   exit(1);
 }
 
-void
-init_stack(struct stack *stack, int len)
+void *
+cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned char id)
 {
-  stack->cells = calloc(len, sizeof(cell));
+  void *ptr = calloc(nmemb, size);
+  if (!ptr) cf_fatal_error(state, id);
+
+  return ptr;
+}
+
+void
+init_stack(struct stack *stack, int len, unsigned char id)
+{
+  stack->cells = cf_calloc(NULL, len, sizeof(cell), id);
   stack->sp = 0;
   stack->lim = len - 1;
 }
@@ -246,7 +252,7 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
   dict->latest++;
   struct entry *entry = dict->latest;
   entry->name_len = strlen(name);
-  entry->name = calloc(1, entry->name_len);
+  entry->name = cf_calloc(s, 1, entry->name_len, 11);
   memcpy(entry->name, name, entry->name_len);
   entry->code = s->here;
   entry->code->opcode = opcode;
@@ -296,7 +302,7 @@ define_generic(struct state *s, struct dictionary *dict)
   dict->latest++;
   struct entry *entry = dict->latest;
   entry->name_len = s->tib.len;
-  entry->name = calloc(1, entry->name_len);
+  entry->name = cf_calloc(s, 1, entry->name_len, 12);
   memcpy(entry->name, s->tib.buf, s->tib.len);
   entry->code = s->here;
 }
@@ -912,7 +918,7 @@ define_prefix(char c, void (*fn)(struct state *s), char * color, short reset)
 
   if (n_prefix >= MAX_PREFIX)
   {
-    cf_fatal_error(NULL, "Too many prefix. Exiting!\n");
+    cf_fatal_error(NULL, 7);
   }
 
   prefix_map[n_prefix].c = c;
@@ -939,24 +945,24 @@ parse_from_embed_lib_cf(struct state *state)
 struct state*
 colorforth_newstate(void)
 {
-  struct state *state = calloc(1, sizeof(*state));
+  struct state *state = cf_calloc(NULL, 1, sizeof(*state), 0);
   state->color = execute;
 
   state->base = 10;
 
-  state->stack = calloc(1, sizeof(struct stack));
-  init_stack(state->stack, STACK_SIZE);
+  state->stack = cf_calloc(state, 1, sizeof(struct stack), 1);
+  init_stack(state->stack, STACK_SIZE, 2);
 
-  state->r_stack = calloc(1, sizeof(struct stack));
-  init_stack(state->r_stack, R_STACK_SIZE);
+  state->r_stack = cf_calloc(state, 1, sizeof(struct stack), 3);
+  init_stack(state->r_stack, R_STACK_SIZE, 4);
 
-  state->dict.entries = calloc(DICT_SIZE, sizeof(struct entry));
+  state->dict.entries = cf_calloc(state, DICT_SIZE, sizeof(struct entry), 5);
   state->dict.latest = state->dict.entries - 1;
 
-  state->inlined_dict.entries = calloc(INLINED_DICT_SIZE, sizeof(struct entry));
+  state->inlined_dict.entries = cf_calloc(state, INLINED_DICT_SIZE, sizeof(struct entry), 6);
   state->inlined_dict.latest = state->inlined_dict.entries - 1;
 
-  state->heap = calloc(1, HEAP_SIZE);
+  state->heap = cf_calloc(state, 1, HEAP_SIZE, 7);
   state->here = state->heap;
 
   state->coll = 0; state->line = 1;

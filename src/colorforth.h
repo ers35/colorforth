@@ -193,6 +193,8 @@ extern void clear_tib (struct state *s);
 
 extern void init_lib(struct state *state);
 
+extern void *cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned char id);
+
 #define CFSTRING2C(str) ((char *)(str) + sizeof(cell))
 
 #ifdef __cplusplus
