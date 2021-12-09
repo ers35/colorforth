@@ -2,6 +2,9 @@
 #ifndef __CONF_H
 #define __CONF_H
 
+// #define __ARDUINO_MEGA
+#define __ARDUINO_NANO
+
 typedef int cell;
 #define CELL_FMT "%d"
 
@@ -34,6 +37,7 @@ typedef int cell;
 // #define __USE_REGISTER
 
 // Various sizes
+#ifdef __ARDUINO_MEGA
 #define STACK_SIZE 30
 #define R_STACK_SIZE 30
 
@@ -44,6 +48,21 @@ typedef int cell;
 
 #define TIB_SIZE 32
 #define BUF_SIZE 128
+
+#elif defined __ARDUINO_NANO
+#define STACK_SIZE 10
+#define R_STACK_SIZE 10
+
+#define DICT_SIZE 50
+#define INLINED_DICT_SIZE 10
+
+#define HEAP_SIZE 600
+
+#define TIB_SIZE 32
+#define BUF_SIZE 64
+#endif
+
+
 
 // Number of bits in a char
 #define CHAR_BIT 8
