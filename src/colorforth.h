@@ -20,11 +20,9 @@ extern "C" {
 #include <mp-math.h>
 #endif
 
-typedef long cell;
+
 typedef unsigned long hash_t;
 
-
-#define CELL_FMT "ld"
 
 #define MAX_PREFIX 10
 

@@ -63,7 +63,7 @@ cf_print_cell(struct state *state, cell cell)
     }
     default:
     {
-      cf_printf(state, "%ld ", cell);
+      cf_printf(state, CELL_FMT" ", cell);
       break;
     }
   }

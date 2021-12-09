@@ -2,6 +2,9 @@
 #ifndef __CONF_H
 #define __CONF_H
 
+typedef long cell;
+#define CELL_FMT "%ld"
+
 // Enable hashed names: reduce memory size but break words/see/disasemble
 // #define __HASH_NAMES
 

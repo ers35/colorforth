@@ -34,13 +34,13 @@ typedef int cell;
 // #define __USE_REGISTER
 
 // Various sizes
-#define STACK_SIZE 30
-#define R_STACK_SIZE 30
+#define STACK_SIZE 10
+#define R_STACK_SIZE 10
 
-#define DICT_SIZE 80
+#define DICT_SIZE 50
 #define INLINED_DICT_SIZE 10
 
-#define HEAP_SIZE 3000
+#define HEAP_SIZE 600
 
 #define TIB_SIZE 32
 #define BUF_SIZE 128
