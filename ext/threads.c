@@ -31,7 +31,7 @@ extern void execute_(struct state *s, struct entry *entry);
 struct state *
 clone_state(struct state *state)
 {
-  struct state *clone = cf_calloc(state, 1, sizeof(*state), 130);
+  struct state *clone = cf_calloc(state, 1, sizeof(*state), THREAD_CLONE_STATE_ERROR);
   clone->color = execute;
 
   clone->dict.entries = state->dict.entries;
@@ -40,11 +40,11 @@ clone_state(struct state *state)
   clone->inlined_dict.entries = state->inlined_dict.entries;
   clone->inlined_dict.latest = state->inlined_dict.latest;
 
-  clone->stack = cf_calloc(state, 1, sizeof(struct stack), 131);
-  init_stack(clone->stack, STACK_SIZE, 132);
+  clone->stack = cf_calloc(state, 1, sizeof(struct stack), THREAD_STACK_ERROR);
+  init_stack(clone->stack, STACK_SIZE, THREAD_INIT_STACK_ERROR);
 
-  clone->r_stack = cf_calloc(state, 1, sizeof(struct stack), 133);
-  init_stack(clone->r_stack, R_STACK_SIZE, 134);
+  clone->r_stack = cf_calloc(state, 1, sizeof(struct stack), THREAD_RSTACK_ERROR);
+  init_stack(clone->r_stack, R_STACK_SIZE, THREAD_INIT_RSTACK_ERROR);
 
   clone->heap = state->heap;
   clone->here = state->here;

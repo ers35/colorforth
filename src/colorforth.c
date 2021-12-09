@@ -282,7 +282,7 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
   entry->name_hash = hash(name);
 #else
   entry->name_len = strlen(name);
-  entry->name = cf_calloc(s, 1, entry->name_len, 11);
+  entry->name = cf_calloc(s, 1, entry->name_len, PRIMITIVE_ERROR);
   memcpy(entry->name, name, entry->name_len);
 #endif
 
@@ -338,7 +338,7 @@ define_generic(struct state *s, struct dictionary *dict)
   entry->name_hash = hash(s->tib.buf);
 #else
   entry->name_len = s->tib.len;
-  entry->name = cf_calloc(s, 1, entry->name_len, 12);
+  entry->name = cf_calloc(s, 1, entry->name_len, DEFINE_ERROR);
   memcpy(entry->name, s->tib.buf, s->tib.len);
 #endif
 
@@ -983,24 +983,24 @@ parse_from_embed_lib_cf(struct state *state)
 struct state*
 colorforth_newstate(void)
 {
-  struct state *state = cf_calloc(NULL, 1, sizeof(*state), 0);
+  struct state *state = cf_calloc(NULL, 1, sizeof(*state), STATE_ERROR);
   state->color = execute;
 
   state->base = 10;
 
-  state->stack = cf_calloc(state, 1, sizeof(struct stack), 1);
-  init_stack(state->stack, STACK_SIZE, 2);
+  state->stack = cf_calloc(state, 1, sizeof(struct stack), STACK_ERROR);
+  init_stack(state->stack, STACK_SIZE, STACK_INIT_ERROR);
 
-  state->r_stack = cf_calloc(state, 1, sizeof(struct stack), 3);
-  init_stack(state->r_stack, R_STACK_SIZE, 4);
+  state->r_stack = cf_calloc(state, 1, sizeof(struct stack), RSTACK_ERROR);
+  init_stack(state->r_stack, R_STACK_SIZE, RSTACK_INIT_ERROR);
 
-  state->dict.entries = cf_calloc(state, DICT_SIZE, sizeof(struct entry), 5);
+  state->dict.entries = cf_calloc(state, DICT_SIZE, sizeof(struct entry), DICT_ERROR);
   state->dict.latest = state->dict.entries - 1;
 
-  state->inlined_dict.entries = cf_calloc(state, INLINED_DICT_SIZE, sizeof(struct entry), 6);
+  state->inlined_dict.entries = cf_calloc(state, INLINED_DICT_SIZE, sizeof(struct entry), INLINE_DICT_ERROR);
   state->inlined_dict.latest = state->inlined_dict.entries - 1;
 
-  state->heap = cf_calloc(state, 1, HEAP_SIZE, 7);
+  state->heap = cf_calloc(state, 1, HEAP_SIZE, HEAP_ERROR);
   state->here = state->heap;
 
   state->coll = 0; state->line = 1;

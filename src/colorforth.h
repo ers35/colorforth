@@ -92,6 +92,32 @@ enum opcode
   __LAST_PRIMITIVE_OP_CODE__
 };
 
+enum errors {
+  STATE_ERROR                =   0,
+  STACK_ERROR                =   1,
+  STACK_INIT_ERROR           =   2,
+  RSTACK_ERROR               =   3,
+  RSTACK_INIT_ERROR          =   4,
+  DICT_ERROR                 =   5,
+  INLINE_DICT_ERROR          =   6,
+  HEAP_ERROR                 =   7,
+  PRIMITIVE_ERROR            =  11,
+  DEFINE_ERROR               =  12,
+
+  CALLOC_ERROR               = 100,
+  F_STACK_ERROR              = 120,
+
+  F_LITERAL_ERROR            = 121,
+
+  MP_STACK_INIT_ERROR        = 110,
+  MP_LITERAL_ERROR           = 111,
+
+  THREAD_CLONE_STATE_ERROR   = 130,
+  THREAD_INIT_STACK_ERROR    = 131,
+  THREAD_RSTACK_ERROR        = 132,
+  THREAD_INIT_RSTACK_ERROR   = 133
+};
+
 // terminal input buffer
 struct tib
 {

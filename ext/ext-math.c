@@ -7,7 +7,7 @@
 void
 init_fstack(struct fstack *stack, int len)
 {
-  stack->cells = cf_calloc(NULL, len, sizeof(number_t), 120);
+  stack->cells = cf_calloc(NULL, len, sizeof(number_t), FSTACK_ERROR);
   stack->sp = 0;
   stack->lim = len - 1;
 }
@@ -210,7 +210,7 @@ fstore(struct state *s)
 void
 fcompile_literal(struct state *s)
 {
-  number_t *ptr = cf_calloc(s, 1, sizeof(number_t), 121);
+  number_t *ptr = cf_calloc(s, 1, sizeof(number_t), F_LITERAL_ERROR);
   *ptr = fpop(&s->fstack);
 
   struct code *code =  (struct code *)s->here;
