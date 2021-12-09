@@ -7,7 +7,7 @@
 void
 init_fstack(struct fstack *stack, int len)
 {
-  stack->cells = cf_calloc(NULL, len, sizeof(number_t), FSTACK_ERROR);
+  stack->cells = cf_calloc(NULL, len, sizeof(number_t), F_STACK_ERROR);
   stack->sp = 0;
   stack->lim = len - 1;
 }
