@@ -45,12 +45,16 @@ room (struct state *s)
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
   const unsigned int defined_inlined = s->inlined_dict.latest - s->inlined_dict.entries + 1;
   const unsigned int used = (char *)s->here - (char *)s->heap;
+  const unsigned int cell_bytes = sizeof(cell);
+  const unsigned int cell_bits = sizeof(cell) * 8;
 
-  cf_printf(s, "ROOM: Entries: %u / %d (%u%%) | Inlined: %u / %d (%u%%) | Heap (bytes): %u / %d (%u%%)\n",
+  cf_printf(s, "Entries: %u/%d %u%%|Inlined: %u/%d %u%%|Heap (bytes): %u/%d %u%%|Cell: %u bytes, %u bits\n",
             defined, DICT_SIZE, (defined*100/DICT_SIZE),
             defined_inlined, INLINED_DICT_SIZE, (defined_inlined*100/INLINED_DICT_SIZE),
-            used, HEAP_SIZE,(used*100/HEAP_SIZE));
+            used, HEAP_SIZE,(used*100/HEAP_SIZE), cell_bytes, cell_bits);
 
+  push(s->stack, cell_bits);
+  push(s->stack, cell_bytes);
   push(s->stack, HEAP_SIZE);
   push(s->stack, used);
   push(s->stack, INLINED_DICT_SIZE);
