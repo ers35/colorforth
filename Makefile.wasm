@@ -24,8 +24,14 @@ SRC_H=src/colorforth.h \
 	src/cf-stdio.h \
 	src/color.h
 
-wasm/conf.h: wasm/conf.tmpl.h
-	cp wasm/conf.tmpl.h wasm/conf.h
+wasm/conf.h: conf.tmpl.h
+	cp conf.tmpl.h wasm/conf.h
+	sed -i 's%\(#.*MP_MATH\)%// \1%' wasm/conf.h
+	sed -i 's%\(extern .*init_mp_math_utils\)%// \1%' wasm/conf.h
+	sed -i 's%\(extern .*init_threads_utils\)%// \1%' wasm/conf.h
+	sed -i 's%\(init_ext_math_utils.*;\).*\\%\1%' wasm/conf.h
+	sed -i 's%\(init_mp_math_utils.*;\).*\\%// \1%' wasm/conf.h
+	sed -i 's%\(init_threads_utils\)%// \1%' wasm/conf.h
 
 src/lib.cf.h: lib.tmpl.cf
 	cp lib.tmpl.cf lib.cf
