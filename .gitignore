@@ -1,5 +1,5 @@
 Makefile
 colorforth
 conf.h
-src/lib.cf
+lib.cf
 colorforth-arduino/conf.h

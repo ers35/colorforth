@@ -969,11 +969,11 @@ define_prefix(char c, void (*fn)(struct state *s), char * color, short reset)
 void
 parse_from_embed_lib_cf(struct state *state)
 {
-  char* str = malloc(src_lib_cf_len + 1);
+  char* str = malloc(lib_cf_len + 1);
   if (str)
   {
-    strncpy(str, (char *)src_lib_cf, src_lib_cf_len);
-    str[src_lib_cf_len] = 0;
+    strncpy(str, (char *)lib_cf, lib_cf_len);
+    str[lib_cf_len] = 0;
     parse_from_string(state, str);
     free(str);
   }

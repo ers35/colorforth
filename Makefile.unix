@@ -32,9 +32,9 @@ optim_cpl:
 conf.h: src/conf.tmpl.h
 	cp src/conf.tmpl.h conf.h
 
-src/lib.cf.h: src/lib.tmpl.cf
-	cp src/lib.tmpl.cf src/lib.cf
-	xxd -i src/lib.cf src/lib.cf.h
+src/lib.cf.h: lib.tmpl.cf
+	cp lib.tmpl.cf lib.cf
+	xxd -i lib.cf src/lib.cf.h
 
 colorforth: Makefile $(SRC) $(SRC_H)
 	gcc -fPIE -std=gnu99 -O3 -Wall -Werror -Wextra -pedantic \
