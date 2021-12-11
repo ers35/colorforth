@@ -59,7 +59,7 @@ see(struct state *s, struct entry *entry)
 
         case OP_FUNCTION_CALL:
         {
-          struct entry *entry_by_fn = find_entry_by_fn(s, &s->dict, &entry->code[i]);
+          struct entry *entry_by_fn = find_entry_by_fn(&s->dict, &entry->code[i]);
           if (entry_by_fn)
           {
             cf_printf(s, "%s ", entry_by_fn->name);
@@ -73,10 +73,10 @@ see(struct state *s, struct entry *entry)
 
         default:
         {
-          struct entry *entry_by_code = find_entry_by_code(s, &s->inlined_dict, &entry->code[i]);
+          struct entry *entry_by_code = find_entry_by_code(&s->inlined_dict, &entry->code[i]);
           if (!entry_by_code)
           {
-            entry_by_code = find_entry_by_code(s, &s->dict, &entry->code[i]);
+            entry_by_code = find_entry_by_code(&s->dict, &entry->code[i]);
           }
 
           if (entry_by_code)

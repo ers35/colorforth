@@ -180,10 +180,10 @@ clear_tib (struct state *s){
   s->tib.len = 0;
 }
 
+#ifndef __HASH_NAMES
 void
 dump_words(struct state *s, struct dictionary *dict)
 {
-#ifndef __HASH_NAMES
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
     if (entry->name == NULL) continue;
@@ -193,10 +193,15 @@ dump_words(struct state *s, struct dictionary *dict)
     s->tib.buf[s->tib.len] = '\0';
     cf_printf(s, "%s ", s->tib.buf);
   }
-#else
-  cf_printf(s, "Hashed names. Nothing to see!\n");
-#endif
 }
+#else
+void
+dump_words(struct state *s, struct dictionary *dict __attribute__((unused)))
+{
+  cf_printf(s, "Hashed names. Nothing to see!\n");
+}
+#endif
+
 
 void
 words(struct state *s)
@@ -228,7 +233,7 @@ find_entry(struct state *s, struct dictionary *dict)
 }
 
 struct entry*
-find_entry_by_code(struct state *s, struct dictionary *dict, struct code *code)
+find_entry_by_code(struct dictionary *dict, struct code *code)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
@@ -241,7 +246,7 @@ find_entry_by_code(struct state *s, struct dictionary *dict, struct code *code)
 }
 
 struct entry*
-find_entry_by_fn(struct state *s, struct dictionary *dict, struct code *code)
+find_entry_by_fn(struct dictionary *dict, struct code *code)
 {
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {

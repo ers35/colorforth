@@ -6,7 +6,7 @@
 #include <HardwareSerial.h>
 
 void
-cf_putchar(struct state *s, int c)
+cf_putchar(struct state *s __attribute__((unused)), int c)
 {
   Serial.print((char) c);
 }
