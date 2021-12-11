@@ -3,3 +3,4 @@ colorforth
 conf.h
 lib.cf
 colorforth-arduino/conf.h
+*.hex
