@@ -1,0 +1,40 @@
+#-*- Makefile -*-
+
+.PHONY: conf.tmpl.h
+
+conf.tmpl.h:
+	cp conf.tmpl.h arduino/conf.h
+	sed -i 's%typedef long cell;%typedef int cell;%' arduino/conf.h
+	sed -i 's/CELL_FMT "%ld"/CELL_FMT "%d"/' arduino/conf.h
+	sed -i 's%// \(#define __HASH_NAMES\)%\1%' arduino/conf.h
+	sed -i 's%\(#define __USE_REGISTER\)%// \1%' arduino/conf.h
+	sed -i 's%\(#define __ECHO_COLOR\)%// \1%' arduino/conf.h
+	sed -i 's%\(#define __EMBED_LIB_CF\)%// \1%' arduino/conf.h
+	sed -i 's%\(#define __EXTENDED_MATH\)%// \1%' arduino/conf.h
+	sed -i 's%\(#define FSTACK_SIZE.*\)%// \1%' arduino/conf.h
+	sed -i 's%\(.*double number_t\)%// \1%' arduino/conf.h
+	sed -i 's%\(#define __MP_MATH\)%// \1%' arduino/conf.h
+	sed -i 's%\(#define __THREADS\)%// \1%' arduino/conf.h
+	sed -i 's%\(extern .*\)%// \1%' arduino/conf.h
+	sed -i 's%\(#define LOAD_EXTENTIONS\)%#define LOAD_EXTENTIONS\n// \1%' arduino/conf.h
+
+nano: conf.tmpl.h
+	sed -i 's%\(.*STACK_SIZE\).*%\1 10%' arduino/conf.h
+	sed -i 's%\(.*DICT_SIZE\).*%\1 50%' arduino/conf.h
+	sed -i 's%\(.*INLINED_DICT_SIZE\).*%\1 10%' arduino/conf.h
+	sed -i 's%\(.*HEAP_SIZE\).*%\1 600%' arduino/conf.h
+	sed -i 's%\(TIB_SIZE.*\)%\1\n#define BUF_SIZE 64%' arduino/conf.h
+
+mega: conf.tmpl.h
+	sed -i 's%\(.*STACK_SIZE\).*%\1 30%' arduino/conf.h
+	sed -i 's%\(.*DICT_SIZE\).*%\1 80%' arduino/conf.h
+	sed -i 's%\(.*INLINED_DICT_SIZE\).*%\1 20%' arduino/conf.h
+	sed -i 's%\(.*HEAP_SIZE\).*%\1 3000%' arduino/conf.h
+	sed -i 's%\(TIB_SIZE.*\)%\1\n#define BUF_SIZE 128%' arduino/conf.h
+
+#	sed -i 's%\(#.*MP_MATH\)%// \1%' wasm/conf.h
+#	sed -i 's%\(extern .*init_mp_math_utils\)%// \1%' wasm/conf.h
+#	sed -i 's%\(extern .*init_threads_utils\)%// \1%' wasm/conf.h
+#	sed -i 's%\(init_ext_math_utils.*;\).*\\%\1%' wasm/conf.h
+#	sed -i 's%\(init_mp_math_utils.*;\).*\\%// \1%' wasm/conf.h
+#	sed -i 's%\(init_threads_utils\)%// \1%' wasm/conf.h
