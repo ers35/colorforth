@@ -7,7 +7,7 @@
 void
 see(struct state *s, struct entry *entry)
 {
-#ifndef __HASH_NAMES
+#ifdef __KEEP_ENTRY_NAMES
   if (entry)
   {
     char display_next_sc = 0;
@@ -106,7 +106,7 @@ see(struct state *s, struct entry *entry)
 void
 disassemble_dict(struct state *s, struct dictionary *dict)
 {
-#ifndef __HASH_NAMES
+#ifdef __KEEP_ENTRY_NAMES
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
     if (entry->name_len == 0) continue;
@@ -207,8 +207,8 @@ patch_entry (struct state *s)
 void
 init_dict_utils(struct state *state)
 {
-  define_primitive_extension(state, "see", see_fn);
-  define_primitive_extension(state, "disassemble", disassemble);
-  define_primitive_extension(state, "fullroom", fullroom);
-  define_primitive_extension(state, "entry/patch", patch_entry);
+  define_primitive_extension(state, SEE_HASH,           ENTRY_NAME("see"), see_fn);
+  define_primitive_extension(state, DISASSEMBLE_HASH,   ENTRY_NAME("disassemble"), disassemble);
+  define_primitive_extension(state, FULLROOM_HASH,      ENTRY_NAME("fullroom"), fullroom);
+  define_primitive_extension(state, ENTRY__PATCH_HASH, ENTRY_NAME("entry/patch"), patch_entry);
 }

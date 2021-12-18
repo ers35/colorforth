@@ -20,6 +20,7 @@ SRC_WASM=wasm/html_template/shell.html wasm/html_template/shell.js wasm/html_tem
 
 SRC_H=src/colorforth.h \
 	wasm/conf.h \
+	src/hash_def.h \
 	src/lib.cf.h \
 	src/cf-stdio.h \
 	src/color.h

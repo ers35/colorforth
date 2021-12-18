@@ -225,31 +225,31 @@ init_ext_math_utils(struct state *state)
   init_fstack(&state->fstack, FSTACK_SIZE);
   define_prefix('$', define_float,  COLOR_YELLOW,     0);
 
-  define_primitive_extension(state, "float", fsize);
+  define_primitive_extension(state, FLOAT_HASH,      ENTRY_NAME("float"), fsize);
 
-  define_primitive_extension(state, "f.s", fdot_s);
-  define_primitive_extension(state, "f.", print_ftos);
+  define_primitive_extension(state, F_DOTS_HASH,     ENTRY_NAME("f.s"), fdot_s);
+  define_primitive_extension(state, F_DOT_HASH,      ENTRY_NAME("f."), print_ftos);
 
-  define_primitive_extension(state, "fdrop", fdrop);
-  define_primitive_extension(state, "fdup", fdup);
-  define_primitive_extension(state, "fswap", fswap);
-  define_primitive_extension(state, "fover", fover);
-  define_primitive_extension(state, "frot", frot);
-  define_primitive_extension(state, "f-rot", fminus_rot);
-  define_primitive_extension(state, "fnip", fnip);
+  define_primitive_extension(state, FDROP_HASH,      ENTRY_NAME("fdrop"), fdrop);
+  define_primitive_extension(state, FDUP_HASH,       ENTRY_NAME("fdup"), fdup);
+  define_primitive_extension(state, FSWAP_HASH,      ENTRY_NAME("fswap"), fswap);
+  define_primitive_extension(state, FOVER_HASH,      ENTRY_NAME("fover"), fover);
+  define_primitive_extension(state, FROT_HASH,       ENTRY_NAME("frot"), frot);
+  define_primitive_extension(state, F_SUBROT_HASH,   ENTRY_NAME("f-rot"), fminus_rot);
+  define_primitive_extension(state, FNIP_HASH,       ENTRY_NAME("fnip"), fnip);
 
-  define_primitive_extension(state, "f+", fadd);
-  define_primitive_extension(state, "f-", fsub);
-  define_primitive_extension(state, "f*", fmul);
-  define_primitive_extension(state, "f/", fdiv);
+  define_primitive_extension(state, F_ADD_HASH,      ENTRY_NAME("f+"), fadd);
+  define_primitive_extension(state, F_SUB_HASH,      ENTRY_NAME("f-"), fsub);
+  define_primitive_extension(state, F_MUL_HASH,      ENTRY_NAME("f*"), fmul);
+  define_primitive_extension(state, F_DIV_HASH,      ENTRY_NAME("f/"), fdiv);
 
-  define_primitive_extension(state, "f>", fsup);
-  define_primitive_extension(state, "f<", finf);
+  define_primitive_extension(state, F_TO__HASH,      ENTRY_NAME("f>"), fsup);
+  define_primitive_extension(state, F_FROM_HASH,     ENTRY_NAME("f<"), finf);
 
-  define_primitive_extension(state, "f@", fload);
-  define_primitive_extension(state, "f!", fstore);
+  define_primitive_extension(state, F_LOAD_HASH,     ENTRY_NAME("f@"), fload);
+  define_primitive_extension(state, F_STORE_HASH,    ENTRY_NAME("f!"), fstore);
 
-  define_primitive_extension(state, "f>>", fcompile_literal);
+  define_primitive_extension(state, F_INLINE_HASH,   ENTRY_NAME("f>>"), fcompile_literal);
 }
 
 #else

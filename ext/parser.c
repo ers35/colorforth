@@ -13,6 +13,6 @@ parse(struct state *s)
 void
 init_parser_utils(struct state *state)
 {
-  define_primitive_extension(state, "parse", parse);
-  define_primitive_extension(state, "clear-tib", clear_tib);
+  define_primitive_extension(state, PARSE_HASH,        ENTRY_NAME("parse"), parse);
+  define_primitive_extension(state, CLEAR_TIB_HASH,    ENTRY_NAME("clear-tib"), clear_tib);
 }

@@ -23,7 +23,7 @@ c_free(struct state *s)
 void
 init_os_utils(struct state *state)
 {
-  define_primitive_extension(state, "system", system_fn);
-  define_primitive_extension(state, "c-alloc", c_alloc);
-  define_primitive_extension(state, "c-free", c_free);
+  define_primitive_extension(state, SYSTEM_HASH,      ENTRY_NAME("system"), system_fn);
+  define_primitive_extension(state, C_SUBALLOC_HASH,  ENTRY_NAME("c-alloc"), c_alloc);
+  define_primitive_extension(state, C_SUBFREE_HASH,   ENTRY_NAME("c-free"), c_free);
 }

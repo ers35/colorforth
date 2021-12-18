@@ -175,12 +175,12 @@ init_threads_utils(struct state *state)
     sem_init(&locks[i], 0, 1);
   }
 
-  define_primitive_extension(state, "thread/run", thread_run);
-  define_primitive_extension(state, "thread/join-all", thread_join_all);
-  define_primitive_extension(state, "thread/join", thread_join);
-  define_primitive_extension(state, "thread/kill", thread_kill);
-  define_primitive_extension(state, "thread/lock", thread_lock);
-  define_primitive_extension(state, "thread/unlock", thread_unlock);
+  define_primitive_extension(state, THREAD__RUN_HASH,         ENTRY_NAME("thread/run"), thread_run);
+  define_primitive_extension(state, THREAD__JOIN_SUBALL_HASH, ENTRY_NAME("thread/join-all"), thread_join_all);
+  define_primitive_extension(state, THREAD__JOIN_HASH,        ENTRY_NAME("thread/join"), thread_join);
+  define_primitive_extension(state, THREAD__KILL_HASH,        ENTRY_NAME("thread/kill"), thread_kill);
+  define_primitive_extension(state, THREAD__LOCK_HASH,        ENTRY_NAME("thread/lock"), thread_lock);
+  define_primitive_extension(state, THREAD__UNLOCK_HASH,      ENTRY_NAME("thread/unlock"), thread_unlock);
 }
 
 #else

@@ -30,9 +30,8 @@ hide_entry (struct state *s)
 {
   struct entry *entry = (struct entry*)pop(s->stack);
 
-#ifdef __HASH_NAMES
   entry->name_hash = 0;
-#else
+#ifdef __KEEP_ENTRY_NAMES
   free(entry->name);
   entry->name = NULL;
   entry->name_len = 0;
@@ -66,9 +65,9 @@ room (struct state *s)
 void
 init_lib(struct state *state)
 {
-  define_primitive_extension(state, "base!", set_base);
-  define_primitive_extension(state, "base@", fetch_base);
-  define_primitive_extension(state, "entry/is", is);
-  define_primitive_extension(state, "entry/hide", hide_entry);
-  define_primitive_extension(state, "room", room);
+  define_primitive_extension(state, BASE_STORE_HASH,     ENTRY_NAME("base!"), set_base);
+  define_primitive_extension(state, BASE_LOAD_HASH,      ENTRY_NAME("base@"), fetch_base);
+  define_primitive_extension(state, ENTRY_IS_HASH,       ENTRY_NAME("entry/is"), is);
+  define_primitive_extension(state, ENTRY_HIDE_HASH,     ENTRY_NAME("entry/hide"), hide_entry);
+  define_primitive_extension(state, ROOM_HASH,           ENTRY_NAME("room"), room);
 }

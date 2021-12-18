@@ -24,13 +24,14 @@ struct prefix_map prefix_map[MAX_PREFIX];
   case OP_##N##_R_POP: { N = pop(s->r_stack); break; }                  \
   case OP_##N##_R_PUSH: { push(s->r_stack, N); break; }
 
-#define define_register_primitive(N) define_primitive_inlined(state, #N"@", OP_##N##_LOAD); \
-  define_primitive_inlined(state, #N"!", OP_##N##_STORE);               \
-  define_primitive_inlined(state, #N"+!", OP_##N##_ADD);                \
-  define_primitive_inlined(state, #N"++", OP_##N##_INC);                \
-  define_primitive_inlined(state, #N"--", OP_##N##_DEC);                \
-  define_primitive_inlined(state, #N">R", OP_##N##_R_PUSH);             \
-  define_primitive_inlined(state, "R>"#N, OP_##N##_R_POP);
+#define define_register_primitive(N)                                    \
+  define_primitive_inlined(state, REG_##N##_LOAD_HASH,        ENTRY_NAME(#N"@"), OP_##N##_LOAD); \
+  define_primitive_inlined(state, REG_##N##_STORE_HASH,       ENTRY_NAME(#N"!"), OP_##N##_STORE); \
+  define_primitive_inlined(state, REG_##N##_ADD_STORE_HASH,   ENTRY_NAME(#N"+!"), OP_##N##_ADD); \
+  define_primitive_inlined(state, REG_##N##_ADD_ADD_HASH,     ENTRY_NAME(#N"++"), OP_##N##_INC); \
+  define_primitive_inlined(state, REG_##N##_SUB_SUB_HASH,     ENTRY_NAME(#N"--"), OP_##N##_DEC); \
+  define_primitive_inlined(state, REG_##N##_TO_R_HASH,        ENTRY_NAME(#N">R"), OP_##N##_R_PUSH); \
+  define_primitive_inlined(state, REG_R_TO_##N##_HASH,        ENTRY_NAME("R>"#N), OP_##N##_R_POP);
 
 void
 cf_print_cell(struct state *state, cell cell)
@@ -111,6 +112,8 @@ cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned char id)
 hash_t
 hash(char *str)
 {
+  if (!str) return 0;
+
   hash_t hash = 5381;
   int c;
 
@@ -180,7 +183,7 @@ clear_tib (struct state *s){
   s->tib.len = 0;
 }
 
-#ifndef __HASH_NAMES
+#ifdef __KEEP_ENTRY_NAMES
 void
 dump_words(struct state *s, struct dictionary *dict)
 {
@@ -214,17 +217,25 @@ words(struct state *s)
 struct entry*
 find_entry(struct state *s, struct dictionary *dict)
 {
-#ifdef __HASH_NAMES
+  s->tib.buf[s->tib.len] = '\0';
   const hash_t tib_hash = hash(s->tib.buf);
-#endif
 
   for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
   {
-#ifdef __HASH_NAMES
     if (entry->name_hash == tib_hash)
-#else
-    if (entry->name_len == s->tib.len && memcmp(entry->name, s->tib.buf, s->tib.len) == 0)
-#endif
+    {
+      return entry;
+    }
+  }
+  return NULL;
+}
+
+struct entry*
+find_entry_by_hash(struct dictionary *dict, hash_t name_hash)
+{
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  {
+    if (entry->name_hash == name_hash)
     {
       return entry;
     }
@@ -275,20 +286,45 @@ unknow_word (struct state *s, const char *msg)
   cf_printf(s, "': unknown word at line %u, column %u\n", s->line, s->coll);
 }
 
+// 'hashed_name' is 'hash(name)' or 0x0 if names are kept
 // 'name' must be null-terminated.
 static void
-define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
+define_primitive_generic(struct state *s, struct dictionary *dict,
+                         hash_t hashed_name, char name[] __attribute__((unused)),
                          const enum opcode opcode, void (*fn)(struct state *s))
 {
+  if (hashed_name && find_entry_by_hash(dict, hashed_name)) cf_fatal_error(s, DUPLICATE_HASH_ERROR);
+
   dict->latest++;
   struct entry *entry = dict->latest;
 
-#ifdef __HASH_NAMES
-  entry->name_hash = hash(name);
-#else
+  entry->name_hash = hashed_name;
+
+#ifdef __KEEP_ENTRY_NAMES
+  if (!entry->name_hash)
+  {
+    entry->name_hash = hash(name);
+  }
+
   entry->name_len = strlen(name);
   entry->name = cf_calloc(s, 1, entry->name_len, PRIMITIVE_ERROR);
   memcpy(entry->name, name, entry->name_len);
+#endif
+
+#ifdef __SHOW_MISSING_HASH
+#ifdef __KEEP_ENTRY_NAMES
+  char *up_name = cf_calloc(s, 1, entry->name_len + 1, PRIMITIVE_ERROR);
+  memcpy(up_name, name, entry->name_len + 1);
+
+  char *p = up_name;
+  while((*p=toupper(*p))) p++;
+
+  cf_printf(s, "%20s <-> %-20lX   hashed_name=%-20lX | %20s_HASH %20lX\n", name, entry->name_hash, hashed_name, up_name, hash(name));
+
+  free(up_name);
+#else
+  cf_printf(s, "%-20lX %lX\n", entry->name_hash, hashed_name);
+#endif
 #endif
 
   entry->code = s->here;
@@ -302,21 +338,21 @@ define_primitive_generic(struct state *s, struct dictionary *dict, char name[],
 }
 
 static void
-define_primitive(struct state *s, char name[], const enum opcode opcode)
+define_primitive(struct state *s, hash_t hashed_name, char name[], const enum opcode opcode)
 {
-  define_primitive_generic(s, &s->dict, name, opcode, NULL);
+  define_primitive_generic(s, &s->dict, hashed_name, name, opcode, NULL);
 }
 
 static void
-define_primitive_inlined(struct state *s, char name[], const enum opcode opcode)
+define_primitive_inlined(struct state *s, hash_t hashed_name, char name[], const enum opcode opcode)
 {
-  define_primitive_generic(s, &s->inlined_dict, name, opcode, NULL);
+  define_primitive_generic(s, &s->inlined_dict, hashed_name, name, opcode, NULL);
 }
 
 void
-define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s))
+define_primitive_extension(struct state *s, hash_t hashed_name, char name[], void (*fn)(struct state *s))
 {
-  define_primitive_generic(s, &s->dict, name, OP_FUNCTION_CALL, fn);
+  define_primitive_generic(s, &s->dict, hashed_name, name, OP_FUNCTION_CALL, fn);
 }
 
 static bool
@@ -339,9 +375,9 @@ define_generic(struct state *s, struct dictionary *dict)
   dict->latest++;
   struct entry *entry = dict->latest;
 
-#ifdef __HASH_NAMES
   entry->name_hash = hash(s->tib.buf);
-#else
+
+#ifdef __KEEP_ENTRY_NAMES
   entry->name_len = s->tib.len;
   entry->name = cf_calloc(s, 1, entry->name_len, DEFINE_ERROR);
   memcpy(entry->name, s->tib.buf, s->tib.len);
@@ -1023,45 +1059,45 @@ colorforth_newstate(void)
   define_prefix('`', compile_tick,   COLOR_BLUE,    0);
   define_prefix(',', compile_inline, COLOR_CYAN,    0);
 
-  define_primitive(state, "nop", OP_NOP);
-  define_primitive(state, ".", OP_PRINT_TOS);
-  define_primitive(state, "dup", OP_DUP);
-  define_primitive(state, "over", OP_OVER);
-  define_primitive(state, "swap", OP_SWAP);
-  define_primitive(state, "drop", OP_DROP);
-  define_primitive(state, "rot", OP_ROT);
-  define_primitive(state, "-rot", OP_MINUS_ROT);
-  define_primitive(state, "nip", OP_NIP);
-  define_primitive(state, "+", OP_ADD);
-  define_primitive(state, "-", OP_SUB);
-  define_primitive(state, "*", OP_MUL);
-  define_primitive(state, "=", OP_EQUAL);
-  define_primitive(state, "<", OP_LESS);
-  define_primitive(state, "bye", OP_BYE);
-  define_primitive(state, "words", OP_WORDS);
-  define_primitive(state, "emit", OP_EMIT);
-  define_primitive(state, "key", OP_KEY);
-  define_primitive(state, "@", OP_LOAD);
-  define_primitive(state, "!", OP_STORE);
-  define_primitive(state, "c@", OP_CLOAD);
-  define_primitive(state, "c!", OP_CSTORE);
-  define_primitive(state, "cell", OP_CELL);
-  define_primitive(state, "here", OP_HERE);
-  define_primitive(state, "latest", OP_LATEST);
-  define_primitive(state, "i-latest", OP_I_LATEST);
-  define_primitive(state, ">>", OP_COMPILE_LITERAL);
-  define_primitive(state, "code>", OP_GET_ENTRY_CODE);
-  define_primitive(state, "execute", OP_EXECUTE);
-  define_primitive(state, ".s", OP_DOT_S);
+  define_primitive(state, NOP_HASH,               ENTRY_NAME("nop"), OP_NOP);
+  define_primitive(state, PRINT_TOS_HASH,         ENTRY_NAME("."), OP_PRINT_TOS);
+  define_primitive(state, DUP_HASH,               ENTRY_NAME("dup"), OP_DUP);
+  define_primitive(state, OVER_HASH,              ENTRY_NAME("over"), OP_OVER);
+  define_primitive(state, SWAP_HASH,              ENTRY_NAME("swap"), OP_SWAP);
+  define_primitive(state, DROP_HASH,              ENTRY_NAME("drop"), OP_DROP);
+  define_primitive(state, ROT_HASH,               ENTRY_NAME("rot"), OP_ROT);
+  define_primitive(state, MINUS_ROT_HASH,         ENTRY_NAME("-rot"), OP_MINUS_ROT);
+  define_primitive(state, NIP_HASH,               ENTRY_NAME("nip"), OP_NIP);
+  define_primitive(state, ADD_HASH,               ENTRY_NAME("+"), OP_ADD);
+  define_primitive(state, SUB_HASH,               ENTRY_NAME("-"), OP_SUB);
+  define_primitive(state, MUL_HASH,               ENTRY_NAME("*"), OP_MUL);
+  define_primitive(state, EQUAL_HASH,             ENTRY_NAME("="), OP_EQUAL);
+  define_primitive(state, LESS_HASH,              ENTRY_NAME("<"), OP_LESS);
+  define_primitive(state, BYE_HASH,               ENTRY_NAME("bye"), OP_BYE);
+  define_primitive(state, WORDS_HASH,             ENTRY_NAME("words"), OP_WORDS);
+  define_primitive(state, EMIT_HASH,              ENTRY_NAME("emit"), OP_EMIT);
+  define_primitive(state, KEY_HASH,               ENTRY_NAME("key"), OP_KEY);
+  define_primitive(state, LOAD_HASH,              ENTRY_NAME("@"), OP_LOAD);
+  define_primitive(state, STORE_HASH,             ENTRY_NAME("!"), OP_STORE);
+  define_primitive(state, CLOAD_HASH,             ENTRY_NAME("c@"), OP_CLOAD);
+  define_primitive(state, CSTORE__HASH,           ENTRY_NAME("c!"), OP_CSTORE);
+  define_primitive(state, CELL_HASH,              ENTRY_NAME("cell"), OP_CELL);
+  define_primitive(state, HERE_HASH,              ENTRY_NAME("here"), OP_HERE);
+  define_primitive(state, LATEST_HASH,            ENTRY_NAME("latest"), OP_LATEST);
+  define_primitive(state, I_LATEST_HASH,          ENTRY_NAME("i-latest"), OP_I_LATEST);
+  define_primitive(state, COMPILE_LITERAL_HASH,   ENTRY_NAME(">>"), OP_COMPILE_LITERAL);
+  define_primitive(state, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
+  define_primitive(state, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
+  define_primitive(state, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
 
-  define_primitive_inlined(state, ";", OP_RETURN);
-  define_primitive_inlined(state, "when", OP_WHEN);
-  define_primitive_inlined(state, "unless", OP_UNLESS);
-  define_primitive_inlined(state, "choose", OP_CHOOSE);
+  define_primitive_inlined(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);
+  define_primitive_inlined(state, WHEN_HASH,      ENTRY_NAME("when"), OP_WHEN);
+  define_primitive_inlined(state, UNLESS_HASH,    ENTRY_NAME("unless"), OP_UNLESS);
+  define_primitive_inlined(state, CHOOSE_HASH,    ENTRY_NAME("choose"), OP_CHOOSE);
 
-  define_primitive_inlined(state, ">R", OP_R_PUSH);
-  define_primitive_inlined(state, "R>", OP_R_POP);
-  define_primitive_inlined(state, "R@", OP_R_FETCH);
+  define_primitive_inlined(state, R_PUSH_HASH,    ENTRY_NAME(">R"), OP_R_PUSH);
+  define_primitive_inlined(state, R_POP_HASH,     ENTRY_NAME("R>"), OP_R_POP);
+  define_primitive_inlined(state, R_FETCH_HASH,   ENTRY_NAME("R@"), OP_R_FETCH);
 
   init_lib(state);
 

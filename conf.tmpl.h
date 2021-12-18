@@ -6,7 +6,12 @@ typedef long cell;
 #define CELL_FMT "%ld"
 
 // Enable hashed names: reduce memory size but break words/see/disasemble
-// #define __HASH_NAMES
+#define __KEEP_ENTRY_NAMES
+
+// Uncomment to display name <-> hash relationship
+// #define __SHOW_MISSING_HASH
+
+#include "hash_def.h"
 
 // Enable register variable
 #define __USE_REGISTER

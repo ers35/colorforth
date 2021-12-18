@@ -13,7 +13,7 @@ void setup() {
 
   state = colorforth_newstate();
 
-  Serial.println("colorForth started!");
+  Serial.println("OK");
 }
 
 void loop() {

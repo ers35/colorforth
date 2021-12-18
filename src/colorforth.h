@@ -99,8 +99,10 @@ enum errors {
   DICT_ERROR                 =   5,
   INLINE_DICT_ERROR          =   6,
   HEAP_ERROR                 =   7,
+
   PRIMITIVE_ERROR            =  11,
   DEFINE_ERROR               =  12,
+  DUPLICATE_HASH_ERROR       =  13,
 
   CALLOC_ERROR               = 100,
   F_STACK_ERROR              = 120,
@@ -134,9 +136,8 @@ struct code
 struct entry;
 struct entry
 {
-#ifdef __HASH_NAMES
   hash_t name_hash;
-#else
+#ifdef __KEEP_ENTRY_NAMES
   char *name;
   size_t name_len;
 #endif
@@ -211,7 +212,7 @@ extern struct entry* find_entry_by_fn(struct dictionary *dict, struct code *code
 extern void unknow_word (struct state *s, const char *msg);
 
 extern void define_prefix(char c, void (*fn)(struct state *s), char * color, short reset);
-extern void define_primitive_extension(struct state *s, char name[], void (*fn)(struct state *s));
+extern void define_primitive_extension(struct state *s, hash_t hashed_name, char name[], void (*fn)(struct state *s));
 
 extern void quit(struct state *state, char ask);
 extern struct state* colorforth_newstate(void);

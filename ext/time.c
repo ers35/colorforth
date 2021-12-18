@@ -41,8 +41,8 @@ mssleep_fn(struct state *s)
 void
 init_time_utils(struct state *state)
 {
-  define_primitive_extension(state, "time", time_fn);
-  define_primitive_extension(state, "utime", utime_fn);
-  define_primitive_extension(state, "sleep", sleep_fn);
-  define_primitive_extension(state, "mssleep", mssleep_fn);
+  define_primitive_extension(state, TIME_HASH,    ENTRY_NAME("time"), time_fn);
+  define_primitive_extension(state, UTIME_HASH,   ENTRY_NAME("utime"), utime_fn);
+  define_primitive_extension(state, SLEEP_HASH,   ENTRY_NAME("sleep"), sleep_fn);
+  define_primitive_extension(state, MSSLEEP_HASH, ENTRY_NAME("mssleep"), mssleep_fn);
 }

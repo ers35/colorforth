@@ -6,7 +6,7 @@ conf.tmpl.h:
 	cp conf.tmpl.h arduino/conf.h
 	sed -i 's%typedef long cell;%typedef int cell;%' arduino/conf.h
 	sed -i 's/CELL_FMT "%ld"/CELL_FMT "%d"/' arduino/conf.h
-	sed -i 's%// \(#define __HASH_NAMES\)%\1%' arduino/conf.h
+	sed -i 's%\(#define __KEEP_ENTRY_NAMES\)%// \1%' arduino/conf.h
 	sed -i 's%\(#define __USE_REGISTER\)%// \1%' arduino/conf.h
 	sed -i 's%\(#define __ECHO_COLOR\)%// \1%' arduino/conf.h
 	sed -i 's%\(#define __EMBED_LIB_CF\)%// \1%' arduino/conf.h
