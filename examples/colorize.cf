@@ -1,42 +1,40 @@
 %
-~\ usage: cat colorize.cf lib.cf | ./colorforth
+~\ usage: cat lib.cf | ./colorforth examples/colorize.cf -e colorize
 
-:[esc0 ^27 emit ~key [ ^emit ~key 0 ^;
-:[esc1 ^[esc0 emit ~key 1 ^emit ~key ; ^emit ;
-:[esc  ^[esc1 ~key 9 ^emit ;
-:esc]  ^emit ~key m ^emit ;
+:[esc0 ^27 emit ~key [ >> ^emit ~key 0 >> ^;
+:[esc1 ^[esc0 emit ~key 1 >> ^emit ~key ; >> ^emit ;
+:[esc  ^[esc1 ~key 9 >> ^emit ;
+:esc]  ^emit ~key m >> ^emit ;
 
 :eof? ^-1 = ;
 
 :clear!    ^[esc0 esc] ;
-:red!     ^[esc ~key 1 ^esc] ;
-:green!   ^[esc ~key 2 ^esc] ;
-:yellow!  ^[esc ~key 3 ^esc] ;
-:blue!    ^[esc ~key 4 ^esc] ;
-:magenta! ^[esc ~key 5 ^esc] ;
-:cyan!    ^[esc ~key 6 ^esc] ;
-:white!   ^[esc1 ~key 3 ^emit ~key 7 ^esc] ;
+:red!     ^[esc ~key 1 >> ^esc] ;
+:green!   ^[esc ~key 2 >> ^esc] ;
+:yellow!  ^[esc ~key 3 >> ^esc] ;
+:blue!    ^[esc ~key 4 >> ^esc] ;
+:magenta! ^[esc ~key 5 >> ^esc] ;
+:cyan!    ^[esc ~key 6 >> ^esc] ;
+:white!   ^[esc1 ~key 3 >> ^emit ~key 7 >> ^esc] ;
 
 :dump-comment ^key dup emit 10 = unless dump-comment ;
 :line-comment ^white! emit dump-comment yellow! ;
 
-:dump-string ^key dup emit dup ~key " ^ = when ; 10 = when ; dump-string ;
-:line-string ^magenta! emit dump-string yellow! ;
+:dump-string ^key dup emit dup ~key " >> ^ = when ; 10 = when ; dump-string ;
+:line-string ^magenta! emit dump-string yellow! ;; ;
 
 
 :.key
-  ^dup ~key : ^= when red!
-  ^dup ~key | ^= when magenta!
-  ^dup ~key ^ ^= when green!
-  ^dup ~key ~ ^= when yellow!
-  ^dup ~key % ^= when yellow!
-  ^dup ~key ' ^= when blue!
-  ^dup ~key , ^= when cyan!
-  ^dup ~key ( ^= when white!
-  ^dup ~key \ ^= when line-comment
-  ^dup ~key " ^= when line-string
+  ^dup ~key : >> ^= when red!
+  ^dup ~key | >> ^= when magenta!
+  ^dup ~key ^ >> ^= when green!
+  ^dup ~key ~ >> ^= when yellow!
+  ^dup ~key % >> ^= when yellow!
+  ^dup ~key ' >> ^= when blue!
+  ^dup ~key , >> ^= when cyan!
+  ^dup ~key ( >> ^= when white!
+  ^dup ~key \ >> ^= when line-comment
+  ^dup ~key " >> ^= when line-string
   ^dup emit ;
 
 :colorize ^key .key eof? unless colorize clear! bye ;
-
-~colorize
