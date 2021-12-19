@@ -96,7 +96,7 @@ see(struct state *s, struct entry *entry)
   }
   else
   {
-    unknow_word(s, "with");
+    unknow_word(s);
   }
 #else
   cf_printf(s, "Hashed names. Nothing to see!\n");

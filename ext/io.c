@@ -12,7 +12,6 @@ parse_from_file(struct state *s, char *filename)
   {
     s->file_stream = old_stream;
     cf_printf(s, "Unable to read '%s'\n", filename);
-    quit(s, 1);
     return;
   }
 

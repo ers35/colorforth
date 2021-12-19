@@ -209,12 +209,12 @@ extern cell pop(struct stack *stack);
 extern struct entry* find_entry(struct state *state, struct dictionary *dict);
 extern struct entry* find_entry_by_code(struct dictionary *dict, struct code *code);
 extern struct entry* find_entry_by_fn(struct dictionary *dict, struct code *code);
-extern void unknow_word (struct state *s, const char *msg);
+extern void unknow_word (struct state *s);
 
 extern void define_prefix(char c, void (*fn)(struct state *s), char * color, short reset);
 extern void define_primitive_extension(struct state *s, hash_t hashed_name, char name[], void (*fn)(struct state *s));
 
-extern void quit(struct state *state, char ask);
+extern void quit(struct state *state);
 extern struct state* colorforth_newstate(void);
 extern void free_state(struct state* state);
 

@@ -71,19 +71,10 @@ cf_print_cell(struct state *state, cell cell)
 }
 
 void
-quit(struct state *state, char ask)
+quit(struct state *state)
 {
-  char c = 'n';
-  if (ask)
-  {
-    cf_printf(state, "Continue? (y/n) ");
-    c = cf_getchar(state);
-  }
-  if (c == 'n')
-  {
-    state->done = 1;
-    echo_color(state, ' ', COLOR_CLEAR);
-  }
+  state->done = 1;
+  echo_color(state, ' ', COLOR_CLEAR);
   cf_printf(state, "\n");
 }
 
@@ -201,7 +192,7 @@ dump_words(struct state *s, struct dictionary *dict)
 void
 dump_words(struct state *s, struct dictionary *dict __attribute__((unused)))
 {
-  cf_printf(s, "Hashed names. Nothing to see!\n");
+  cf_printf(s, "...\n");
 }
 #endif
 
@@ -279,11 +270,9 @@ print_tib(struct state *s)
 }
 
 void
-unknow_word (struct state *s, const char *msg)
+unknow_word (struct state *s)
 {
-  cf_printf(s, "Error %s '", msg);
-  print_tib(s);
-  cf_printf(s, "': unknown word at line %u, column %u\n", s->line, s->coll);
+  cf_printf(s, "? (%u, %u)\n", s->line, s->coll);
 }
 
 // 'hashed_name' is 'hash(name)' or 0x0 if names are kept
@@ -446,8 +435,7 @@ compile(struct state *s)
     }
     else
     {
-      unknow_word(s, "compiling");
-      quit(s, 1);
+      unknow_word(s);
     }
   }
 }
@@ -462,8 +450,7 @@ compile_inline(struct state *s)
   }
   else
   {
-    unknow_word(s, "inlining");
-    quit(s, 1);
+    unknow_word(s);
   }
 }
 
@@ -794,7 +781,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_BYE:
       {
-        quit(s, 0);
+        quit(s);
         break;
       }
 
@@ -823,8 +810,7 @@ execute_(struct state *s, struct entry *entry)
 
       default:
       {
-        cf_printf(s, "unknown opcode");
-        quit(s, 1);
+        cf_printf(s, "??");
       }
     }
     pc++;
@@ -850,7 +836,7 @@ execute(struct state *s)
     }
     else
     {
-      unknow_word(s, "executing");
+      unknow_word(s);
     }
   }
 }
@@ -865,7 +851,7 @@ tick(struct state *s)
   }
   else
   {
-    unknow_word(s, "ticking");
+    unknow_word(s);
   }
 }
 
@@ -882,8 +868,7 @@ compile_tick(struct state *s)
   }
   else
   {
-    unknow_word(s, "ticking");
-    quit(s, 1);
+    unknow_word(s);
   }
 }
 
