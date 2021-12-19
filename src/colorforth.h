@@ -172,8 +172,6 @@ struct state
 
   char base;
 
-  // track stream position for debugging compilation
-  unsigned int line, coll;
   int done;
   int echo_on;
 

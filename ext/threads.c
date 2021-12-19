@@ -52,8 +52,6 @@ clone_state(struct state *state)
   clone->done = 0;
   clone->echo_on = 0;
 
-  clone->coll = 0; clone->line = 1;
-
   clone->str_stream = NULL;
   clone->file_stream = NULL;
 

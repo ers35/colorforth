@@ -272,7 +272,7 @@ print_tib(struct state *s)
 void
 unknow_word (struct state *s)
 {
-  cf_printf(s, "? (%u, %u)\n", s->line, s->coll);
+  cf_printf(s, "?\n");
 }
 
 // 'hashed_name' is 'hash(name)' or 0x0 if names are kept
@@ -881,7 +881,6 @@ parse_colorforth(struct state *state, int c)
       if (prefix_map[i].c == c) {
         state->color = prefix_map[i].fn;
         echo_color(state, c, prefix_map[i].color);
-        state->coll += 1;
         return;
       }
     }
@@ -905,18 +904,11 @@ parse_colorforth(struct state *state, int c)
       state->tib.len = 0;
     }
 
-    if (c == '\n') {
-      state->coll = 0; state->line += 1;
-    } else {
-      state->coll += 1;
-    }
-
     return;
   }
 
   if (c == CF_EOF)
   {
-    state->coll = 0; state->line = 1;
     echo_color(state, c, COLOR_CLEAR);
     return;
   }
@@ -927,7 +919,6 @@ parse_colorforth(struct state *state, int c)
     if (state->tib.len > 0)
     {
       state->tib.len -= 1;
-      state->coll -= 1;
     }
     return;
   }
@@ -937,7 +928,6 @@ parse_colorforth(struct state *state, int c)
   if (state->tib.len < sizeof(state->tib.buf))
   {
     state->tib.buf[state->tib.len++] = c;
-    state->coll += 1;
   }
 }
 
@@ -1029,7 +1019,6 @@ colorforth_newstate(void)
   state->heap = cf_calloc(state, 1, HEAP_SIZE, HEAP_ERROR);
   state->here = state->heap;
 
-  state->coll = 0; state->line = 1;
   state->done = 0;
   state->echo_on = 0;
 
@@ -1103,7 +1092,6 @@ colorforth_newstate(void)
 
   state->color = execute;
   echo_color(state, '~', COLOR_YELLOW);
-  state->coll = 0; state->line = 1;
   state->echo_on = 1;
 
   return state;
