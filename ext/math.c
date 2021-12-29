@@ -2,6 +2,8 @@
 #include "colorforth.h"
 #include "cf-stdio.h"
 
+#define modulo(n2, n1) ((n2 < 0) ? (n2 % n1 + n1) : (n2 % n1))
+
 void
 div_fn(struct state *s)
 {
@@ -15,7 +17,7 @@ mod_fn(struct state *s)
 {
   const cell n1 = pop(s->stack);
   const cell n2 = pop(s->stack);
-  push(s->stack, n2 % n1);
+  push(s->stack, modulo(n2, n1));
 }
 
 void
@@ -23,7 +25,7 @@ slash_mod_fn(struct state *s)
 {
   const cell n1 = pop(s->stack);
   const cell n2 = pop(s->stack);
-  push(s->stack, n2 / n1); push(s->stack, n2 % n1);
+  push(s->stack, n2 / n1); push(s->stack, modulo(n2, n1));
 }
 
 void
