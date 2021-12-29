@@ -32,9 +32,9 @@
 
 :world-l-op ^; :world-h-op ^;
 
-:.world-loop-l ^I@ J@ world-l-op I++  I@ w < when .world-loop-l ;
-:.world-loop-h ^0 I! .world-loop-l world-h-op J++ J@ h < when .world-loop-h ;
-:world-loop ^I>R J>R 0 J! .world-loop-h R>J R>I ;
+:world-loop-l ^I@ J@ world-l-op I++  I@ w < when world-loop-l ;
+:world-loop-h ^0 I! world-loop-l world-h-op J++ J@ h < when world-loop-h ;
+:world-loop ^I>R J>R 0 J! world-loop-h R>J R>I ;
 
 :esc ^27 emit ;
 :at-00 ^esc ~c" [0;0H" ^pr ;
