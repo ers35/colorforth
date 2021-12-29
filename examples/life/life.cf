@@ -1,0 +1,165 @@
+%
+:help
+   ~c" g             One generation" ^prn
+   ~c" n gg          n generations" ^prn
+   ~c" slow          slow speed" ^prn
+   ~c" med           medium speed" ^prn
+   ~c" fast          fast speed" ^prn
+   ~c" (ms) delay !  set speed" ^prn
+   ~c" cls           clear and redraw board" ^prn ;
+
+:w ^128 ;
+:h ^32 ;
+:size ~w h * >> ^;
+:n-gen ~0 variable ^;
+:delay ~100 variable ^;
+
+:row ,w ^* ;
+
+:n-world ~0 variable ^;
+:flip ^1 n-world @ - n-world ! ;
+
+:world ~w h * 2 * dalloc >> ^;
+:world# ^h mod row  swap w mod + world + ;
+:world! ~( n x y - ) ^world# n-world @ size * + c! ;
+:world@ ~( x y ) ^world# 1 n-world @ - size * + c@ ;
+
+:world-l-op ^; :world-h-op ^;
+
+:.world-loop-l ^I@ J@ world-l-op I++  I@ w < when .world-loop-l ;
+:.world-loop-h ^0 I! .world-loop-l world-h-op J++ J@ h < when .world-loop-h ;
+:world-loop ^I>R J>R 0 J! .world-loop-h R>J R>I ;
+
+:esc ^27 emit ;
+:at-00 ^esc ~c" [0;0H" ^pr ;
+:green ^esc ~c" [38;5;154m" ^pr ;
+:white ^esc ~c" [38;5;53m" ^pr ;
+
+:.star  ^green ~key * >> ^emit ;
+:.blank ^white ~key . >> ^emit ;
+:.cell ~( x y - ) ^world@ choose .star .blank ;
+
+:.world ^at-00
+  `world-l-op `.cell ^entry/is   `world-h-op `cr ^entry/is
+  world-loop
+  green
+  ~c" Generation: " ^pr n-gen ? cr cr ;
+
+:cls ^esc ~c" [2J" ^pr .world ;
+
+:sum-neighbor ~( x y - n )^
+   I>R J>R   J! I!
+   I@ 1- J@ 1- world@     I@ J@ 1- world@ +   I@ 1+ J@ 1- world@ +
+   I@ 1- J@    world@ +                       I@ 1+ J@    world@ +
+   I@ 1- J@ 1+ world@ +   I@ J@ 1+ world@ +   I@ 1+ J@ 1+ world@ +
+   R>J R>I ;
+
+:apply-alive ~( n - ) ^dup 2 = swap 3 = or choose 1 0 ;
+:apply-dead ~( n - ) ^3 = choose 1 0 ;
+:apply ~( x y - )^
+   2dup 2dup sum-neighbor -rot
+   world@ choose apply-alive apply-dead
+   -rot world! ;
+
+:gen ^
+   `world-l-op `apply ^entry/is   `world-h-op `nop ^entry/is
+   world-loop   n-gen 1+! ;
+
+:g ^gen flip .world delay @  mssleep ;
+
+:gg
+:gens ~( n -- )^g 1- dup when gens drop cls ;
+
+:run ^flip cls eon! help ;
+
+:slow ^200 delay ! ;
+:med  ^100 delay ! ;
+:fast ^ 10 delay ! ;
+
+~\ Paterns
+:ox ~0 variable ^;
+:x ~0 variable ^;
+:y ~0 variable ^;
+
+:ox! ^x @ ox ! ;
+:at ~( x y - )^y ! x ! ox! ;
+:* ^1 x @ y @ world! x 1+! ;
+:_ ^0 x @ y @ world! x 1+! ;
+:_s ~( n -) ^_ 1- dup when _s drop ;
+:/ ^ox @ x !  y 1+! ;
+
+:blinker ^* * * ;
+
+:toad ^ox!
+   * * *   /
+   _ * * * ;
+
+:pentomino ^ox!
+   * *   /
+   _ * * /
+   _ *   ;
+
+:pi ^ox!
+   * *   /
+   _ * * /
+   * *   ;
+
+:glider ^ox!
+   _ *   /
+   _ _ * /
+   * * * ;
+
+:glider2 ^ox!
+   _ *   /
+   * _ _ /
+   * * * ;
+
+:glider3 ^ox!
+   * * * /
+   _ _ * /
+   _ *   ;
+
+:glider4 ^ox!
+   * * * /
+   * _ _ /
+   _ *   ;
+
+:pulsar ^ox!
+   * * * * * /
+   * _ _ _ * ;
+
+:ship ^ox!
+   _ * * * * /
+   * _ _ _ * /
+   _ _ _ _ * /
+   _ _ _ *   ;
+
+:ship2 ^ox!
+   * * * * _ /
+   * _ _ _ * /
+   * _ _ _ _ /
+   _ *       ;
+
+:ship3 ^ox!
+   _ * _ _ /
+   * _ _ _ /
+   * _ _ _ /
+   * _ _ * /
+   * * * _ ;
+
+:ship4 ^ox!
+   * * * _ /
+   * _ _ * /
+   * _ _ _ /
+   * _ _ _ /
+   _ * _ _ ;
+
+
+:pentadecathalon ^ox!
+   * * * * * * * * * * ;
+
+:clock ^ox!
+   _ * _ _ /
+   _ _ * * /
+   * * _ _ /
+   _ _ * _ ;
