@@ -1,4 +1,6 @@
 %
+\ Usage: colorforth life.cf gliders.cf
+
 :help
    ~c" g             One generation" ^prn
    ~c" n gg          n generations" ^prn
@@ -74,7 +76,7 @@
 :gg
 :gens ~( n -- )^g 1- dup when gens drop cls ;
 
-:run ^flip cls eon! help ;
+:life ^flip cls eon! help ;
 
 ~\ Paterns
 :ox ~0 variable ^;
