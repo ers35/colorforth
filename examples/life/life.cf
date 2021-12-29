@@ -38,17 +38,17 @@
 
 :esc ^27 emit ;
 :at-00 ^esc ~c" [0;0H" ^pr ;
-:green ^esc ~c" [38;5;154m" ^pr ;
-:white ^esc ~c" [38;5;53m" ^pr ;
+:star-color ^esc ~c" [38;5;154m" ^pr ;
+:blank-color ^esc ~c" [38;5;53m" ^pr ;
 
-:.star  ^green ~key * >> ^emit ;
-:.blank ^white ~key . >> ^emit ;
+:.star  ^star-color ~key * >> ^emit ;
+:.blank ^blank-color ~key . >> ^emit ;
 :.cell ~( x y - ) ^world@ choose .star .blank ;
 
 :.world ^at-00
   `world-l-op `.cell ^entry/is   `world-h-op `cr ^entry/is
   world-loop
-  green
+  star-color
   ~c" Generation: " ^pr n-gen ? cr cr ;
 
 :cls ^esc ~c" [2J" ^pr .world ;
