@@ -14,6 +14,10 @@
 :n-gen ~0 variable ^;
 :delay ~100 variable ^;
 
+:slow ^200 delay ! ;
+:med  ^100 delay ! ;
+:fast ^ 10 delay ! ;
+
 :row ,w ^* ;
 
 :n-world ~0 variable ^;
@@ -72,10 +76,6 @@
 
 :run ^flip cls eon! help ;
 
-:slow ^200 delay ! ;
-:med  ^100 delay ! ;
-:fast ^ 10 delay ! ;
-
 ~\ Paterns
 :ox ~0 variable ^;
 :x ~0 variable ^;
@@ -83,8 +83,9 @@
 
 :ox! ^x @ ox ! ;
 :at ~( x y - )^y ! x ! ox! ;
-:* ^1 x @ y @ world! x 1+! ;
-:_ ^0 x @ y @ world! x 1+! ;
+:world!! ^x @ y @ world! x 1+! ;
+:* ^1 world!! ;
+:_ ^0 world!! ;
 :_s ~( n -) ^_ 1- dup when _s drop ;
 :/ ^ox @ x !  y 1+! ;
 
