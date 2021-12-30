@@ -1,5 +1,8 @@
 %
-\ Usage: colorforth life.cf gliders.cf
+\ Usage: colorforth small.cf life.cf gliders.cf
+
+:h ~ >> ^ ;
+:w ~ >> ^ ;
 
 :help
    ~c" g             One generation" ^prn
@@ -10,9 +13,8 @@
    ~c" (ms) delay !  set speed" ^prn
    ~c" cls           clear and redraw board" ^prn ;
 
-:w ^128 ;
-:h ^32 ;
 :size ~w h * >> ^;
+
 :n-gen ~0 variable ^;
 :delay ~100 variable ^;
 
