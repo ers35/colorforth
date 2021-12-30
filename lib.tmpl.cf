@@ -80,7 +80,8 @@
 :>! ^cell alloc ! ;
 :>c! ^1 alloc ! ;
 
-~10000 alloc :dataheap ~>> ^;
+:data-heap-size ^50000 ;
+~data-heap-size c-alloc :dataheap ~>> ^;
 ~cell alloc :dhere ~>> ^;
 ~dataheap dhere !
 
@@ -113,7 +114,11 @@
 :npr ^cr pr ;
 :nprn ^cr pr cr ;
 
-
+:droom
+   ~c" Data: " ^pr dhere @  dataheap - dup . ~c" / " ^pr data-heap-size .
+   100 * data-heap-size / . ~c" %" ^prn ;
+:dmarker ^dhere @  >> ;
+:dforget ^dhere ! ;
 
 ~( system )
 :cmd ^cell + system ;

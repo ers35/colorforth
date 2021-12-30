@@ -1,0 +1,19 @@
+~
+droom
+
+1000 dalloc
+droom
+
+:mark ~dmarker ^;
+~
+2000 dalloc
+droom
+
+" Static strings also takes place" prn
+
+droom
+
+mark dforget
+droom
+~
+bye
