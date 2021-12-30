@@ -272,6 +272,7 @@ print_tib(struct state *s)
 void
 unknow_word (struct state *s)
 {
+  print_tib(s);
   cf_printf(s, "?\n");
 }
 
