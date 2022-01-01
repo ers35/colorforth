@@ -141,12 +141,12 @@
    R>  -cmove-done?; cmove-loop
 ;
 :cmove ~( src dst n - ) ^
-   `cmove-advance `1+ ^entry/is
+   `1+ `cmove-advance ^is
    cmove-loop ;
 
 :cmove> ~( src dst n - ) ^
   1- >R R@ + swap R@ + swap R> 1+
-  `cmove-advance `1- ^entry/is
+  `1- `cmove-advance ^is
   cmove-loop ;
 
 ~( eval )

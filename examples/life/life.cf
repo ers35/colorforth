@@ -32,10 +32,10 @@
 :world! ~( n x y - ) ^world# n-world @ size * + c! ;
 :world@ ~( x y ) ^world# 1 n-world @ - size * + c@ ;
 
-:world-l-op ^; :world-h-op ^;
+:<world-l> ^; :<world-h> ^;
 
-:world-loop-l ^I@ J@ world-l-op I++  I@ w < when world-loop-l ;
-:world-loop-h ^0 I! world-loop-l world-h-op J++ J@ h < when world-loop-h ;
+:world-loop-l ^I@ J@ <world-l> I++  I@ w < when world-loop-l ;
+:world-loop-h ^0 I! world-loop-l <world-h> J++ J@ h < when world-loop-h ;
 :world-loop ^I>R J>R 0 J! world-loop-h R>J R>I ;
 
 :esc ^27 emit ;
@@ -48,7 +48,7 @@
 :.cell ~( x y - ) ^world@ choose .star .blank ;
 
 :.world ^at-00
-  `world-l-op `.cell ^entry/is   `world-h-op `cr ^entry/is
+  `.cell `<world-l> ^is   `cr `<world-h> ^is
   world-loop
   star-color
   ~c" Generation: " ^pr n-gen ? cr cr ;
@@ -70,7 +70,7 @@
    -rot world! ;
 
 :gen ^
-   `world-l-op `apply ^entry/is   `world-h-op `nop ^entry/is
+   `apply `<world-l> ^is   `nop `<world-h> ^is
    world-loop   n-gen 1+! ;
 
 :g ^gen flip .world delay @  mssleep ;
