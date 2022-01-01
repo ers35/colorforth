@@ -100,7 +100,9 @@
 
 :move ^
    dup ~key s >> ^= when turn-left;
+   dup ~key * >> ^= when turn-left;
    dup ~key d >> ^= when turn-right;
+   dup ~key / >> ^= when turn-right;
    dup ~key 4 >> ^= when move-left;
    dup ~key 6 >> ^= when move-right;
    dup ~key 2 >> ^= when move-down;
