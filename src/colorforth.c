@@ -783,7 +783,7 @@ execute_(struct state *s, struct entry *entry)
       case OP_BYE:
       {
         quit(s);
-        break;
+        return;
       }
 
       case OP_WORDS:
