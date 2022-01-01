@@ -1,0 +1,138 @@
+%
+\ Usage: colorforth drod.cf levels/level-1.cf -e run
+
+:c>! ^code> >! ;
+
+:height ~64 variable ^ ;
+:width ~128 variable ^ ;
+
+:row ,width ^@ * ;
+
+~width @ height @ * dup
+:world ~dalloc >> ^;
+:static-world ~dalloc >> ^;
+
+:world# ~( x y - ) ^height @ mod row  swap width @ mod + ;
+:world! ~( n x y - ) ^world# world + c! ;
+:world@ ~( x y ) ^world# world + c@ ;
+
+:static-world! ~( n x y - ) ^world# static-world + c! ;
+:static-world@ ~( x y ) ^world# static-world + c@ ;
+
+:<world-h> ^; :<world-v> ^;
+
+:world-loop-h ^I@ J@ <world-h> I++  I@ width @ < when world-loop-h ;
+:world-loop-v ^0 I! world-loop-h <world-v> J++ J@ height @ < when world-loop-v ;
+:world-loop ^I>R J>R 0 J! world-loop-v R>J R>I ;
+
+:esc ^27 emit ;
+:cls ^esc ~c" [2J" ^pr ;
+:at-00 ^esc ~c" [0;0H" ^pr ;
+:star-color ^esc ~c" [38;5;154m" ^pr ;
+:blank-color ^esc ~c" [38;5;53m" ^pr ;
+:wall-color ^esc ~c" [38;5;254m" ^pr ;
+:player-color ^esc ~c" [38;5;226m" ^pr ;
+
+:.. ^blank-color ~key . >> ^emit ;
+:.# ^wall-color ~key # >> ^emit ;
+:.* ^star-color ~key * >> ^emit ;
+:.@ ^player-color ~key @ >> ^emit ;
+:.- ^player-color ~key - >> ^emit ;
+:.| ^player-color ~key | >> ^emit ;
+:./ ^player-color ~key / >> ^emit ;
+:.\ ^player-color ~key \ >> ^emit ;
+
+~here @ '.. ~c>! '.# ~c>!  '.* ~c>!  '.@ ~c>! '.- ~c>!  '.| ~c>!  './ ~c>!  '.\ ~c>!
+:.cell ^world@ cells ~>> ^+ @ execute ;
+
+:.world ^at-00
+  `.cell `<world-h> ^is   `cr `<world-v> ^is
+  world-loop  star-color  cr .s ;
+
+:player ~3 variables ^;
+
+:x ^;
+:y ^cell + ;
+:dir ^2 cells + ;
+
+:player? ^player x ?   player y ?   player dir ? cr ;
+
+:dir-nw ^7 -1 -1 ;   :dir-n ^5 0 -1 ;  :dir-ne ^6 1 -1 ;
+:dir-w  ^4 -1  0 ;                     :dir-e  ^4 1  0 ;
+:dir-sw ^6 -1  1 ;   :dir-s ^5 0  1 ;  :dir-se ^7 1  1 ;
+
+~here @ 'dir-nw ~c>!  'dir-n ~c>!  'dir-ne ~c>!  'dir-e  ~c>!
+        'dir-se  ~c>! 'dir-s ~c>!  'dir-sw ~c>!  'dir-w ~c>!
+:dir@ ^cells ~>> ^+ @  execute ;
+
+:sword@ ^player dir @ dir@   player y @ + height @ mod swap   player x @ + width @ mod swap ;
+
+
+:render-cell ^2dup static-world@ -rot world! ;
+:render-player ^3 player x @ player y @ world! ;
+:render-sword ^sword@ world! ;
+
+:render-world `render-cell `<world-h> ^is `nop `<world-v> ^is
+   world-loop render-player render-sword ;
+
+
+:turn ^player dir @ + 8 mod player dir ! ;
+:turn-left; ^-1 turn ;; ;
+:turn-right; ^1 turn ;; ;
+
+:player-x! ^player x ! ;
+:player-y! ^player y ! ;
+
+:valid? ^static-world@ 0 = ;
+
+:move-x ^player x @ + width  @ mod   dup player y @  valid? choose player-x! drop ;
+:move-y ^player y @ + height @ mod   player x @ over valid? choose player-y! drop ;
+
+:move-left;  ^-1 move-x ;; ;
+:move-right; ^ 1 move-x ;; ;
+:move-down;  ^ 1 move-y ;; ;
+:move-up;    ^-1 move-y ;; ;
+
+:move-up-left;    ^-1 move-x  -1 move-y ;; ;
+:move-up-right;   ^ 1 move-x  -1 move-y ;; ;
+:move-down-left;  ^-1 move-x   1 move-y ;; ;
+:move-down-right; ^ 1 move-x   1 move-y ;; ;
+
+:move ^
+   dup ~key s >> ^= when turn-left;
+   dup ~key d >> ^= when turn-right;
+   dup ~key 4 >> ^= when move-left;
+   dup ~key 6 >> ^= when move-right;
+   dup ~key 2 >> ^= when move-down;
+   dup ~key 8 >> ^= when move-up;
+   dup ~key 7 >> ^= when move-up-left;
+   dup ~key 9 >> ^= when move-up-right;
+   dup ~key 1 >> ^= when move-down-left;
+   dup ~key 3 >> ^= when move-down-right;
+   dup 27 = when bye
+;
+
+:run ^render-world .world  key move drop run ;
+
+
+~\ Patterns
+:world-ox ~0 variable ^;
+:world-x ~0 variable ^;
+:world-y ~0 variable ^;
+
+:world-ox! ^world-x @ world-ox ! ;
+:at ~( x y - ) ^world-y ! world-x ! world-ox! ;
+:world!! ^world-x @ world-y @ static-world! world-x 1+! ;
+
+:/ ^world-ox @ world-x !  world-y 1+! ;
+
+:. ^0 world!! ;
+:+ ^1 world!! ;
+:* ^2 world!! ; \ TODO: enemy
+:P ^world-x @ player x !   world-y @ player y ! ;
+
+:.s ~( n -) ^. 1- dup when .s drop ;
+:h-+ ~( n -) ^+   1- dup when h-+ drop ;
+:v-+ ~( n -) ^+ / 1- dup when v-+ drop ;
+
+~cls
