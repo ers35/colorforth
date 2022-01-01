@@ -32,11 +32,11 @@
 :world! ~( n x y - ) ^world# n-world @ size * + c! ;
 :world@ ~( x y ) ^world# 1 n-world @ - size * + c@ ;
 
-:<world-l> ^; :<world-h> ^;
+:<world-h> ^; :<world-v> ^;
 
-:world-loop-l ^I@ J@ <world-l> I++  I@ w < when world-loop-l ;
-:world-loop-h ^0 I! world-loop-l <world-h> J++ J@ h < when world-loop-h ;
-:world-loop ^I>R J>R 0 J! world-loop-h R>J R>I ;
+:world-loop-h ^I@ J@ <world-h> I++  I@ w < when world-loop-h ;
+:world-loop-v ^0 I! world-loop-h <world-v> J++ J@ h < when world-loop-v ;
+:world-loop ^I>R J>R 0 J! world-loop-v R>J R>I ;
 
 :esc ^27 emit ;
 :at-00 ^esc ~c" [0;0H" ^pr ;
@@ -48,7 +48,7 @@
 :.cell ~( x y - ) ^world@ choose .star .blank ;
 
 :.world ^at-00
-  `.cell `<world-l> ^is   `cr `<world-h> ^is
+  `.cell `<world-h> ^is   `cr `<world-v> ^is
   world-loop
   star-color
   ~c" Generation: " ^pr n-gen ? cr cr ;
@@ -70,7 +70,7 @@
    -rot world! ;
 
 :gen ^
-   `apply `<world-l> ^is   `nop `<world-h> ^is
+   `apply `<world-h> ^is   `nop `<world-v> ^is
    world-loop   n-gen 1+! ;
 
 :g ^gen flip .world delay @  mssleep ;
@@ -80,7 +80,7 @@
 
 :life ^flip cls eon! help ;
 
-~\ Paterns
+~\ Patterns
 :ox ~0 variable ^;
 :x ~0 variable ^;
 :y ~0 variable ^;
