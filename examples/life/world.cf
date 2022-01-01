@@ -1,4 +1,4 @@
-~ \ Usage: colorforth small.cf life.cf board.cf ~
+~ \ Usage: colorforth small.cf life.cf world.cf ~
 
 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . /
 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . /
