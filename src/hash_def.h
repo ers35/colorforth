@@ -138,6 +138,7 @@
 #define AND_HASH                       (hash_t) 0xB885E18
 #define MIN_HASH                       (hash_t) 0xB889089
 #define MAX_HASH                       (hash_t) 0xB888F8B
+#define ABS_HASH                       (hash_t) 0xB885C9B
 #define RAND_HASH                      (hash_t) 0x17C9D3DEA
 #define SRAND_HASH                     (hash_t) 0x311060307D
 #define RANDOM_HASH                    (hash_t) 0x65318E46F26

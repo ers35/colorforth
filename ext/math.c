@@ -118,6 +118,13 @@ max_fn(struct state *s)
 }
 
 void
+abs_fn(struct state *s)
+{
+  const cell n = pop(s->stack);
+  push(s->stack, labs(n));
+}
+
+void
 rand_fn(struct state *s)
 {
   push(s->stack, rand());
@@ -154,6 +161,7 @@ init_math_utils(struct state *state)
   define_primitive_extension(state, AND_HASH,       ENTRY_NAME("and"), and_fn);
   define_primitive_extension(state, MIN_HASH,       ENTRY_NAME("min"), min_fn);
   define_primitive_extension(state, MAX_HASH,       ENTRY_NAME("max"), max_fn);
+  define_primitive_extension(state, ABS_HASH,       ENTRY_NAME("abs"), abs_fn);
   define_primitive_extension(state, RAND_HASH,      ENTRY_NAME("rand"), rand_fn);
   define_primitive_extension(state, SRAND_HASH,     ENTRY_NAME("srand"), srand_fn);
   define_primitive_extension(state, RANDOM_HASH,    ENTRY_NAME("random"), random_fn);
