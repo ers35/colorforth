@@ -1,4 +1,4 @@
-% off echo!
+%
 
 \ one line comment
 
@@ -40,3 +40,5 @@ my-var @ . cr cr
 
 
 ~fullroom
+
+echo on
