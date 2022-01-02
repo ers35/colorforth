@@ -6,8 +6,8 @@
 |true   ^1 ;
 |false  ^0 ;
 
-:on  ^1 swap ! ;
-:off ^0 swap ! ;
+:on  ^1 swap c! ;
+:off ^0 swap c! ;
 
 :hex ^16 base! ;
 :dec ^10 base! ;

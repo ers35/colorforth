@@ -172,8 +172,8 @@ struct state
 
   char base;
 
-  int done;
-  int echo_on;
+  char done;
+  char echo_on;
 
   // streams
   char *str_stream;
