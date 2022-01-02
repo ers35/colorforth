@@ -17,12 +17,6 @@ parse_command_line(struct state *state, int argc, char *argv[])
       continue;
     }
 
-    if (memcmp(argv[i], "-x", 2) == 0)
-    {
-      break_on_unknown_word = 1;
-      continue;
-    }
-
     if (nextIsEval)
     {
       parse_from_string(state, argv[i]);
@@ -30,13 +24,16 @@ parse_command_line(struct state *state, int argc, char *argv[])
       continue;
     }
 
+    if (memcmp(argv[i], "-x", 2) == 0)
+    {
+      break_on_unknown_word = 1;
+      continue;
+    }
+
     parse_from_file(state, argv[i]);
   }
 
-  if (argc == 1)
-  {
-    parse_colorforth(state, '~');
-  }
+  parse_colorforth(state, '~');
 }
 
 int
