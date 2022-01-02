@@ -145,6 +145,10 @@
   `1- `cmove-advance ^is
   cmove-loop ;
 
+~( math )
+:sign-0; ^drop 0 ;; ;
+:sign ^dup unless sign-0; < choose 1 -1 ;
+
 ~( eval )
 :ptr ~0 variable ^;
 :count ~0 variable ^;
