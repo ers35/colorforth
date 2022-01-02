@@ -130,7 +130,7 @@
 
 :. ^0 world!! ;
 :+ ^1 world!! ;
-:* ^2 world!! ; \ TODO: enemy
+:* ^2 world!! ; ~\ TODO: enemy
 :P ^world-x @ player x !   world-y @ player y ! ;
 
 :.s ~( n -) ^. 1- dup when .s drop ;

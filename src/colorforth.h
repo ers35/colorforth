@@ -198,6 +198,7 @@ struct prefix_map
 };
 
 extern struct prefix_map prefix_map[];
+extern char break_on_unknown_word;
 
 extern void cf_print_cell(struct state *state, cell cell);
 

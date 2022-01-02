@@ -16,6 +16,8 @@
 
 struct prefix_map prefix_map[MAX_PREFIX];
 
+char break_on_unknown_word = DEFAULT_BREAK_ON_UNKNOWN_WORD;
+
 #define define_register(N) case OP_##N##_STORE: { N = pop(s->stack); break; } \
   case OP_##N##_LOAD: { push(s->stack, N); break; }                     \
   case OP_##N##_ADD: { N += pop(s->stack); break; }                     \
@@ -274,6 +276,11 @@ unknow_word (struct state *s)
 {
   print_tib(s);
   cf_printf(s, "?\n");
+
+  if (break_on_unknown_word)
+  {
+    cf_fatal_error(s, -1);
+  }
 }
 
 // 'hashed_name' is 'hash(name)' or 0x0 if names are kept
