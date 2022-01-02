@@ -78,7 +78,7 @@
 :gg
 :gens ~( n -- )^g 1- dup when gens drop cls ;
 
-:life ^flip cls eon! help ;
+:life ^flip cls echo on help ;
 
 ~\ Patterns
 :ox ~0 variable ^;

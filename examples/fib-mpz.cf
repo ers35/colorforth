@@ -27,4 +27,4 @@ $ wc -c fib-10000000.txt
 ...
 )
 
-eon!
+echo on

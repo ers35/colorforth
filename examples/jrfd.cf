@@ -37,4 +37,4 @@ Example:
 
 :?? ~( n -) ^100 random .?? check? cr ;
 
-~rules eon!
+~rules echo on

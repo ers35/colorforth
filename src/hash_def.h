@@ -107,7 +107,7 @@
 #define ENTRY__PATCH_HASH              (hash_t) 0xC08573511B46B7F6
 
 // IO
-#define ECHO_STORE_HASH                (hash_t) 0x310F5ABD65
+#define ECHO_ADDR_HASH                 (hash_t) 0x17C9624C4
 #define FILE_SUBSIZE_HASH              (hash_t) 0x377C80EAB4BB74D
 #define FILE_LOAD_HASH                 (hash_t) 0x17C9A2D85
 #define FILE_SAVE_HASH                 (hash_t) 0x17C9DCB54

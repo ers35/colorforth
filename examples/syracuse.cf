@@ -46,7 +46,7 @@
 
 ~
 " Usage: <N> sy(racuse)" nprn cr
-eon!
+echo on
 127 syracuse
 15 syracuse
 703 sy

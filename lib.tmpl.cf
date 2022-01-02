@@ -6,19 +6,15 @@
 |true   ^1 ;
 |false  ^0 ;
 
-|on     ^true ^;
-|off    ^false ^;
-:on  ^on ;
-:off ^off ;
+:on  ^1 swap ! ;
+:off ^0 swap ! ;
 
 :hex ^16 base! ;
 :dec ^10 base! ;
 :bin ^2 base! ;
 :base? ^base@ dup dec . base! ;
 
-:eon! ^on echo! ;
-:eoff! ^off echo! ;
-:% ^eoff! ;
+:% ^echo off ;
 
 ~( helper words )
 |2R> ^R> R> ;
