@@ -18,7 +18,8 @@ struct prefix_map prefix_map[MAX_PREFIX];
 
 char break_on_unknown_word = DEFAULT_BREAK_ON_UNKNOWN_WORD;
 
-#define define_register(N) case OP_##N##_STORE: { N = pop(s->stack); break; } \
+#define define_register(N)                                              \
+  case OP_##N##_STORE: { N = pop(s->stack); break; }                    \
   case OP_##N##_LOAD: { push(s->stack, N); break; }                     \
   case OP_##N##_ADD: { N += pop(s->stack); break; }                     \
   case OP_##N##_INC: { N += 1; break; }                                 \
@@ -110,10 +111,7 @@ hash(char *str)
   hash_t hash = 5381;
   int c;
 
-  while ((c = *str++))
-  {
-    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-  }
+  while ((c = *str++)) hash = ((hash << 5) + hash) + c;
 
   return hash;
 }
@@ -137,32 +135,18 @@ dot_s(struct state *state, struct stack *stack)
   cf_printf(state, " <tos\n");
 }
 
-void
+inline void
 push(struct stack *stack, const cell n)
 {
-  if (stack->sp == stack->lim)
-  {
-    stack->sp = 0;
-  }
-  else
-  {
-    stack->sp += 1;
-  }
+  stack->sp = stack->sp == stack->lim ? 0 : stack->sp + 1;
   stack->cells[stack->sp] = n;
 }
 
-cell
+inline cell
 pop(struct stack *stack)
 {
   const cell n = stack->cells[stack->sp];
-  if (stack->sp == 0)
-  {
-    stack->sp = stack->lim;
-  }
-  else
-  {
-    stack->sp -= 1;
-  }
+  stack->sp = stack->sp == 0 ? stack->lim : stack->sp - 1;
 
   return n;
 }
