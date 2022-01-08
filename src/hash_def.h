@@ -8,6 +8,8 @@
 #endif
 
 // Define __SHOW_MISSING_HASH in conf.h to display name <-> hash relationship
+//
+// Use `.hash" <string to hash>"` to find them in colorForth
 
 #define NOP_HASH                       (hash_t) 0xB889592
 #define PRINT_TOS_HASH                 (hash_t) 0x2B5D3
@@ -48,6 +50,7 @@
 #define R_FETCH_HASH                   (hash_t) 0x597517
 
 // Lib
+#define HASH_HASH                      (hash_t) 0x17C97C2C9
 #define BASE_STORE_HASH                (hash_t) 0x310F2388A1
 #define BASE_LOAD_HASH                 (hash_t) 0x310F2388C0
 #define ENTRY_IS_HASH                  (hash_t) 0x597841

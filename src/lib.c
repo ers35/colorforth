@@ -2,6 +2,15 @@
 #include "colorforth.h"
 #include "cf-stdio.h"
 
+extern hash_t hash(char *str);
+
+void
+hash_fn (struct state *s)
+{
+  char *input = CFSTRING2C(pop(s->stack));
+  push(s->stack, hash(input));
+}
+
 void
 set_base (struct state *s)
 {
@@ -65,6 +74,7 @@ room (struct state *s)
 void
 init_lib(struct state *state)
 {
+  define_primitive_extension(state, HASH_HASH,           ENTRY_NAME("hash"), hash_fn);
   define_primitive_extension(state, BASE_STORE_HASH,     ENTRY_NAME("base!"), set_base);
   define_primitive_extension(state, BASE_LOAD_HASH,      ENTRY_NAME("base@"), fetch_base);
   define_primitive_extension(state, ENTRY_IS_HASH,       ENTRY_NAME("is"), is);

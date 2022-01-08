@@ -162,3 +162,7 @@
 ~( time )
 :time/start ^utime >> ;
 :time/end ^utime swap - 1000 / . ~c" ms elapsed" ^prn ;
+
+~( hash )
+:hash" ^" hash ;
+:.hash" ^base@  hash" hex . base! ;

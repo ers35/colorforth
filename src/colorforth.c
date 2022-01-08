@@ -41,7 +41,7 @@ cf_print_cell(struct state *state, cell cell)
   {
     case 16:
     {
-      cf_printf(state, "$%X ", cell);
+      cf_printf(state, "$%lX ", cell);
       break;
     }
     case 2:
