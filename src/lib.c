@@ -12,17 +12,10 @@ hash_fn (struct state *s)
 }
 
 void
-set_base (struct state *s)
+get_base_addr (struct state *s)
 {
 
-  s->base = pop(s->stack);
-}
-
-void
-fetch_base (struct state *s)
-{
-
-  push(s->stack, s->base);
+  push(s->stack, (cell) &s->base);
 }
 
 void
@@ -75,8 +68,7 @@ void
 init_lib(struct state *state)
 {
   define_primitive_extension(state, HASH_HASH,           ENTRY_NAME("hash"), hash_fn);
-  define_primitive_extension(state, BASE_STORE_HASH,     ENTRY_NAME("base!"), set_base);
-  define_primitive_extension(state, BASE_LOAD_HASH,      ENTRY_NAME("base@"), fetch_base);
+  define_primitive_extension(state, BASE_HASH,           ENTRY_NAME("base"), get_base_addr);
   define_primitive_extension(state, ENTRY_IS_HASH,       ENTRY_NAME("is"), is);
   define_primitive_extension(state, ENTRY_HIDE_HASH,     ENTRY_NAME("entry/hide"), hide_entry);
   define_primitive_extension(state, ROOM_HASH,           ENTRY_NAME("room"), room);

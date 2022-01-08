@@ -9,10 +9,10 @@
 :on  ^1 swap c! ;
 :off ^0 swap c! ;
 
-:hex ^16 base! ;
-:dec ^10 base! ;
-:bin ^2 base! ;
-:base? ^base@ dup dec . base! ;
+:hex ^16 base c! ;
+:dec ^10 base c! ;
+:bin ^2 base c! ;
+:base? ^base c@ dup dec . base c! ;
 
 :% ^echo off ;
 
@@ -165,4 +165,4 @@
 
 ~( hash )
 :hash" ^" hash ;
-:.hash" ^base@  hash" hex . base! ;
+:.hash" ^base c@  hash" hex cr . cr base c! ;

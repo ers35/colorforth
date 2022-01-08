@@ -51,8 +51,7 @@
 
 // Lib
 #define HASH_HASH                      (hash_t) 0x17C97C2C9
-#define BASE_STORE_HASH                (hash_t) 0x310F2388A1
-#define BASE_LOAD_HASH                 (hash_t) 0x310F2388C0
+#define BASE_HASH                      (hash_t) 0x17C947880
 #define ENTRY_IS_HASH                  (hash_t) 0x597841
 #define ENTRY_HIDE_HASH                (hash_t) 0x7270A6674E62BAC0
 #define ROOM_HASH                      (hash_t) 0x17C9D79A2
