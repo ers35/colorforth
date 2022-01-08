@@ -94,12 +94,15 @@
 :[] ^[] ;
 
 ~( create null-terminated string )
-:"init ^dhere @ cell + ;
-:"loop ^dup key dup ~key " >> ^= when ; swap c! 1 + "loop ;
+:"marker ~0 variable ^;
+:"forget ^"marker @ dhere ! ;
+
+:"init ^dhere @  dup "marker !  cell + ;
+:."key ^dup  echo c@ choose emit drop ;
+:"loop ^dup key ."key dup ~key " >> ^= when ; swap c! 1 + "loop ;
 :"done ^drop drop dhere @ - dup ^1 + dalloc swap cell - over ! ;
 :" ^"init "loop "done ;
 :c" ^" >> ;
-
 
 ~( print string )
 :."init ^dup dup @ + cell + swap cell + ;
