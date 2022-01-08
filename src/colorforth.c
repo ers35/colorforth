@@ -16,8 +16,6 @@
 
 struct prefix_map prefix_map[MAX_PREFIX];
 
-char break_on_unknown_word = DEFAULT_BREAK_ON_UNKNOWN_WORD;
-
 #define define_register(N)                                              \
   case OP_##N##_STORE: { N = pop(s->stack); break; }                    \
   case OP_##N##_LOAD: { push(s->stack, N); break; }                     \
@@ -261,7 +259,7 @@ unknow_word (struct state *s)
   print_tib(s);
   cf_printf(s, "?\n");
 
-  if (break_on_unknown_word)
+  if (s->str_stream || s->file_stream)
   {
     cf_fatal_error(s, -1);
   }
@@ -949,6 +947,8 @@ parse_from_string(struct state *s, char *str)
   {
     parse_colorforth(s, c);
   }
+
+  parse_colorforth(s, ' ');
 
   s->str_stream = old_stream;
 

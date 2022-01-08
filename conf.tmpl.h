@@ -5,8 +5,6 @@
 typedef long cell;
 #define CELL_FMT "%ld"
 
-#define DEFAULT_BREAK_ON_UNKNOWN_WORD 0
-
 // Enable hashed names: reduce memory size but break words/see/disasemble
 #define __KEEP_ENTRY_NAMES
 
