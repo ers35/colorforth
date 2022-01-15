@@ -36,6 +36,7 @@
 :cell+! ^dup @ cell + swap ! ;
 
 |;; ^R> drop ;
+|;;; ^;; ;; ;
 
 |cells ^cell * ;
 :cells ^cells ;
