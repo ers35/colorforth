@@ -25,6 +25,10 @@ SRC_H=src/colorforth.h \
 	src/cf-stdio.h \
 	src/color.h
 
+FLAGS=-fPIE -std=gnu99 -O3 -Wall -Werror -Wextra -pedantic \
+	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
+	-I. -Isrc -Iext
+
 EXTRA_CLIBS=-lgmp -lpthread
 
 optim_cpl:
@@ -38,10 +42,9 @@ src/lib.cf.h: lib.tmpl.cf
 	xxd -i lib.cf src/lib.cf.h
 
 colorforth: Makefile $(SRC) $(SRC_H)
-	gcc -fPIE -std=gnu99 -O3 -Wall -Werror -Wextra -pedantic \
-	-s -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-parameter \
-	-I. -Isrc -Iext $(EXTRA_CFLAGS) \
-	-o colorforth $(SRC) $(EXTRA_CLIBS)
+	gcc $(FLAGS) $(EXTRA_CFLAGS) -o colorforth $(SRC) $(EXTRA_CLIBS)
+	gcc -DUNSAFE_MODE=1 $(FLAGS) $(EXTRA_CFLAGS) -o colorforth-unsafe $(SRC) $(EXTRA_CLIBS)
+
 
 optimize: colorforth
 	@#readelf -l colorforth

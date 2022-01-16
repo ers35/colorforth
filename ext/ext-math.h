@@ -6,7 +6,7 @@
 
 struct fstack
 {
-  // circular stack
+  // stack
   number_t *cells;
   // stack position
   int sp;

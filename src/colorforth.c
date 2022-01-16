@@ -119,34 +119,48 @@ init_stack(struct stack *stack, int len, unsigned char id)
 {
   stack->cells = cf_calloc(NULL, len, sizeof(cell), id);
   stack->sp = 0;
-  stack->lim = len - 1;
+  stack->lim = len;
 }
 
 static void
 dot_s(struct state *state, struct stack *stack)
 {
-  for (int i = 0, p = stack->sp + 1; i <= stack->lim; i++, p++)
+  cf_printf(state, "[%d] ", stack->sp);
+  for (int i = 0; i < stack->sp ; i++)
   {
-    if (p > stack->lim) p = 0;
-    cf_print_cell(state, stack->cells[p]);
+    cf_print_cell(state, stack->cells[i]);
   }
-  cf_printf(state, " <tos\n");
+  cf_printf(state, "<tos\n");
 }
 
 inline void
 push(struct stack *stack, const cell n)
 {
-  stack->sp = stack->sp == stack->lim ? 0 : stack->sp + 1;
+#ifndef UNSAFE_MODE
+  if (stack->sp >= stack->lim)
+  {
+    cf_printf(NULL, "ES>!\n");
+    return;
+  }
+#endif
+
   stack->cells[stack->sp] = n;
+  stack->sp += 1;
 }
 
 inline cell
 pop(struct stack *stack)
 {
-  const cell n = stack->cells[stack->sp];
-  stack->sp = stack->sp == 0 ? stack->lim : stack->sp - 1;
+#ifndef UNSAFE_MODE
+  if (stack->sp == 0)
+  {
+    cf_printf(NULL, "ES<!\n");
+    return 0;
+  }
+#endif
 
-  return n;
+  stack->sp -= 1;
+  return stack->cells[stack->sp];
 }
 
 void
@@ -504,7 +518,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_R_FETCH:
       {
-        push(s->stack, s->r_stack->cells[s->r_stack->sp]);
+        push(s->stack, s->r_stack->cells[s->r_stack->sp - 1]);
         break;
       }
 
@@ -518,7 +532,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_DUP:
       {
-        push(s->stack, s->stack->cells[s->stack->sp]);
+        push(s->stack, s->stack->cells[s->stack->sp - 1]);
         break;
       }
 

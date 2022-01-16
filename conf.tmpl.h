@@ -5,6 +5,9 @@
 typedef long cell;
 #define CELL_FMT "%ld"
 
+// Unsafe mode: disable stack underflow/overflow check
+// #define UNSAFE_MODE
+
 // Enable hashed names: reduce memory size but break words/see/disasemble
 #define __KEEP_ENTRY_NAMES
 

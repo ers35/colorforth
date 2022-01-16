@@ -9,7 +9,7 @@ init_fstack(struct fstack *stack, int len)
 {
   stack->cells = cf_calloc(NULL, len, sizeof(number_t), F_STACK_ERROR);
   stack->sp = 0;
-  stack->lim = len - 1;
+  stack->lim = len;
 }
 
 void
@@ -21,45 +21,42 @@ fsize(struct state *state)
 static void
 fdot_s(struct state *state)
 {
-  for (int i = 0, p = state->fstack.sp + 1; i <= state->fstack.lim; i++, p++)
+  cf_printf(state, "[%d] ", state->fstack.sp);
+  for (int i = 0; i < state->fstack.sp; i++)
   {
-    if (p > state->fstack.lim) p = 0;
-
-    if (i <= state->fstack.lim - 8) continue;
-
-    cf_printf(state, "%lf ", state->fstack.cells[p]);
+    cf_printf(state, "%lf ", state->fstack.cells[i]);
   }
-  cf_printf(state, " <ftos\n");
+  cf_printf(state, "<ftos\n");
 }
 
 void
 fpush(struct fstack *stack, const number_t n)
 {
-  if (stack->sp == stack->lim)
+#ifndef UNSAFE_MODE
+  if (stack->sp >= stack->lim)
   {
-    stack->sp = 0;
+    cf_printf(NULL, "ES>!\n");
+    return;
   }
-  else
-  {
-    stack->sp += 1;
-  }
+#endif
+
   stack->cells[stack->sp] = n;
+  stack->sp += 1;
 }
 
 number_t
 fpop(struct fstack *stack)
 {
-  const number_t n = stack->cells[stack->sp];
+#ifndef UNSAFE_MODE
   if (stack->sp == 0)
   {
-    stack->sp = stack->lim;
+    cf_printf(NULL, "ES<!\n");
+    return 0;
   }
-  else
-  {
-    stack->sp -= 1;
-  }
+#endif
 
-  return n;
+  stack->sp -= 1;
+  return stack->cells[stack->sp];
 }
 
 
@@ -87,7 +84,7 @@ fdrop(struct state *s)
 void
 fdup(struct state *s)
 {
-  fpush(&s->fstack, s->fstack.cells[s->fstack.sp]);
+  fpush(&s->fstack, s->fstack.cells[s->fstack.sp - 1]);
 }
 
 void

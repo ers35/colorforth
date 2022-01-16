@@ -146,7 +146,7 @@ struct entry
 
 struct stack
 {
-  // circular stack
+  // stack
   cell *cells;
   // stack position
   int sp;
