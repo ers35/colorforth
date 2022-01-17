@@ -85,8 +85,8 @@
 
 :valid? ^static-world@ 0 = ;
 
-:move-x ^player x @ + width  @ mod   dup player y @  valid? choose player-x! drop ;
-:move-y ^player y @ + height @ mod   player x @ over valid? choose player-y! drop ;
+:move-x ^player x @ + width  @ mod   dup player y @  valid? if player-x! else drop ;
+:move-y ^player y @ + height @ mod   player x @ over valid? if player-y! else drop ;
 
 :move-left;  ^-1 move-x ;; ;
 :move-right; ^ 1 move-x ;; ;

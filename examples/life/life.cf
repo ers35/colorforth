@@ -45,7 +45,7 @@
 
 :.star  ^star-color ~key * >> ^emit ;
 :.blank ^blank-color ~key . >> ^emit ;
-:.cell ~( x y - ) ^world@ choose .star .blank ;
+:.cell ~( x y - ) ^world@ if .star else .blank ;
 
 :.world ^at-00
   `.cell `<world-h> ^is   `cr `<world-v> ^is
@@ -62,11 +62,11 @@
    I@ 1- J@ 1+ world@ +   I@ J@ 1+ world@ +   I@ 1+ J@ 1+ world@ +
    R>J R>I ;
 
-:apply-alive ~( n - ) ^dup 2 = swap 3 = or choose 1 0 ;
-:apply-dead ~( n - ) ^3 = choose 1 0 ;
+:apply-alive ~( n - ) ^dup 2 = swap 3 = or if 1 else 0 ;
+:apply-dead ~( n - ) ^3 = if 1 else 0 ;
 :apply ~( x y - )^
    2dup 2dup sum-neighbor -rot
-   world@ choose apply-alive apply-dead
+   world@ if apply-alive else apply-dead
    -rot world! ;
 
 :gen ^

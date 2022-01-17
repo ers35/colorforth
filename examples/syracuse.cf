@@ -35,7 +35,7 @@
 :even ^2 / ;
 :odd  ^3 * 1+ ;
 
-:next ^dup 2 mod choose odd even ;
+:next ^dup 2 mod if odd else even ;
 
 :loop ~( n - ) ^record dup 1 = when ;  next loop ;
 

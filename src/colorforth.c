@@ -475,7 +475,7 @@ execute_(struct state *s, struct entry *entry)
 
   push(s->r_stack, 0);
 
-  short choose_state = 0;
+  short else_state = 0;
 
 #ifdef __USE_REGISTER
   register cell A = 0;
@@ -622,11 +622,6 @@ execute_(struct state *s, struct entry *entry)
       case OP_CALL:
       {
         struct entry *entry_ = (struct entry*)pc->value;
-        if (choose_state) {
-          choose_state = 0;
-          pc++;
-        }
-
         push(s->r_stack, (cell)pc);
         pc = entry_->code - 1;
         break;
@@ -650,11 +645,6 @@ execute_(struct state *s, struct entry *entry)
       case OP_TICK_NUMBER:
       {
         push(s->stack, pc->value);
-
-        if (choose_state) {
-          choose_state = 0;
-          pc++;
-        }
         break;
       }
 
@@ -698,26 +688,40 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_WHEN:
+      case OP_IF:
       {
         const cell n = pop(s->stack);
-        if (!n) pc++;
-        break;
-      }
-
-      case OP_UNLESS:
-      {
-        const cell n = pop(s->stack);
-        if (n) pc++;
-        break;
-      }
-
-      case OP_CHOOSE:
-      {
-        const cell n = pop(s->stack);
-        if (n)
+        if (!n)
         {
-          choose_state = 1;
+          else_state = 1;
+          pc++;
+        }
+        else
+        {
+          else_state = 0;
+        }
+        break;
+      }
+
+      case OP_IF_NOT:
+      {
+        const cell n = pop(s->stack);
+        if (n) {
+          else_state = 1;
+          pc++;
+        }
+        else
+        {
+          else_state = 0;
+        }
+        break;
+      }
+
+      case OP_ELSE:
+      {
+        if (else_state)
+        {
+          else_state = 0;
         }
         else
         {
@@ -1071,9 +1075,9 @@ colorforth_newstate(void)
   define_primitive(state, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
 
   define_primitive_inlined(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);
-  define_primitive_inlined(state, WHEN_HASH,      ENTRY_NAME("when"), OP_WHEN);
-  define_primitive_inlined(state, UNLESS_HASH,    ENTRY_NAME("unless"), OP_UNLESS);
-  define_primitive_inlined(state, CHOOSE_HASH,    ENTRY_NAME("choose"), OP_CHOOSE);
+  define_primitive_inlined(state, IF_HASH,        ENTRY_NAME("if"), OP_IF);
+  define_primitive_inlined(state, IF_NOT_HASH,    ENTRY_NAME("-if"), OP_IF_NOT);
+  define_primitive_inlined(state, ELSE_HASH,      ENTRY_NAME("else"), OP_ELSE);
 
   define_primitive_inlined(state, R_PUSH_HASH,    ENTRY_NAME(">R"), OP_R_PUSH);
   define_primitive_inlined(state, R_POP_HASH,     ENTRY_NAME("R>"), OP_R_POP);

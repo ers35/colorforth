@@ -4,8 +4,8 @@
 " 2 + 2 = " pr   2 2 + . cr
 
 :old2 ^2 ;
-:2 ^dup old2 = choose 3 old2 ;
+:2 ^dup old2 = when 3 else old2 ;
 ~
-" 2 + 2 = " pr   2 2 + .
+" 2 + 2 = " pr  2 2 + .
 
 bye

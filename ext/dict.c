@@ -90,7 +90,7 @@ see(struct state *s, struct entry *entry)
         }
       }
 
-      display_next_sc = (entry->code[i].opcode == OP_WHEN || entry->code[i].opcode == OP_UNLESS) ? 1 : 0;
+      display_next_sc = (entry->code[i].opcode == OP_IF || entry->code[i].opcode == OP_IF_NOT) ? 1 : 0;
     }
     cf_printf(s, "\n");
   }
@@ -200,7 +200,7 @@ patch_entry (struct state *s)
       }
     }
 
-    is_test = (entry->code[i].opcode == OP_WHEN || entry->code[i].opcode == OP_UNLESS) ? 1 : 0;
+    is_test = (entry->code[i].opcode == OP_IF || entry->code[i].opcode == OP_IF_NOT) ? 1 : 0;
   }
 }
 

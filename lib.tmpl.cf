@@ -1,3 +1,6 @@
+|when ^if ;
+|unless ^-if ;
+
 :\ ^key 10 = unless \ ;
 :( ^key 41 = unless ( ;
 ~( The two lines above defines comments. We do not have them till there )
@@ -99,7 +102,7 @@
 :"forget ^"marker @ dhere ! ;
 
 :"init ^dhere @  dup "marker !  cell + ;
-:."key ^dup  echo c@ choose emit drop ;
+:."key ^dup  echo c@ when emit else drop ;
 :"loop ^dup key ."key dup ~key " >> ^= when ; swap c! 1 + "loop ;
 :"done ^drop drop dhere @ - dup ^1 + dalloc swap cell - over ! ;
 :" ^"init "loop "done ;
@@ -151,7 +154,7 @@
 
 ~( math )
 :sign-0; ^drop 0 ;; ;
-:sign ^dup unless sign-0;  0 < choose -1 1 ;
+:sign ^dup unless sign-0;  0 < when -1 else 1 ;
 
 ~( eval )
 :ptr ~0 variable ^;

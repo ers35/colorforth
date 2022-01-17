@@ -33,7 +33,7 @@ Example:
 :.KO  ~c" No :-("  ^pr ;
 
 :.??  ^2dup  ~c"    " ^pr  .  ~c" / " ^pr  . ;
-:check? ^<= choose .OK .KO ;
+:check? ^<= if .OK else .KO ;
 
 :?? ~( n -) ^100 random .?? check? cr ;
 

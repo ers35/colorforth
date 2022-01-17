@@ -70,9 +70,9 @@ enum opcode
 
   /* inlined */
   OP_RETURN,
-  OP_WHEN,
-  OP_UNLESS,
-  OP_CHOOSE,
+  OP_IF,
+  OP_IF_NOT,
+  OP_ELSE,
 
   OP_R_PUSH,
   OP_R_POP,
