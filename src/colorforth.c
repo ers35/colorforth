@@ -475,7 +475,7 @@ execute_(struct state *s, struct entry *entry)
 
   push(s->r_stack, 0);
 
-  short else_state = 0;
+  short else_offset = 0;
 
 #ifdef __USE_REGISTER
   register cell A = 0;
@@ -693,12 +693,12 @@ execute_(struct state *s, struct entry *entry)
         const cell n = pop(s->stack);
         if (!n)
         {
-          else_state = 1;
+          else_offset = 0;
           pc++;
         }
         else
         {
-          else_state = 0;
+          else_offset = 1;
         }
         break;
       }
@@ -707,26 +707,19 @@ execute_(struct state *s, struct entry *entry)
       {
         const cell n = pop(s->stack);
         if (n) {
-          else_state = 1;
+          else_offset = 0;
           pc++;
         }
         else
         {
-          else_state = 0;
+          else_offset = 1;
         }
         break;
       }
 
       case OP_ELSE:
       {
-        if (else_state)
-        {
-          else_state = 0;
-        }
-        else
-        {
-          pc++;
-        }
+        pc += else_offset;
         break;
       }
 
