@@ -122,6 +122,26 @@ init_stack(struct stack *stack, int len, unsigned char id)
   stack->lim = len;
 }
 
+void
+free_stack(struct stack *stack)
+{
+  free(stack->cells);
+  free(stack);
+}
+
+void
+free_dictionary(struct dictionary *dict)
+{
+#ifdef __KEEP_ENTRY_NAMES
+  for (struct entry *entry = dict->latest; entry != dict->entries - 1; entry--)
+  {
+    if (entry->name != NULL) free(entry->name);
+  }
+#endif
+
+  free(dict->entries);
+}
+
 static void
 dot_s(struct state *state, struct stack *stack)
 {
@@ -1104,9 +1124,20 @@ void
 free_state(struct state* state)
 {
   free(state->heap);
-  free(state->inlined_dict.entries);
-  free(state->dict.entries);
-  free(state->r_stack);
-  free(state->stack);
+
+  free_dictionary(&state->dict);
+  free_dictionary(&state->inlined_dict);
+
+  free_stack(state->r_stack);
+  free_stack(state->stack);
+
+#ifdef __EXTENDED_MATH
+  free(state->fstack.cells);
+#endif
+
+#ifdef __MP_MATH
+  free(state->mpstack.cells);
+#endif
+
   free(state);
 }
