@@ -10,6 +10,10 @@
 #include <signal.h>
 #include <string.h>
 
+#ifdef __EXTENDED_MATH
+extern void init_fstack(struct fstack *stack, int len);
+#endif
+
 #ifdef __MP_MATH
 extern void init_mpstack(struct mpstack *stack, int len, unsigned char id);
 #endif
@@ -55,6 +59,9 @@ clone_state(struct state *state)
   clone->str_stream = NULL;
   clone->file_stream = NULL;
 
+#ifdef __EXTENDED_MATH
+  init_fstack(&clone->fstack, FSTACK_SIZE);
+#endif
 
 #ifdef __MP_MATH
   init_mpstack(&clone->mpstack, MPSTACK_SIZE, 135);
@@ -68,6 +75,10 @@ free_clone_state(struct state *clone)
 {
   free(clone->stack);
   free(clone->r_stack);
+
+#ifdef __EXTENDED_MATH
+  free(clone->fstack.cells);
+#endif
 
 #ifdef __MP_MATH
   free(clone->mpstack.cells);
