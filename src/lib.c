@@ -65,6 +65,15 @@ room (struct state *s)
 }
 
 void
+clear_room (struct state *s)
+{
+  for (int i = 0; i < 8; i++)
+  {
+    pop(s->stack);
+  }
+}
+
+void
 init_lib(struct state *state)
 {
   define_primitive_extension(state, HASH_HASH,           ENTRY_NAME("hash"), hash_fn);
@@ -72,4 +81,5 @@ init_lib(struct state *state)
   define_primitive_extension(state, ENTRY_IS_HASH,       ENTRY_NAME("is"), is);
   define_primitive_extension(state, ENTRY_HIDE_HASH,     ENTRY_NAME("entry/hide"), hide_entry);
   define_primitive_extension(state, ROOM_HASH,           ENTRY_NAME("room"), room);
+  define_primitive_extension(state, CLEAR_ROOM_HASH,     ENTRY_NAME("clear-room"), clear_room);
 }
