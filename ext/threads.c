@@ -68,6 +68,11 @@ free_clone_state(struct state *clone)
 {
   free(clone->stack);
   free(clone->r_stack);
+
+#ifdef __MP_MATH
+  free(clone->mpstack.cells);
+#endif
+
   free(clone);
 }
 
