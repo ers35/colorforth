@@ -87,6 +87,10 @@
 
 :dalloc ~( n - a ) ^dhere @ swap over + dhere ! ;
 
+:<old-bye> ^bye ;
+:bye ^dataheap c-free <old-bye> ;
+~'<old-bye> ~entry/hide
+
 :>d! ^cell dalloc ! ;
 :>dc! ^1 dalloc ! ;
 
