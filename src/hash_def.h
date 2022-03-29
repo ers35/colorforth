@@ -55,7 +55,7 @@
 #define ENTRY_IS_HASH                  (hash_t) 0x597841
 #define ENTRY_HIDE_HASH                (hash_t) 0x7270A6674E62BAC0
 #define ROOM_HASH                      (hash_t) 0x17C9D79A2
-#define CLEAR_ROOM_HASH                (hash_t) 0x72704ED258687DD6
+#define DROP_ROOM_HASH                 (hash_t) 0x377C5DA113A5224
 
 // Registers
 #define REG_A_LOAD_HASH                (hash_t) 0x5972E6
