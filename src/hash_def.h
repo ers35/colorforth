@@ -99,6 +99,17 @@
 #define REG_J_TO_R_HASH                (hash_t) 0xB87F5FF
 #define REG_R_TO_J_HASH                (hash_t) 0xB8817FF
 
+// Load Extensions
+#define REQUIRE_OS_HASH                (hash_t) 0x7272BF856C1C94D1
+#define REQUIRE_DICT_HASH              (hash_t) 0xDA20B690E58EE793
+#define REQUIRE_IO_HASH                (hash_t) 0x7272BF856C1C9407
+#define REQUIRE_PARSER_HASH            (hash_t) 0xE5289E60A05C7EBC
+#define REQUIRE_TIME_HASH              (hash_t) 0xDA20B690E597AEDE
+#define REQUIRE_MATH_HASH              (hash_t) 0xDA20B690E593B719
+#define REQUIRE_EXT_MATH_HASH          (hash_t) 0xD1C9B8A3ECDA3577
+#define REQUIRE_MP_MATH_HASH           (hash_t) 0x8A3C6A73E3170C03
+#define REQUIRE_THREADS_HASH           (hash_t) 0x8A3C6A75F021A5FA
+
 // OS
 #define SYSTEM_HASH                    (hash_t) 0x6531CEEE48A
 #define C_SUBALLOC_HASH                (hash_t) 0xD0B138959C40

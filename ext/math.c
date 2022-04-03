@@ -2,6 +2,8 @@
 #include "colorforth.h"
 #include "cf-stdio.h"
 
+static char initialized = 0;
+
 #define modulo(n2, n1) ((n2 < 0) ? (n2 % n1 + n1) : (n2 % n1))
 
 void
@@ -145,8 +147,10 @@ random_fn(struct state *s)
 }
 
 void
-init_math_utils(struct state *state)
+require_math_fn(struct state *state)
 {
+  if (initialized) return;
+
   define_primitive_extension(state, DIV_HASH,       ENTRY_NAME("/"), div_fn);
   define_primitive_extension(state, MOD_HASH,       ENTRY_NAME("mod"), mod_fn);
   define_primitive_extension(state, DIVMOD_HASH,    ENTRY_NAME("/mod"), slash_mod_fn);
@@ -165,4 +169,6 @@ init_math_utils(struct state *state)
   define_primitive_extension(state, RAND_HASH,      ENTRY_NAME("rand"), rand_fn);
   define_primitive_extension(state, SRAND_HASH,     ENTRY_NAME("srand"), srand_fn);
   define_primitive_extension(state, RANDOM_HASH,    ENTRY_NAME("random"), random_fn);
+
+  initialized = 1;
 }

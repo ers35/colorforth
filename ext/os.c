@@ -1,6 +1,8 @@
 // The author disclaims copyright to this source code.
 #include "colorforth.h"
 
+static char initialized = 0;
+
 void
 system_fn(struct state *s)
 {
@@ -21,9 +23,13 @@ c_free(struct state *s)
 }
 
 void
-init_os_utils(struct state *state)
+require_os_fn(struct state *state)
 {
+  if (initialized) return;
+
   define_primitive_extension(state, SYSTEM_HASH,      ENTRY_NAME("system"), system_fn);
   define_primitive_extension(state, C_SUBALLOC_HASH,  ENTRY_NAME("c-alloc"), c_alloc);
   define_primitive_extension(state, C_SUBFREE_HASH,   ENTRY_NAME("c-free"), c_free);
+
+  initialized = 1;
 }

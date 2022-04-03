@@ -6,6 +6,7 @@ SRC=wasm/main-wasm.c src/colorforth.c \
 	wasm/cf-stdio-wasm.c \
 	src/color.c \
 	src/lib.c \
+	ext/load-ext.c \
 	ext/os.c \
 	ext/dict.c \
 	ext/io.c \

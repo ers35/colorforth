@@ -10,6 +10,8 @@
 #include <signal.h>
 #include <string.h>
 
+static char initialized = 0;
+
 #ifdef __EXTENDED_MATH
 extern void init_fstack(struct fstack *stack, int len);
 #endif
@@ -182,8 +184,10 @@ thread_unlock(struct state *state)
 }
 
 void
-init_threads_utils(struct state *state)
+require_threads_fn(struct state *state)
 {
+  if (initialized) return;
+
   for (int i = 0; i < MAX_LOCK; i++)
   {
     sem_init(&locks[i], 0, 1);
@@ -195,6 +199,8 @@ init_threads_utils(struct state *state)
   define_primitive_extension(state, THREAD__KILL_HASH,        ENTRY_NAME("thread/kill"), thread_kill);
   define_primitive_extension(state, THREAD__LOCK_HASH,        ENTRY_NAME("thread/lock"), thread_lock);
   define_primitive_extension(state, THREAD__UNLOCK_HASH,      ENTRY_NAME("thread/unlock"), thread_unlock);
+
+  initialized = 1;
 }
 
 #else

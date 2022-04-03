@@ -1,3 +1,5 @@
+~require-os require-dict require-io require-parser require-time require-math
+
 |when ^if ;
 |unless ^-if ;
 

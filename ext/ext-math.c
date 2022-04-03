@@ -4,6 +4,8 @@
 
 #ifdef __EXTENDED_MATH
 
+static char initialized = 0;
+
 void
 init_fstack(struct fstack *stack, int len)
 {
@@ -217,8 +219,10 @@ fcompile_literal(struct state *s)
 }
 
 void
-init_ext_math_utils(struct state *state)
+require_ext_math_fn(struct state *state)
 {
+  if (initialized) return;
+
   init_fstack(&state->fstack, FSTACK_SIZE);
   define_prefix('$', define_float,  COLOR_YELLOW,     0);
 
@@ -247,6 +251,8 @@ init_ext_math_utils(struct state *state)
   define_primitive_extension(state, F_STORE_HASH,    ENTRY_NAME("f!"), fstore);
 
   define_primitive_extension(state, F_INLINE_HASH,   ENTRY_NAME("f>>"), fcompile_literal);
+
+  initialized = 1;
 }
 
 #else

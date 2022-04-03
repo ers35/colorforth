@@ -60,26 +60,4 @@ typedef double number_t;
 // Extensions to load
 struct state;
 
-extern void init_os_utils(struct state *s);
-extern void init_dict_utils(struct state *s);
-extern void init_io_utils(struct state *s);
-extern void init_parser_utils(struct state *s);
-extern void init_time_utils(struct state *s);
-extern void init_math_utils(struct state *s);
-extern void init_ext_math_utils(struct state *state);
-extern void init_mp_math_utils(struct state *state);
-extern void init_threads_utils(struct state *state);
-
-#define LOAD_EXTENTIONS                         \
-  init_os_utils(state);                         \
-  init_dict_utils(state);                       \
-  init_io_utils(state);                         \
-  init_parser_utils(state);                     \
-  init_time_utils(state);                       \
-  init_math_utils(state);                       \
-  init_ext_math_utils(state);                   \
-  init_mp_math_utils(state);                    \
-  init_threads_utils(state);
-
-
 #endif /* __CONF_H */

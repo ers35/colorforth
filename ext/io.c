@@ -2,6 +2,8 @@
 #include "colorforth.h"
 #include "cf-stdio.h"
 
+static char initialized = 0;
+
 void
 parse_from_file(struct state *s, char *filename)
 {
@@ -126,11 +128,15 @@ included_file(struct state *s)
 }
 
 void
-init_io_utils(struct state *state)
+require_io_fn(struct state *state)
 {
+  if (initialized) return;
+
   define_primitive_extension(state, ECHO_ADDR_HASH,      ENTRY_NAME("echo"), echo_addr);
   define_primitive_extension(state, FILE_SUBSIZE_HASH,   ENTRY_NAME("file-size"), file_size_fn);
   define_primitive_extension(state, FILE_LOAD_HASH,      ENTRY_NAME("load"), load_file);
   define_primitive_extension(state, FILE_SAVE_HASH,      ENTRY_NAME("save"), save_file);
   define_primitive_extension(state, INCLUDED_HASH,       ENTRY_NAME("included"), included_file);
+
+  initialized = 1;
 }

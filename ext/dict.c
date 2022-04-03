@@ -4,6 +4,8 @@
 #include "colorforth.h"
 #include "cf-stdio.h"
 
+static char initialized = 0;
+
 void
 see(struct state *s, struct entry *entry)
 {
@@ -205,10 +207,14 @@ patch_entry (struct state *s)
 }
 
 void
-init_dict_utils(struct state *state)
+require_dict_fn(struct state *state)
 {
+  if (initialized) return;
+
   define_primitive_extension(state, SEE_HASH,           ENTRY_NAME("see"), see_fn);
   define_primitive_extension(state, DISASSEMBLE_HASH,   ENTRY_NAME("disassemble"), disassemble);
   define_primitive_extension(state, FULLROOM_HASH,      ENTRY_NAME("fullroom"), fullroom);
   define_primitive_extension(state, ENTRY__PATCH_HASH, ENTRY_NAME("entry/patch"), patch_entry);
+
+  initialized = 1;
 }

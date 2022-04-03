@@ -4,6 +4,8 @@
 
 #ifdef __MP_MATH
 
+static char initialized = 0;
+
 #define s_sp(s) s->mpstack.sp
 #define s_lim(s) s->mpstack.lim
 #define s_cells(s, sp) s->mpstack.cells[sp]
@@ -241,8 +243,10 @@ mcompile_literal(struct state *s)
 }
 
 void
-init_mp_math_utils(struct state *state)
+require_mp_math_fn(struct state *state)
 {
+  if (initialized) return;
+
   init_mpstack(&state->mpstack, MPSTACK_SIZE);
   define_prefix('#', define_mpz,  COLOR_YELLOW,     0);
 
@@ -272,6 +276,8 @@ init_mp_math_utils(struct state *state)
   define_primitive_extension(state, M_STORE_HASH,   ENTRY_NAME("m!"), mstore);
 
   define_primitive_extension(state, M_INLINE_HASH,  ENTRY_NAME("m>>"), mcompile_literal);
+
+  initialized = 1;
 }
 
 #else

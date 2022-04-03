@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <time.h>
 
+static char initialized = 0;
+
 void
 time_fn(struct state *s)
 {
@@ -39,10 +41,14 @@ mssleep_fn(struct state *s)
 }
 
 void
-init_time_utils(struct state *state)
+require_time_fn(struct state *state)
 {
+  if (initialized) return;
+
   define_primitive_extension(state, TIME_HASH,    ENTRY_NAME("time"), time_fn);
   define_primitive_extension(state, UTIME_HASH,   ENTRY_NAME("utime"), utime_fn);
   define_primitive_extension(state, SLEEP_HASH,   ENTRY_NAME("sleep"), sleep_fn);
   define_primitive_extension(state, MSSLEEP_HASH, ENTRY_NAME("mssleep"), mssleep_fn);
+
+  initialized = 1;
 }

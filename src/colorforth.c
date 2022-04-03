@@ -14,7 +14,9 @@
 #include <lib.cf.h>
 #endif /* __EMBED_LIB_CF */
 
-struct prefix_map prefix_map[MAX_PREFIX];
+extern void load_extensions(struct state *state);
+
+  struct prefix_map prefix_map[MAX_PREFIX];
 
 #define define_register(N)                                              \
   case OP_##N##_STORE: { N = pop(s->stack); break; }                    \
@@ -219,6 +221,7 @@ void
 words(struct state *s)
 {
   dump_words(s, &s->inlined_dict);
+  cf_printf(s, "\n");
   dump_words(s, &s->dict);
   cf_printf(s, "\n");
 }
@@ -1105,9 +1108,11 @@ colorforth_newstate(void)
   define_register_primitive(C);
   define_register_primitive(I);
   define_register_primitive(J);
+  // I, J, K counter
+  // A, B, C, X, Y just register
 #endif
 
-  LOAD_EXTENTIONS;
+  load_extensions(state);
 
 #ifdef __EMBED_LIB_CF
   parse_from_embed_lib_cf(state);
