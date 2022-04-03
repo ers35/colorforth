@@ -53,6 +53,7 @@
 #define HASH_HASH                      (hash_t) 0x17C97C2C9
 #define BASE_HASH                      (hash_t) 0x17C947880
 #define ENTRY_IS_HASH                  (hash_t) 0x597841
+#define ENTRY_C_IS_HASH                (hash_t) 0x17C946EC2
 #define ENTRY_HIDE_HASH                (hash_t) 0x7270A6674E62BAC0
 #define ROOM_HASH                      (hash_t) 0x17C9D79A2
 #define DROP_ROOM_HASH                 (hash_t) 0x377C5DA113A5224

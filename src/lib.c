@@ -28,6 +28,15 @@ is (struct state *s)
 }
 
 void
+c_is (struct state *s)
+{
+  struct entry *entry_from = (struct entry*)pop(s->stack);
+  struct code *code_to = (struct code*)pop(s->stack);
+
+  entry_from->code = code_to;
+}
+
+void
 hide_entry (struct state *s)
 {
   struct entry *entry = (struct entry*)pop(s->stack);
@@ -79,6 +88,7 @@ init_lib(struct state *state)
   define_primitive_extension(state, HASH_HASH,           ENTRY_NAME("hash"), hash_fn);
   define_primitive_extension(state, BASE_HASH,           ENTRY_NAME("base"), get_base_addr);
   define_primitive_extension(state, ENTRY_IS_HASH,       ENTRY_NAME("is"), is);
+  define_primitive_extension(state, ENTRY_C_IS_HASH,     ENTRY_NAME("c>is"), c_is);
   define_primitive_extension(state, ENTRY_HIDE_HASH,     ENTRY_NAME("entry/hide"), hide_entry);
   define_primitive_extension(state, ROOM_HASH,           ENTRY_NAME("room"), room);
   define_primitive_extension(state, DROP_ROOM_HASH,      ENTRY_NAME("drop-room"), drop_room);

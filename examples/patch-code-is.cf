@@ -1,0 +1,23 @@
+%
+:main ~c" Hello world!" ^prn ;
+
+:before ~c" Before do this: " ^pr ;
+:after ~c" After do that: " ^pr ;
+
+~\ At least one entry before rebinding since the last entry will be treated as a recurse
+:one-more-entry ^;
+
+~
+'main ~see
+main cr
+
+~noname> ^before 2 2 + . cr 'main ~code> >> ^execute after 3 3 + . cr ; 'main ~c>is
+
+~
+'main ~see
+main cr
+
+words
+
+" The 'main' entry code has been redefined. There is only one 'main' entry in the dictionary" nprn
+bye
