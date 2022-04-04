@@ -16,7 +16,7 @@
 
 extern void load_extensions(struct state *state);
 
-  struct prefix_map prefix_map[MAX_PREFIX];
+struct prefix_map prefix_map[MAX_PREFIX];
 
 #define define_register(N)                                              \
   case OP_##N##_STORE: { N = pop(s->stack); break; }                    \

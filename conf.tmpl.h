@@ -57,7 +57,6 @@ typedef double number_t;
 // Number of bits in a char
 #define CHAR_BIT 8
 
-// Extensions to load
 struct state;
 
 #endif /* __CONF_H */

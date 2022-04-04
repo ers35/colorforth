@@ -1,6 +1,8 @@
 #ifndef __HASH_DEF_64
 #define __HASH_DEF_64
 
+typedef unsigned long hash_t;
+
 #ifdef __KEEP_ENTRY_NAMES
 #define ENTRY_NAME(x) (x)
 #else

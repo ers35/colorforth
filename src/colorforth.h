@@ -21,9 +21,6 @@ extern "C" {
 #endif
 
 
-typedef unsigned long hash_t;
-
-
 #define MAX_PREFIX 10
 
 #define define_register_OP(N) OP_##N##_LOAD, OP_##N##_STORE, OP_##N##_ADD, \
