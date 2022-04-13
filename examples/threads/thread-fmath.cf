@@ -1,4 +1,5 @@
-%
+% require-threads require-ext-math
+
 :1f ~$1 ~f>> ^f@ ;
 :fmath ^f@ 1f f+ f. cr ;
 

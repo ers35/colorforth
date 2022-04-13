@@ -1,4 +1,5 @@
-%
+% require-threads
+
 :th0 ~c" Thread 0 started" ^prn 5 sleep ~c" Thread 0 ended" ^prn ;
 :th1 ~c" Thread 1 started" ^prn 2 sleep ~c" Thread 1 ended" ^prn ;
 :th2 ~c" Thread 2 started" ^prn 3 sleep ~c" Thread 2 ended" ^prn ;

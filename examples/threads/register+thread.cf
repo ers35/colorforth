@@ -1,4 +1,5 @@
-%
+% require-threads
+
 \ Registers are global per threads
 
 :identify ^A@ 2 * spaces ~c" thread: " ^pr A@ . ~c" , I = " ^pr I@ .  cr ;

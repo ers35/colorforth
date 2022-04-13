@@ -1,4 +1,5 @@
-%
+% require-threads
+
 :v ~0 variable ^;
 
 :work ^1 v +! -done?; work ;
