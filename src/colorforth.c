@@ -498,8 +498,6 @@ execute_(struct state *s, struct entry *entry)
 
   push(s->r_stack, 0);
 
-  short else_offset = 0;
-
 #ifdef __USE_REGISTER
   register cell A = 0;
   register cell B = 0;
@@ -711,38 +709,28 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_IF:
+      case OP_BRANCH:
       {
-        const cell n = pop(s->stack);
-        if (!n)
-        {
-          else_offset = 0;
-          pc++;
-        }
-        else
-        {
-          else_offset = 1;
-        }
+        pc = (struct code*)pc->value;
         break;
       }
 
-      case OP_IF_NOT:
+      case OP_ZBRANCH:
       {
-        const cell n = pop(s->stack);
-        if (n) {
-          else_offset = 0;
-          pc++;
-        }
-        else
-        {
-          else_offset = 1;
-        }
+        if (!pop(s->stack)) pc = (struct code*)pc->value;
         break;
       }
 
-      case OP_ELSE:
+      case OP_NBRANCH:
       {
-        pc += else_offset;
+        if (pop(s->stack)) pc = (struct code*)pc->value;
+        break;
+      }
+
+      case OP_CVA: // Code value address
+      {
+        struct code *code = (struct code *) pop(s->stack);
+        push(s->stack, (cell) &code->value);
         break;
       }
 
@@ -770,6 +758,12 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_CODE_LEN:
+      {
+        push(s->stack, sizeof(struct code));
+        break;
+      }
+
       case OP_GET_ENTRY_CODE:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
@@ -782,6 +776,16 @@ execute_(struct state *s, struct entry *entry)
         struct code *code_ = (struct code*)pop(s->stack);
         push(s->r_stack, (cell)pc);
         pc = code_ - 1;
+        break;
+      }
+
+      case OP_COMPILE:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        struct code *code = (struct code *)s->here;
+        code->opcode = entry_->code->opcode;
+        code->value = 0;
+        s->here = (struct code *)s->here + 1;
         break;
       }
 
@@ -1082,18 +1086,21 @@ colorforth_newstate(void)
   define_primitive(state, CLOAD_HASH,             ENTRY_NAME("c@"), OP_CLOAD);
   define_primitive(state, CSTORE__HASH,           ENTRY_NAME("c!"), OP_CSTORE);
   define_primitive(state, CELL_HASH,              ENTRY_NAME("cell"), OP_CELL);
+  define_primitive(state, CODE_LEN_HASH,          ENTRY_NAME("#code"), OP_CODE_LEN);
   define_primitive(state, HERE_HASH,              ENTRY_NAME("here"), OP_HERE);
   define_primitive(state, LATEST_HASH,            ENTRY_NAME("latest"), OP_LATEST);
   define_primitive(state, I_LATEST_HASH,          ENTRY_NAME("i-latest"), OP_I_LATEST);
   define_primitive(state, COMPILE_LITERAL_HASH,   ENTRY_NAME(">>"), OP_COMPILE_LITERAL);
   define_primitive(state, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
   define_primitive(state, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
+  define_primitive(state, COMPILE_HASH,           ENTRY_NAME("compile"), OP_COMPILE);
+  define_primitive(state, CVA_HASH,               ENTRY_NAME("cva"), OP_CVA);
+  define_primitive(state, BRANCH_HASH,            ENTRY_NAME("branch"), OP_BRANCH);
+  define_primitive(state, ZBRANCH_HASH,           ENTRY_NAME("0branch"), OP_ZBRANCH);
+  define_primitive(state, NBRANCH_HASH,           ENTRY_NAME("nbranch"), OP_NBRANCH);
   define_primitive(state, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
 
   define_primitive_inlined(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);
-  define_primitive_inlined(state, IF_HASH,        ENTRY_NAME("if"), OP_IF);
-  define_primitive_inlined(state, IF_NOT_HASH,    ENTRY_NAME("-if"), OP_IF_NOT);
-  define_primitive_inlined(state, ELSE_HASH,      ENTRY_NAME("else"), OP_ELSE);
 
   define_primitive_inlined(state, R_PUSH_HASH,    ENTRY_NAME(">R"), OP_R_PUSH);
   define_primitive_inlined(state, R_POP_HASH,     ENTRY_NAME("R>"), OP_R_POP);

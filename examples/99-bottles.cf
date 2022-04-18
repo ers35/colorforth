@@ -10,7 +10,7 @@ noname> ^dup . ~c" bottles" ^pr ;
 :.take ~c" Take one down, pass it around" ^pr ;
 :.verse ^.wall .beer cr
       1- .take cr .wall ;
-:.verses ^cr .verse dup when .verses ;
+:.verses ^cr .verse dup ~if ^.verses ~then ^;
 ~
 99 .verses
 bye

@@ -15,8 +15,8 @@ wd
 
 cr
 :ping
-:pong   ~c" pong" ^prn 1- dup when ping ;
-:<ping> ~c" ping" ^prn 1- dup when pong ;
+:pong   ~c" pong" ^prn 1- dup ~if ^ping ~then ^;
+:<ping> ~c" ping" ^prn 1- dup ~if ^pong ~then ^;
 
 '<ping> 'ping ~is
 

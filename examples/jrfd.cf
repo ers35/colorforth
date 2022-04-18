@@ -27,13 +27,13 @@ Example:
 
 ~time srand
 
-:q: ^key dup emit 63 = unless q: ;
+:q: ^key dup emit 63 = ~-if ^q: ~then ^;
 
 :.OK  ~c" Yes :-)" ^pr ;
 :.KO  ~c" No :-("  ^pr ;
 
 :.??  ^2dup  ~c"    " ^pr  .  ~c" / " ^pr  . ;
-:check? ^<= if .OK else .KO ;
+:check? ^<= ~if ^.OK ~else ^.KO ~then ^;
 
 :?? ~( n -) ^100 random .?? check? cr ;
 

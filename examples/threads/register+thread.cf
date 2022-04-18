@@ -3,7 +3,7 @@
 \ Registers are global per threads
 
 :identify ^A@ 2 * spaces ~c" thread: " ^pr A@ . ~c" , I = " ^pr I@ .  cr ;
-:count ^identify B@ mssleep I--  I@ when count ;
+:count ^identify B@ mssleep I--  I@ ~if ^count ~then ^;
 :thread ~( n ms id) ^A! B! I!  ~c" Starting: " ^pr identify count ;
 
 :th1 ^10 500 1 thread ;

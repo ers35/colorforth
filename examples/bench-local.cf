@@ -65,7 +65,7 @@ tm time/end
 :tm ~time/start ^;
 
 |v-inc ^A++ ;
-:loop ^v-inc 1 - dup unless ; loop ;
+:loop ^v-inc 1 - dup ~if ^loop ~then ^;
 
 :test ^0 A! nb loop A@ . ;
 ~
@@ -77,7 +77,7 @@ tm time/end
 :tm ~time/start ^;
 
 |v-inc ^A++ ;
-:loop ^v-inc B-- B@ unless ; loop ;
+:loop ^v-inc B-- B@ ~if ^loop ~then ^;
 
 :test ^0 A! nb B! loop A@ . ;
 ~
@@ -88,7 +88,7 @@ tm time/end
 ~" * inline register manually (same as above normally)" ~nprn
 :tm ~time/start ^;
 
-:loop ^A++ B-- B@ unless ; loop ;
+:loop ^A++ B-- B@ ~if ^loop ~then ^;
 
 :test ^0 A! nb B! loop A@ . ;
 ~
