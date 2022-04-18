@@ -166,7 +166,7 @@
 
 ~( math )
 :sign-0; ^drop 0 ;; ;
-:sign ^dup ~-if ^drop 0 ; ~then ^0 < ~if ^-1 ~else ^1 ;
+:sign ^dup ~-if ^drop 0 ; ~then ^0 < ~if ^-1 ~else ^1 ~then ^;
 
 ~( eval )
 :ptr ~0 variable ^;
