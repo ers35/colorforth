@@ -236,10 +236,7 @@ mcompile_literal(struct state *s)
   mpz_set(*ptr, s_cells(s, s_sp(s)));;
   s_sp(s) = get_s_psp(s);
 
-  struct code *code =  (struct code *)s->here;
-  code->opcode = OP_NUMBER;
-  code->value = (cell)ptr;
-  s->here = (struct code *)s->here + 1;
+  compile_code(s, OP_NUMBER, (cell)ptr);
 }
 
 void

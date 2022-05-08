@@ -216,6 +216,8 @@ extern void unknow_word (struct state *s);
 extern void define_prefix(char c, void (*fn)(struct state *s), char * color, short reset);
 extern void define_primitive_extension(struct state *s, hash_t hashed_name, char name[], void (*fn)(struct state *s));
 
+extern void compile_code(struct state *s, enum opcode opcode, cell value);
+
 extern void quit(struct state *state);
 extern struct state* colorforth_newstate(void);
 extern void free_state(struct state* state);

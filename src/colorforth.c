@@ -414,13 +414,19 @@ define_inlined(struct state *s)
   define_generic(s, &s->inlined_dict);
 }
 
+inline void
+compile_code(struct state *s, enum opcode opcode, cell value)
+{
+  struct code *code = (struct code *)s->here;
+  code->opcode = opcode;
+  code->value = value;
+  s->here = (struct code *)s->here + 1;
+}
+
 static void
 compile_entry(struct state *s, struct entry *entry)
 {
-  struct code *code = (struct code *)s->here;
-  code->opcode = entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL;
-  code->value = (cell)entry;
-  s->here = (struct code *)s->here + 1;
+  compile_code(s, entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL, (cell)entry);
 }
 
 static void
@@ -433,20 +439,14 @@ inline_entry(struct state *s, struct entry *entry)
     {
       break;
     }
-    struct code *code = (struct code *)s->here;
-    code->opcode = entry->code[i].opcode;
-    code->value = entry->code[i].value;
-    s->here = (struct code *)s->here + 1;
+    compile_code(s, entry->code[i].opcode, entry->code[i].value);
   }
 }
 
 static void
 compile_literal(struct state *s, cell n)
 {
-  struct code *code =  (struct code *)s->here;
-  code->opcode = OP_NUMBER;
-  code->value = n;
-  s->here = (struct code *)s->here + 1;
+  compile_code(s, OP_NUMBER, n);
 }
 
 static void
@@ -897,10 +897,7 @@ compile_tick(struct state *s)
   struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
-    struct code *code = (struct code *)s->here;
-    code->opcode = OP_TICK_NUMBER;
-    code->value = (cell)entry;
-    s->here = (struct code *)s->here + 1;
+    compile_code(s, OP_TICK_NUMBER, (cell)entry);
   }
   else
   {

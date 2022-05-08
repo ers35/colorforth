@@ -212,10 +212,7 @@ fcompile_literal(struct state *s)
   number_t *ptr = cf_calloc(s, 1, sizeof(number_t), F_LITERAL_ERROR);
   *ptr = fpop(&s->fstack);
 
-  struct code *code =  (struct code *)s->here;
-  code->opcode = OP_NUMBER;
-  code->value = (cell)ptr;
-  s->here = (struct code *)s->here + 1;
+  compile_code(s, OP_NUMBER, (cell)ptr);
 }
 
 void
