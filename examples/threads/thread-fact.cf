@@ -1,13 +1,13 @@
 % require-threads require-mp-math
 
-:1m ~#1 ~m>> ^m@ ;
+:1m ~#1 ~[m,] ^m@ ;
 :mfact-loop ^mover m*  mswap 1m m-  mdup  1m m= ~if ^; ~then ^mswap mfact-loop ;
 :mfact ^m@ 1m mfact-loop mdrop m. cr ;
 
-:th0 ~#5  ~m>> ^mfact ;
-:th1 ~#25 ~m>> ^mfact ;
-:th2 ~#50 ~m>> ^mfact ;
-:th3 ~#55 ~m>> ^mfact ;
+:th0 ~#5  ~[m,] ^mfact ;
+:th1 ~#25 ~[m,] ^mfact ;
+:th2 ~#50 ~[m,] ^mfact ;
+:th3 ~#55 ~[m,] ^mfact ;
 
 'th0 ~0 thread/run
 'th1 ~1 thread/run

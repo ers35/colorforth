@@ -1,5 +1,5 @@
 %
-:buf ~100 cells dalloc >> ^;
+:buf ~100 cells dalloc [,] ^;
 :buf? ^buf dump cr ;
 
 ~

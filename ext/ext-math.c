@@ -250,7 +250,7 @@ require_ext_math_fn(struct state *state)
   define_primitive_extension(state, F_LOAD_HASH,     ENTRY_NAME("f@"), fload);
   define_primitive_extension(state, F_STORE_HASH,    ENTRY_NAME("f!"), fstore);
 
-  define_primitive_extension(state, F_INLINE_HASH,   ENTRY_NAME("f>>"), fcompile_literal);
+  define_primitive_extension(state, F_INLINE_HASH,   ENTRY_NAME("[f,]"), fcompile_literal);
 
   initialized = 1;
 }

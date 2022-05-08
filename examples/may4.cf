@@ -1,7 +1,7 @@
 %
 \ Inspired by https://susam.in/maze/may-the-forth-be-with-you.html
 
-:star ~key # >> ^emit ;
+:star ~key # [,] ^emit ;
 
 :stars  ^star  -done?;  stars ;
 :lines  ^cr    -done?;  lines ;

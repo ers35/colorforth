@@ -12,7 +12,7 @@
 
 :square ^dup * ;
 ~\ calculated at compile time
-:25square ~25 square >> ^;
+:25square ~25 square [,] ^;
 ~25square . cr
 
 

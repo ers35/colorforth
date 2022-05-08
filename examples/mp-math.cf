@@ -37,12 +37,12 @@ mover m.s
 m@ m.s
 
 
-:test ~#46 ~m>> ^m@ m. ;
+:test ~#46 ~[m,] ^m@ m. ;
 
 ~test test
 
 
-:test-add ~#12 ~m>> #2 ~m>> ^m@ m@ m+ m. ;
+:test-add ~#12 ~[m,] #2 ~[m,] ^m@ m@ m+ m. ;
 
 ~test-add test-add
 

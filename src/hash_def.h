@@ -12,7 +12,6 @@ typedef unsigned long hash_t;
 // Define __SHOW_MISSING_HASH in conf.h to display name <-> hash relationship
 //
 // Use `.hash" <string to hash>"` to find them in colorForth
-
 #define NOP_HASH                       (hash_t) 0xB889592
 #define PRINT_TOS_HASH                 (hash_t) 0x2B5D3
 #define DUP_HASH                       (hash_t) 0xB886BCE
@@ -30,7 +29,7 @@ typedef unsigned long hash_t;
 #define BRANCH_HASH                    (hash_t) 0x652F4BE8DB3
 #define ZBRANCH_HASH                   (hash_t) 0xD0A25F8A8A83
 #define NBRANCH_HASH                   (hash_t) 0xD0B504254141
-#define CVA_HASH                       (hash_t) 0xB88679F
+#define GET_CVA_HASH                   (hash_t) 0x17C955BBD
 #define BYE_HASH                       (hash_t) 0xB8863C5
 #define WORDS_HASH                     (hash_t) 0x3110A73474
 #define EMIT_HASH                      (hash_t) 0x17C964F74
@@ -44,10 +43,11 @@ typedef unsigned long hash_t;
 #define HERE_HASH                      (hash_t) 0x17C97D3A9
 #define LATEST_HASH                    (hash_t) 0x6530AE8CA72
 #define I_LATEST_HASH                  (hash_t) 0x1AE713EDBA0DE8
-#define COMPILE_LITERAL_HASH           (hash_t) 0x597281
 #define GET_ENTRY_CODE_HASH            (hash_t) 0x310F3D0EBE
 #define EXECUTE_HASH                   (hash_t) 0xD0B281C09678
-#define COMPILE_HASH                   (hash_t) 0xD0B1D365602E
+#define COMPILE_HASH                   (hash_t) 0xB88427B
+#define COMPILE_INLINE_HASH            (hash_t) 0xB8842BD
+#define COMPILE_LITERAL_HASH           (hash_t) 0xB883C09
 #define DOT_S_HASH                     (hash_t) 0x5970A6
 #define RETURN_HASH                    (hash_t) 0x2B5E0
 #define R_PUSH_HASH                    (hash_t) 0x597295
@@ -182,7 +182,7 @@ typedef unsigned long hash_t;
 #define F_FROM_HASH                    (hash_t) 0x5977A7
 #define F_LOAD_HASH                    (hash_t) 0x5977AB
 #define F_STORE_HASH                   (hash_t) 0x59778C
-#define F_INLINE_HASH                  (hash_t) 0xB886D07
+#define F_INLINE_HASH                  (hash_t) 0x17C90ADEF
 
 // MPZ
 #define MPZ_HASH                       (hash_t) 0xB88917C
@@ -204,7 +204,7 @@ typedef unsigned long hash_t;
 #define M_EQUAL_HASH                   (hash_t) 0x59788F
 #define M_LOAD_HASH                    (hash_t) 0x597892
 #define M_STORE_HASH                   (hash_t) 0x597873
-#define M_INLINE_HASH                  (hash_t) 0xB888ACE
+#define M_INLINE_HASH                  (hash_t) 0x17C90CBB6
 
 // Threads
 #define THREAD__RUN_HASH               (hash_t) 0x727317CCDA8200A1

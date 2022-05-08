@@ -12,7 +12,7 @@ c-free
 ~\ Save and reload example
 " This is a test" " test.txt" save
 
-:buf ~" test.txt" aload >> ^;
+:buf ~" test.txt" aload [,] ^;
 ~
 buf prn
 key A buf cell 2 + + c!

@@ -9,8 +9,8 @@
 :row ,width ^@ * ;
 
 ~width @ height @ * dup
-:world ~dalloc >> ^;
-:static-world ~dalloc >> ^;
+:world ~dalloc [,] ^;
+:static-world ~dalloc [,] ^;
 
 :world# ~( x y - ) ^height @ mod row  swap width @ mod + ;
 :world! ~( n x y - ) ^world# world + c! ;
@@ -33,17 +33,17 @@
 :wall-color ^esc ~c" [38;5;254m" ^pr ;
 :player-color ^esc ~c" [38;5;226m" ^pr ;
 
-:.. ^blank-color ~key . >> ^emit ;
-:.# ^wall-color ~key # >> ^emit ;
-:.* ^star-color ~key * >> ^emit ;
-:.@ ^player-color ~key @ >> ^emit ;
-:.- ^player-color ~key - >> ^emit ;
-:.| ^player-color ~key | >> ^emit ;
-:./ ^player-color ~key / >> ^emit ;
-:.\ ^player-color ~key \ >> ^emit ;
+:.. ^blank-color ~key . [,] ^emit ;
+:.# ^wall-color ~key # [,] ^emit ;
+:.* ^star-color ~key * [,] ^emit ;
+:.@ ^player-color ~key @ [,] ^emit ;
+:.- ^player-color ~key - [,] ^emit ;
+:.| ^player-color ~key | [,] ^emit ;
+:./ ^player-color ~key / [,] ^emit ;
+:.\ ^player-color ~key \ [,] ^emit ;
 
 ~here @ '.. ~c>! '.# ~c>!  '.* ~c>!  '.@ ~c>! '.- ~c>!  '.| ~c>!  './ ~c>!  '.\ ~c>!
-:.cell ^world@ cells ~>> ^+ @ execute ;
+:.cell ^world@ cells ~[,] ^+ @ execute ;
 
 :.world ^at-00
   `.cell `<world-h> ^is   `cr `<world-v> ^is
@@ -63,7 +63,7 @@
 
 ~here @ 'dir-nw ~c>!  'dir-n ~c>!  'dir-ne ~c>!  'dir-e  ~c>!
         'dir-se  ~c>! 'dir-s ~c>!  'dir-sw ~c>!  'dir-w ~c>!
-:dir@ ^cells ~>> ^+ @  execute ;
+:dir@ ^cells ~[,] ^+ @  execute ;
 
 :sword@ ^player dir @ dir@   player y @ + height @ mod swap   player x @ + width @ mod swap ;
 
@@ -99,18 +99,18 @@
 :move-down-right; ^ 1 move-x   1 move-y ;; ;
 
 :move ^
-   dup ~key s >> ^= when turn-left;
-   dup ~key * >> ^= when turn-left;
-   dup ~key d >> ^= when turn-right;
-   dup ~key / >> ^= when turn-right;
-   dup ~key 4 >> ^= when move-left;
-   dup ~key 6 >> ^= when move-right;
-   dup ~key 2 >> ^= when move-down;
-   dup ~key 8 >> ^= when move-up;
-   dup ~key 7 >> ^= when move-up-left;
-   dup ~key 9 >> ^= when move-up-right;
-   dup ~key 1 >> ^= when move-down-left;
-   dup ~key 3 >> ^= when move-down-right;
+   dup ~key s [,] ^= when turn-left;
+   dup ~key * [,] ^= when turn-left;
+   dup ~key d [,] ^= when turn-right;
+   dup ~key / [,] ^= when turn-right;
+   dup ~key 4 [,] ^= when move-left;
+   dup ~key 6 [,] ^= when move-right;
+   dup ~key 2 [,] ^= when move-down;
+   dup ~key 8 [,] ^= when move-up;
+   dup ~key 7 [,] ^= when move-up-left;
+   dup ~key 9 [,] ^= when move-up-right;
+   dup ~key 1 [,] ^= when move-down-left;
+   dup ~key 3 [,] ^= when move-down-right;
    dup 27 = when bye
 ;
 

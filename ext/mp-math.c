@@ -275,7 +275,7 @@ require_mp_math_fn(struct state *state)
   define_primitive_extension(state, M_LOAD_HASH,    ENTRY_NAME("m@"), mload);
   define_primitive_extension(state, M_STORE_HASH,   ENTRY_NAME("m!"), mstore);
 
-  define_primitive_extension(state, M_INLINE_HASH,  ENTRY_NAME("m>>"), mcompile_literal);
+  define_primitive_extension(state, M_INLINE_HASH,  ENTRY_NAME("[m,]"), mcompile_literal);
 
   initialized = 1;
 }

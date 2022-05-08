@@ -415,11 +415,20 @@ define_inlined(struct state *s)
 }
 
 static void
+compile_entry(struct state *s, struct entry *entry)
+{
+  struct code *code = (struct code *)s->here;
+  code->opcode = entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL;
+  code->value = (cell)entry;
+  s->here = (struct code *)s->here + 1;
+}
+
+static void
 inline_entry(struct state *s, struct entry *entry)
 {
   for (size_t i = 0, done = 0; !done; i++)
   {
-    // inline the first OP_RETURN
+    // inline OP_RETURN in first position
     if (entry->code[i].opcode == OP_RETURN && i > 0)
     {
       break;
@@ -429,6 +438,15 @@ inline_entry(struct state *s, struct entry *entry)
     code->value = entry->code[i].value;
     s->here = (struct code *)s->here + 1;
   }
+}
+
+static void
+compile_literal(struct state *s, cell n)
+{
+  struct code *code =  (struct code *)s->here;
+  code->opcode = OP_NUMBER;
+  code->value = n;
+  s->here = (struct code *)s->here + 1;
 }
 
 static void
@@ -442,12 +460,9 @@ compile(struct state *s)
   }
 
   struct entry *entry = find_entry(s, &s->dict);
-  struct code *code = (struct code *)s->here;
   if (entry)
   {
-    code->opcode = entry == s->dict.latest ? OP_TAIL_CALL : OP_CALL;
-    code->value = (cell)entry;
-    s->here = (struct code *)s->here + 1;
+    compile_entry(s, entry);
   }
   else
   {
@@ -455,10 +470,7 @@ compile(struct state *s)
     cell n = 0;
     if (tib_to_number(s, &n))
     {
-      // compile number
-      code->opcode = OP_NUMBER;
-      code->value = n;
-      s->here = (struct code *)s->here + 1;
+      compile_literal(s, n);
     }
     else
     {
@@ -479,15 +491,6 @@ compile_inline(struct state *s)
   {
     unknow_word(s);
   }
-}
-
-static void
-compile_literal(struct state *s)
-{
-  struct code *code =  (struct code *)s->here;
-  code->opcode = OP_NUMBER;
-  code->value = pop(s->stack);
-  s->here = (struct code *)s->here + 1;
 }
 
 void
@@ -727,19 +730,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_CVA: // Code value address
-      {
-        struct code *code = (struct code *) pop(s->stack);
-        push(s->stack, (cell) &code->value);
-        break;
-      }
-
-      case OP_COMPILE_LITERAL:
-      {
-        compile_literal(s);
-        break;
-      }
-
       case OP_EMIT:
       {
         cf_putchar(s, (char)pop(s->stack));
@@ -779,16 +769,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_COMPILE:
-      {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        struct code *code = (struct code *)s->here;
-        code->opcode = entry_->code->opcode;
-        code->value = 0;
-        s->here = (struct code *)s->here + 1;
-        break;
-      }
-
       case OP_HERE:
       {
         push(s->stack, (cell)&s->here);
@@ -804,6 +784,34 @@ execute_(struct state *s, struct entry *entry)
       case OP_I_LATEST:
       {
         push(s->stack, (cell)&s->inlined_dict.latest);
+        break;
+      }
+
+      case OP_GET_CVA: // Code value address
+      {
+        struct code *code = (struct code *) pop(s->stack);
+        push(s->stack, (cell) &code->value);
+        break;
+      }
+
+      case OP_COMPILE:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        compile_entry(s, entry_);
+        break;
+      }
+
+      case OP_COMPILE_INLINE:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        inline_entry(s, entry_);
+        break;
+      }
+
+      case OP_COMPILE_LITERAL:
+      {
+        cell n = pop(s->stack);
+        compile_literal(s, n);
         break;
       }
 
@@ -1090,11 +1098,13 @@ colorforth_newstate(void)
   define_primitive(state, HERE_HASH,              ENTRY_NAME("here"), OP_HERE);
   define_primitive(state, LATEST_HASH,            ENTRY_NAME("latest"), OP_LATEST);
   define_primitive(state, I_LATEST_HASH,          ENTRY_NAME("i-latest"), OP_I_LATEST);
-  define_primitive(state, COMPILE_LITERAL_HASH,   ENTRY_NAME(">>"), OP_COMPILE_LITERAL);
+
+  define_primitive(state, COMPILE_HASH,           ENTRY_NAME("[^]"), OP_COMPILE);
+  define_primitive(state, COMPILE_INLINE_HASH,    ENTRY_NAME("[`]"), OP_COMPILE_INLINE); //=> ancien compile
+  define_primitive(state, COMPILE_LITERAL_HASH,   ENTRY_NAME("[,]"), OP_COMPILE_LITERAL);
   define_primitive(state, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
   define_primitive(state, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
-  define_primitive(state, COMPILE_HASH,           ENTRY_NAME("compile"), OP_COMPILE);
-  define_primitive(state, CVA_HASH,               ENTRY_NAME("cva"), OP_CVA);
+  define_primitive(state, GET_CVA_HASH,           ENTRY_NAME("cva>"), OP_GET_CVA);
   define_primitive(state, BRANCH_HASH,            ENTRY_NAME("branch"), OP_BRANCH);
   define_primitive(state, ZBRANCH_HASH,           ENTRY_NAME("0branch"), OP_ZBRANCH);
   define_primitive(state, NBRANCH_HASH,           ENTRY_NAME("nbranch"), OP_NBRANCH);

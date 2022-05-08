@@ -11,7 +11,7 @@
 'main ~see
 main cr
 
-~noname> ^before 2 2 + . cr 'main ~code> >> ^execute after 3 3 + . cr ; 'main ~c>is
+~noname> ^before 2 2 + . cr 'main ~code> [,] ^execute after 3 3 + . cr ; 'main ~c>is
 
 ~
 'main ~see

@@ -1,8 +1,8 @@
 %
 \ Usage: colorforth small.cf life.cf gliders.cf
 
-:h ~ >> ^ ;
-:w ~ >> ^ ;
+:h ~ [,] ^ ;
+:w ~ [,] ^ ;
 
 :help
    ~c" g             One generation" ^prn
@@ -13,7 +13,7 @@
    ~c" (ms) delay !  set speed" ^prn
    ~c" cls           clear and redraw board" ^prn ;
 
-:size ~w h * >> ^;
+:size ~w h * [,] ^;
 
 :n-gen ~0 variable ^;
 :delay ~100 variable ^;
@@ -27,7 +27,7 @@
 :n-world ~0 variable ^;
 :flip ^1 n-world @ - n-world ! ;
 
-:world ~w h * 2 * dalloc >> ^;
+:world ~w h * 2 * dalloc [,] ^;
 :world# ^h mod row  swap w mod + world + ;
 :world! ~( n x y - ) ^world# n-world @ size * + c! ;
 :world@ ~( x y ) ^world# 1 n-world @ - size * + c@ ;
@@ -43,8 +43,8 @@
 :star-color ^esc ~c" [38;5;154m" ^pr ;
 :blank-color ^esc ~c" [38;5;53m" ^pr ;
 
-:.star  ^star-color ~key * >> ^emit ;
-:.blank ^blank-color ~key . >> ^emit ;
+:.star  ^star-color ~key * [,] ^emit ;
+:.blank ^blank-color ~key . [,] ^emit ;
 :.cell ~( x y - ) ^world@ if .star else .blank ;
 
 :.world ^at-00

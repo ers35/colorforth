@@ -1,12 +1,12 @@
 % require-threads require-ext-math
 
-:1f ~$1 ~f>> ^f@ ;
+:1f ~$1 ~[f,] ^f@ ;
 :fmath ^f@ 1f f+ f. cr ;
 
-:th0 ~$5  ~f>> ^fmath ;
-:th1 ~$25 ~f>> ^fmath ;
-:th2 ~$50 ~f>> ^fmath ;
-:th3 ~$55 ~f>> ^fmath ;
+:th0 ~$5  ~[f,] ^fmath ;
+:th1 ~$25 ~[f,] ^fmath ;
+:th2 ~$50 ~[f,] ^fmath ;
+:th3 ~$55 ~[f,] ^fmath ;
 
 'th0 ~0 thread/run
 'th1 ~1 thread/run

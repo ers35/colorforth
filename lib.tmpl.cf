@@ -3,12 +3,12 @@
 :code@ ^here @ #code - ;
 
 :begin ^code@ ;
-:again  ^here @ `branch ^compile cva ! ;
+:again  ^here @ `branch ^[`] cva> ! ;
 
-:if ^here @ `0branch ^compile ;
-:-if ^here @ `nbranch ^compile ;
-:then ^code@ swap cva ! ;
-:else ^here @ `branch ^compile  swap code@ swap cva ! ;
+:if ^here @ `0branch ^[`] ;
+:-if ^here @ `nbranch ^[`] ;
+:then ^code@ swap cva> ! ;
+:else ^here @ `branch ^[`]  swap code@ swap cva> ! ;
 
 :\ ^key 10 = ~-if ^\ ~then ^;
 :( ^key 41 = ~-if ^( ~then ^;
@@ -90,21 +90,21 @@
 :>c! ^1 alloc ! ;
 
 :data-heap-size ^50000 ;
-~data-heap-size c-alloc :dataheap ~>> ^;
-~cell alloc :dhere ~>> ^;
+~data-heap-size c-alloc :dataheap ~[,] ^;
+~cell alloc :dhere ~[,] ^;
 ~dataheap dhere !
 
 :dalloc ~( n - a ) ^dhere @ swap over + dhere ! ;
 
 ~\ patch the 'bye' entry to free the heap before calling the original 'bye'
-~noname> ^dataheap c-free 'bye ~code> >> ^execute ;  'bye ~c>is
+~noname> ^dataheap c-free 'bye ~code> [,] ^execute ;  'bye ~c>is
 
 :>d! ^cell dalloc ! ;
 :>dc! ^1 dalloc ! ;
 
 :? ^@ . ;
-:variable ^cell dalloc dup >> ! ;
-:variables ^cells dalloc >> ;
+:variable ^cell dalloc dup [,] ! ;
+:variables ^cells dalloc [,] ;
 
 |[] ^cells + ;
 :[] ^[] ;
@@ -115,10 +115,10 @@
 
 :"init ^dhere @  dup "marker !  cell + ;
 :."key ^dup  echo c@ ~if ^emit ~else ^drop ~then ^;
-:"loop ^dup key ."key dup ~key " >> ^= ~if ^; ~then ^swap c! 1 + "loop ;
+:"loop ^dup key ."key dup ~key " [,] ^= ~if ^; ~then ^swap c! 1 + "loop ;
 :"done ^drop drop dhere @ - dup ^1 + dalloc swap cell - over ! ;
 :" ^"init "loop "done ;
-:c" ^" >> ;
+:c" ^" [,] ;
 
 ~( print string )
 :."init ^dup dup @ + cell + swap cell + ;
@@ -132,14 +132,14 @@
 :droom
    ~c" Data: " ^pr dhere @  dataheap - dup . ~c" / " ^pr data-heap-size .
    100 * data-heap-size / . ~c" %" ^prn ;
-:dmarker ^dhere @  >> ;
+:dmarker ^dhere @  [,] ;
 :dforget ^dhere ! ;
 
 ~( system )
 :cmd ^cell + system ;
 
 ~( marker/forget )
-:marker ^latest @  i-latest @   here @ 8 cells +   >> >> >> ;
+:marker ^latest @  i-latest @   here @ 8 cells +   [,] [,] [,] ;
 :forget ^latest !  i-latest !   here ! ;
 
 ~( files )
@@ -176,7 +176,7 @@
 'ptr ~entry/hide  'count ~entry/hide  'loop ~entry/hide
 
 ~( time )
-:time/start ^utime >> ;
+:time/start ^utime [,] ;
 :time/end ^utime swap - 1000 / . ~c" ms elapsed" ^prn ;
 
 ~( hash )
