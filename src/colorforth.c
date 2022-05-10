@@ -714,19 +714,19 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_BRANCH:
       {
-        pc = (struct code*)pc->value;
+        pc = (struct code*)pc->value - 1;
         break;
       }
 
       case OP_ZBRANCH:
       {
-        if (!pop(s->stack)) pc = (struct code*)pc->value;
+        if (!pop(s->stack)) pc = (struct code*)pc->value - 1;
         break;
       }
 
       case OP_NBRANCH:
       {
-        if (pop(s->stack)) pc = (struct code*)pc->value;
+        if (pop(s->stack)) pc = (struct code*)pc->value - 1;
         break;
       }
 

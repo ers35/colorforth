@@ -1,14 +1,12 @@
 ~require-os require-dict require-io require-parser require-time require-math
 
-:code@ ^here @ #code - ;
-
-:begin ^code@ ;
+:begin ^here @ ;
 :again  ^here @ `branch ^[`] cva> ! ;
 
 :if ^here @ `0branch ^[`] ;
 :-if ^here @ `nbranch ^[`] ;
-:then ^code@ swap cva> ! ;
-:else ^here @ `branch ^[`]  swap code@ swap cva> ! ;
+:then ^here @ swap cva> ! ;
+:else ^here @ `branch ^[`]  swap here @ swap cva> ! ;
 
 :\ ^key 10 = ~-if ^\ ~then ^;
 :( ^key 41 = ~-if ^( ~then ^;
