@@ -34,9 +34,9 @@
 
 :<world-h> ^; :<world-v> ^;
 
-:world-loop-h ^I@ J@ <world-h> I++  I@ w < ~if ^world-loop-h ~then ^;
-:world-loop-v ^0 I! world-loop-h <world-v> J++ J@ h < ~if ^world-loop-v ~then ^;
-:world-loop ^I>R J>R 0 J! world-loop-v R>J R>I ;
+:world-loop-h ,I@ J@ ^<world-h> ,I++  I@ ^w < ~if ^world-loop-h ~then ^;
+:world-loop-v ^0 ,I! ^world-loop-h <world-v> ,J++ J@ ^h < ~if ^world-loop-v ~then ^;
+:world-loop ,I>R J>R ^0 ,J! ^world-loop-v ,R>J R>I ^;
 
 :esc ^27 emit ;
 :at-00 ^esc ~c" [0;0H" ^pr ;
@@ -56,11 +56,11 @@
 :cls ^esc ~c" [2J" ^pr .world ;
 
 :sum-neighbor ~( x y - n )^
-   I>R J>R   J! I!
-   I@ 1- J@ 1- world@     I@ J@ 1- world@ +   I@ 1+ J@ 1- world@ +
-   I@ 1- J@    world@ +                       I@ 1+ J@    world@ +
-   I@ 1- J@ 1+ world@ +   I@ J@ 1+ world@ +   I@ 1+ J@ 1+ world@ +
-   R>J R>I ;
+   ,I>R J>R   J! I! ^
+   ,I@ ^1- ,J@ ^1- world@     ,I@ J@ ^1- world@ +   ,I@ ^1+ ,J@ ^1- world@ +
+   ,I@ ^1- ,J@ ^   world@ +                         ,I@ ^1+ ,J@ ^   world@ +
+   ,I@ ^1- ,J@ ^1+ world@ +   ,I@ J@ ^1+ world@ +   ,I@ ^1+ ,J@ ^1+ world@ +
+   ,R>J R>I ^;
 
 :apply-alive ~( n - ) ^dup 2 = swap 3 = or ~if ^1 ~else ^0 ~then ^;
 :apply-dead ~( n - ) ^3 = ~if ^1 ~else ^0 ~then ^;
