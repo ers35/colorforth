@@ -402,12 +402,6 @@ define(struct state *s)
   define_generic(s, &s->dict);
 }
 
-static void
-define_inlined(struct state *s)
-{
-  define_generic(s, &s->inlined_dict);
-}
-
 inline void
 compile_code(struct state *s, enum opcode opcode, cell value)
 {
@@ -1055,7 +1049,6 @@ colorforth_newstate(void)
   state->file_stream = NULL;
 
   define_prefix(':', define,         COLOR_RED,     1);
-  define_prefix('|', define_inlined, COLOR_MAGENTA, 0); // TODO: remove
   define_prefix('^', compile,        COLOR_GREEN,   0);
   define_prefix('~', execute,        COLOR_YELLOW,  0);
   define_prefix('\'', tick,          COLOR_BLUE,    0);

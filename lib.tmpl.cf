@@ -30,18 +30,18 @@
 :2dup ^over over ,;
 :2drop ^drop drop ,;
 
-:1+ ^1 + ,;
-:1- ^1 - ,;
+:1+ ^1 ,+ ;
+:1- ^1 ,- ;
 
 :+! ^dup @ rot + swap ! ,;
 :1+! ^dup @ 1+ swap ! ,;
 :1-! ^dup @ 1- swap ! ,;
 :cell+! ^dup @ cell + swap ! ,;
 
-:;; ,R> ^drop ,;
-:;;; ,;; ;; ,;
+:;; ,R> drop ;
+:;;; ,;; ;; ;
 
-:cells ^cell * ,;
+:cells ,cell * ;
 
 :noname> ^here @ ,;
 
@@ -96,8 +96,7 @@
 :variable ^cell dalloc dup [,] ! ,;
 :variables ^cells dalloc [,] ,;
 
-|[] ^cells + ,;
-:[] ^[] ,;
+:[] ,cells + ;
 
 ~( create null-terminated string )
 :"marker ~0 variable ,;
