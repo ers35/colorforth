@@ -43,9 +43,6 @@ clone_state(struct state *state)
   clone->dict.entries = state->dict.entries;
   clone->dict.latest = state->dict.latest;
 
-  clone->inlined_dict.entries = state->inlined_dict.entries;
-  clone->inlined_dict.latest = state->inlined_dict.latest;
-
   clone->stack = cf_calloc(state, 1, sizeof(struct stack), THREAD_STACK_ERROR);
   init_stack(clone->stack, STACK_SIZE, THREAD_INIT_STACK_ERROR);
 

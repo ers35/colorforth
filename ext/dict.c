@@ -75,12 +75,7 @@ see(struct state *s, struct entry *entry)
 
         default:
         {
-          struct entry *entry_by_code = find_entry_by_code(&s->inlined_dict, &entry->code[i]);
-          if (!entry_by_code)
-          {
-            entry_by_code = find_entry_by_code(&s->dict, &entry->code[i]);
-          }
-
+          struct entry *entry_by_code = find_entry_by_code(&s->dict, &entry->code[i]);
           if (entry_by_code)
           {
             cf_printf(s, "%s ", entry_by_code->name);
@@ -128,9 +123,6 @@ disassemble(struct state *s)
 {
   cf_printf(s, "-------- Words ------------------------------------------\n");
   disassemble_dict(s, &s->dict);
-  cf_printf(s, "--------Inlined-------------------------------------------\n");
-  disassemble_dict(s, &s->inlined_dict);
-  cf_printf(s, "---------------------------------------------------------\n");
 }
 
 void
@@ -155,10 +147,6 @@ fullroom(struct state *s)
   const unsigned int defined = s->dict.latest - s->dict.entries + 1;
   cf_printf(s, "There is %u / %d (%u%%) entries defined in the dictionary\n", defined, DICT_SIZE,
          (defined*100/DICT_SIZE));
-
-  const unsigned int defined_inlined = s->inlined_dict.latest - s->inlined_dict.entries + 1;
-  cf_printf(s, "There is %u / %d (%u%%) inlined defined in the inlined dictionary\n", defined_inlined, INLINED_DICT_SIZE,
-         (defined_inlined*100/INLINED_DICT_SIZE));
 
   const unsigned int used = (char *)s->here - (char *)s->heap;
   cf_printf(s, "There is %u / %d (%u%%) bytes used on the heap\n", used, HEAP_SIZE,

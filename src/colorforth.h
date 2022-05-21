@@ -170,7 +170,6 @@ struct state
   struct stack *r_stack;
   struct tib tib;
   struct dictionary dict;
-  struct dictionary inlined_dict;
   void *heap;
   void *here;
 

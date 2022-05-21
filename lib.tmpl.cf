@@ -128,8 +128,8 @@
 :cmd ^cell + system ,;
 
 ~( marker/forget )
-:marker ^latest @  i-latest @   here @ 8 cells +   [,] [,] [,] ,;
-:forget ^latest !  i-latest !   here ! ,;
+:marker ^latest @   here @ 6 cells +   [,] [,] ,;
+:forget ^latest !   here ! ,;
 
 ~( files )
 :aload ~( filename - buf ) ^

@@ -220,8 +220,6 @@ dump_words(struct state *s, struct dictionary *dict __attribute__((unused)))
 void
 words(struct state *s)
 {
-  dump_words(s, &s->inlined_dict);
-  cf_printf(s, "\n");
   dump_words(s, &s->dict);
   cf_printf(s, "\n");
 }
@@ -440,13 +438,6 @@ compile_literal(struct state *s, cell n)
 static void
 compile(struct state *s)
 {
-  struct entry *inlined_entry = find_entry(s, &s->inlined_dict);
-  if (inlined_entry)
-  {
-    inline_entry(s, inlined_entry);
-    return;
-  }
-
   struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
@@ -769,12 +760,6 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_I_LATEST:
-      {
-        push(s->stack, (cell)&s->inlined_dict.latest);
-        break;
-      }
-
       case OP_GET_CVA: // Code value address
       {
         struct code *code = (struct code *) pop(s->stack);
@@ -1036,9 +1021,6 @@ colorforth_newstate(void)
   state->dict.entries = cf_calloc(state, DICT_SIZE, sizeof(struct entry), DICT_ERROR);
   state->dict.latest = state->dict.entries - 1;
 
-  state->inlined_dict.entries = cf_calloc(state, INLINED_DICT_SIZE, sizeof(struct entry), INLINE_DICT_ERROR);
-  state->inlined_dict.latest = state->inlined_dict.entries - 1;
-
   state->heap = cf_calloc(state, 1, HEAP_SIZE, HEAP_ERROR);
   state->here = state->heap;
 
@@ -1132,7 +1114,6 @@ free_state(struct state* state)
   free(state->heap);
 
   free_dictionary(&state->dict);
-  free_dictionary(&state->inlined_dict);
 
   free_stack(state->r_stack);
   free_stack(state->stack);
