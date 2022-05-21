@@ -34,8 +34,8 @@
 
 :<world-h> ^; :<world-v> ^;
 
-:world-loop-h ^I@ J@ <world-h> I++  I@ w < when world-loop-h ;
-:world-loop-v ^0 I! world-loop-h <world-v> J++ J@ h < when world-loop-v ;
+:world-loop-h ^I@ J@ <world-h> I++  I@ w < ~if ^world-loop-h ~then ^;
+:world-loop-v ^0 I! world-loop-h <world-v> J++ J@ h < ~if ^world-loop-v ~then ^;
 :world-loop ^I>R J>R 0 J! world-loop-v R>J R>I ;
 
 :esc ^27 emit ;
@@ -45,7 +45,7 @@
 
 :.star  ^star-color ~key * [,] ^emit ;
 :.blank ^blank-color ~key . [,] ^emit ;
-:.cell ~( x y - ) ^world@ if .star else .blank ;
+:.cell ~( x y - ) ^world@ ~if ^.star ~else ^.blank ~then ^;
 
 :.world ^at-00
   `.cell `<world-h> ^is   `cr `<world-v> ^is
@@ -62,11 +62,11 @@
    I@ 1- J@ 1+ world@ +   I@ J@ 1+ world@ +   I@ 1+ J@ 1+ world@ +
    R>J R>I ;
 
-:apply-alive ~( n - ) ^dup 2 = swap 3 = or if 1 else 0 ;
-:apply-dead ~( n - ) ^3 = if 1 else 0 ;
+:apply-alive ~( n - ) ^dup 2 = swap 3 = or ~if ^1 ~else ^0 ~then ^;
+:apply-dead ~( n - ) ^3 = ~if ^1 ~else ^0 ~then ^;
 :apply ~( x y - )^
    2dup 2dup sum-neighbor -rot
-   world@ if apply-alive else apply-dead
+   world@ ~if ^apply-alive ~else ^apply-dead ~then ^
    -rot world! ;
 
 :gen ^
@@ -76,7 +76,7 @@
 :g ^gen flip .world delay @  mssleep ;
 
 :gg
-:gens ~( n -- )^g 1- dup when gens drop cls ;
+:gens ~( n -- )^g 1- dup ~if ^gens ~then ^drop cls ;
 
 :life ^flip cls echo on help ;
 
@@ -90,7 +90,7 @@
 :world!! ^x @ y @ world! x 1+! ;
 :* ^1 world!! ;
 :. ^0 world!! ;
-:.s ~( n -) ^. 1- dup when .s drop ;
+:.s ~( n -) ^. 1- dup ~if ^.s ~then ^drop ;
 :/ ^ox @ x !  y 1+! ;
 
 :blinker ^* * * ;

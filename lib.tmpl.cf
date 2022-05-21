@@ -13,8 +13,8 @@
 ~( The two lines above defines comments. We do not have them till there )
 
 ~( boolean constant )
-|true   ^1 ;
-|false  ^0 ;
+:true   ^1 ;
+:false  ^0 ;
 
 :on  ^1 swap c! ;
 :off ^0 swap c! ;
@@ -27,29 +27,21 @@
 :% ^echo off ;
 
 ~( helper words )
-|2R> ^R> R> ;
-|2>R ^>R >R ;
+:2dup ^over over ;
+:2drop ^drop drop ;
 
-|2dup ^over over ;
-|2drop ^drop drop ;
-:2dup ^2dup ;
-:2drop ^2drop ;
-
-|1+ ^1 + ;
-|1- ^1 - ;
-:1+ ^1+ ;
-:1- ^1- ;
+:1+ ^1 + ;
+:1- ^1 - ;
 
 :+! ^dup @ rot + swap ! ;
 :1+! ^dup @ 1+ swap ! ;
 :1-! ^dup @ 1- swap ! ;
 :cell+! ^dup @ cell + swap ! ;
 
-|;; ^R> drop ;
-|;;; ^;; ;; ;
+:;; ,R> ^drop ;
+:;;; ,;; ;; ^;
 
-|cells ^cell * ;
-:cells ^cells ;
+:cells ^cell * ;
 
 :noname> ^here @ ;
 
@@ -60,7 +52,7 @@
 ~'times-loop ~entry/hide
 
 ~( another loop form )
-:-done?; ^1 - dup ~if ^; ~then ^drop ;; ;
+:-done?; ^1 - dup ~if ^; ~then ^drop ,;; ^;
 
 ~( rendering )
 :cr ^10 emit ;
@@ -146,19 +138,19 @@
    dup rot load ;
 
 ~( mem move )
-:-cmove-done?; ^1- dup ~if ^; ~then ^2drop drop ;; ;
+:-cmove-done?; ^1- dup ~if ^; ~then ^2drop drop ,;; ^;
 :cmove-advance ^ 1+ ;
 :cmove-loop ^
-   >R  swap dup c@ >R cmove-advance
-   swap dup R> swap c! cmove-advance
-   R>  -cmove-done?; cmove-loop
+   ,>R  ^swap dup c@ ,>R ^cmove-advance
+   swap dup ,R> ^swap c! cmove-advance
+   ,R> ^-cmove-done?; cmove-loop
 ;
 :cmove ~( src dst n - ) ^
    `1+ `cmove-advance ^is
    cmove-loop ;
 
 :cmove> ~( src dst n - ) ^
-  1- >R R@ + swap R@ + swap R> 1+
+  1- ,>R R@ ^+ swap ,R@ ^+ swap ,R> ^1+
   `1- `cmove-advance ^is
   cmove-loop ;
 

@@ -1061,7 +1061,7 @@ colorforth_newstate(void)
   state->file_stream = NULL;
 
   define_prefix(':', define,         COLOR_RED,     1);
-  define_prefix('|', define_inlined, COLOR_MAGENTA, 0);
+  define_prefix('|', define_inlined, COLOR_MAGENTA, 0); // TODO: remove
   define_prefix('^', compile,        COLOR_GREEN,   0);
   define_prefix('~', execute,        COLOR_YELLOW,  0);
   define_prefix('\'', tick,          COLOR_BLUE,    0);
@@ -1109,9 +1109,9 @@ colorforth_newstate(void)
 
   define_primitive_inlined(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);
 
-  define_primitive_inlined(state, R_PUSH_HASH,    ENTRY_NAME(">R"), OP_R_PUSH);
-  define_primitive_inlined(state, R_POP_HASH,     ENTRY_NAME("R>"), OP_R_POP);
-  define_primitive_inlined(state, R_FETCH_HASH,   ENTRY_NAME("R@"), OP_R_FETCH);
+  define_primitive(state, R_PUSH_HASH,    ENTRY_NAME(">R"), OP_R_PUSH);
+  define_primitive(state, R_POP_HASH,     ENTRY_NAME("R>"), OP_R_POP);
+  define_primitive(state, R_FETCH_HASH,   ENTRY_NAME("R@"), OP_R_FETCH);
 
   init_lib(state);
 
