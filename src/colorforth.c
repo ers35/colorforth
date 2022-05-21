@@ -359,12 +359,6 @@ define_primitive(struct state *s, hash_t hashed_name, char name[], const enum op
   define_primitive_generic(s, &s->dict, hashed_name, name, opcode, NULL);
 }
 
-static void
-define_primitive_inlined(struct state *s, hash_t hashed_name, char name[], const enum opcode opcode)
-{
-  define_primitive_generic(s, &s->inlined_dict, hashed_name, name, opcode, NULL);
-}
-
 void
 define_primitive_extension(struct state *s, hash_t hashed_name, char name[], void (*fn)(struct state *s))
 {
@@ -1107,7 +1101,7 @@ colorforth_newstate(void)
   define_primitive(state, NBRANCH_HASH,           ENTRY_NAME("nbranch"), OP_NBRANCH);
   define_primitive(state, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
 
-  define_primitive_inlined(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);
+  define_primitive(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);
 
   define_primitive(state, R_PUSH_HASH,    ENTRY_NAME(">R"), OP_R_PUSH);
   define_primitive(state, R_POP_HASH,     ENTRY_NAME("R>"), OP_R_POP);

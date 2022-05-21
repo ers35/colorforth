@@ -19,11 +19,11 @@ fnip f.s
 ~float alloc dup $11.11 ~swap f! f.s
 f@ f.s
 
-:test ~$13.3 ~[f,] ^f@ f. ;
+:test ~$13.3 ~[f,] ^f@ f. ,;
 
 ~test test
 
-:test-add ~$12.3 ~[f,] $2.5 ~[f,] ^f@ f@ f+ f. ;
+:test-add ~$12.3 ~[f,] $2.5 ~[f,] ^f@ f@ f+ f. ,;
 
 ~test-add test-add
 

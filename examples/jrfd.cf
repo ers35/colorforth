@@ -23,18 +23,18 @@ Syntax:
 Example:
   q: I'm on the moon ? 50 ??
     62 / 50 Yes :-)
-" ^prn ;
+" ^prn ,;
 
 ~time srand
 
-:q: ^key dup emit 63 = ~-if ^q: ~then ^;
+:q: ^key dup emit 63 = ~-if ^q: ~then ,;
 
-:.OK  ~c" Yes :-)" ^pr ;
-:.KO  ~c" No :-("  ^pr ;
+:.OK  ~c" Yes :-)" ^pr ,;
+:.KO  ~c" No :-("  ^pr ,;
 
-:.??  ^2dup  ~c"    " ^pr  .  ~c" / " ^pr  . ;
-:check? ^<= ~if ^.OK ~else ^.KO ~then ^;
+:.??  ^2dup  ~c"    " ^pr  .  ~c" / " ^pr  . ,;
+:check? ^<= ~if ^.OK ~else ^.KO ~then ,;
 
-:?? ~( n -) ^100 random .?? check? cr ;
+:?? ~( n -) ^100 random .?? check? cr ,;
 
 ~rules echo on

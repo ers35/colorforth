@@ -1,21 +1,21 @@
 %
 \ Inspired by https://susam.in/maze/may-the-forth-be-with-you.html
 
-:star ~key # [,] ^emit ;
+:star ~key # [,] ^emit ,;
 
-:stars  ^star  -done?;  stars ;
-:lines  ^cr    -done?;  lines ;
+:stars  ^star  -done?;  stars ,;
+:lines  ^cr    -done?;  lines ,;
 
-:.lines ^40 - lines ;
-:.spaces ^20 - spaces ;
+:.lines ^40 - lines ,;
+:.spaces ^20 - spaces ,;
 
 :print ^
-  dup 60 > ~if ^; ~then ^
-  dup 40 > ~if ^.lines ; ~then ^
-  dup 20 > ~if ^.spaces ; ~then ^
-  stars ;
+  dup 60 > ~if ,; ~then ^
+  dup 40 > ~if ^.lines ,; ~then ^
+  dup 20 > ~if ^.spaces ,; ~then ^
+  stars ,;
 
-:00 ^swap print -done?;  00 ;
+:00 ^swap print -done?;  00 ,;
 
 
 ~

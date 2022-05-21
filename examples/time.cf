@@ -1,5 +1,5 @@
 %
-:tm ~time/start ^;
+:tm ~time/start ,;
 ~
 500 mssleep
 tm time/end

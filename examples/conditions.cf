@@ -1,6 +1,6 @@
 %
 
-:test ^3 . ~begin .s ^2 3 + . cr ~again ^;
+:test ^3 . ~begin .s ^2 3 + . cr ~again ,;
 
 'again ~see
 'test ~see
@@ -8,21 +8,21 @@
 
 ~\ test
 
-:test-if ^111 . cr ~if ^2 2 + . cr ~then ^222 . cr ;
+:test-if ^111 . cr ~if ^2 2 + . cr ~then ^222 . cr ,;
 
 ~
 cr 1 test-if
 cr 0 test-if
 
 cr
-:test-not-if ^111 . cr ~-if ^2 2 + . cr ~then ^222 . cr ;
+:test-not-if ^111 . cr ~-if ^2 2 + . cr ~then ^222 . cr ,;
 
 ~
 cr 1 test-not-if
 cr 0 test-not-if
 
 cr
-:test-else ^333 . cr ~if ^3 3 + . cr ~else ^4 4 + . cr ~then     ^444 . cr ;
+:test-else ^333 . cr ~if ^3 3 + . cr ~else ^4 4 + . cr ~then     ^444 . cr ,;
 
 ~
 cr 1 test-else
@@ -31,7 +31,7 @@ cr 0 test-else
 
 
 cr
-:test-not-else ^333 . cr ~-if ^3 3 + . cr ~else ^4 4 + . cr ~then     ^444 . cr ;
+:test-not-else ^333 . cr ~-if ^3 3 + . cr ~else ^4 4 + . cr ~then     ^444 . cr ,;
 
 ~
 cr 1 test-not-else

@@ -6,21 +6,21 @@
 \     Repeat...
 \  This process will eventually reach the number 1
 
-:N ~0 variable ^;
-:n ~-1 variable ^;
-:time-in-alt ~0 variable ^;
-:max-alt ~0 variable ^;
+:N ~0 variable ,;
+:n ~-1 variable ,;
+:time-in-alt ~0 variable ,;
+:max-alt ~0 variable ,;
 
 :time-in-alt?! ^
-   time-in-alt @ ~if ^; ~then ^
-   dup N @ < ~-if ^; ~then ^
-   n @ time-in-alt ! ;
+   time-in-alt @ ~if ,; ~then ^
+   dup N @ < ~-if ,; ~then ^
+   n @ time-in-alt ! ,;
 
 :max-alt?! ^
-   dup max-alt @ < ~if ^; ~then ^
-   dup max-alt ! ;
+   dup max-alt @ < ~if ,; ~then ^
+   dup max-alt ! ,;
 
-:record ^dup .  time-in-alt?!  max-alt?!  n 1+! ;
+:record ^dup .  time-in-alt?!  max-alt?!  n 1+! ,;
 
 :resume ^
    cr cr
@@ -32,17 +32,17 @@
 ;
 
 
-:even ^2 / ;
-:odd  ^3 * 1+ ;
+:even ^2 / ,;
+:odd  ^3 * 1+ ,;
 
-:next ^dup 2 mod ~if ^odd ~else ^even ~then ^;
+:next ^dup 2 mod ~if ^odd ~else ^even ~then ,;
 
-:loop ~( n - ) ^record dup 1 = ~if ^; ~then ^next loop ;
+:loop ~( n - ) ^record dup 1 = ~if ,; ~then ^next loop ,;
 
-:init ^N !  -1 n !  0 time-in-alt !  0 max-alt ! ;
+:init ^N !  -1 n !  0 time-in-alt !  0 max-alt ! ,;
 
 :sy
-:syracuse ~( n - ) ^init  N @ loop  resume ;
+:syracuse ~( n - ) ^init  N @ loop  resume ,;
 
 ~
 " Usage: <N> sy(racuse)" nprn cr

@@ -1,10 +1,10 @@
 % require-threads
 
-:my-word0 ^2 2 + . my-word0 ;
-:my-word1 ^3 2 + . my-word1 ;
-:my-word2 ^4 2 + . my-word2 ;
-:my-word3 ^5 2 + . my-word3 ;
-:my-word4 ^6 2 + . my-word4 ;
+:my-word0 ^2 2 + . my-word0 ,;
+:my-word1 ^3 2 + . my-word1 ,;
+:my-word2 ^4 2 + . my-word2 ,;
+:my-word3 ^5 2 + . my-word3 ,;
+:my-word4 ^6 2 + . my-word4 ,;
 ~
 'my-word0 ~0 thread/run
 'my-word1 ~1 thread/run

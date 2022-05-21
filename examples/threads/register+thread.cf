@@ -2,14 +2,14 @@
 
 \ Registers are global per threads
 
-:identify ^A@ 2 * spaces ~c" thread: " ^pr A@ . ~c" , I = " ^pr I@ .  cr ;
-:count ^identify B@ mssleep I--  I@ ~if ^count ~then ^;
-:thread ~( n ms id) ^A! B! I!  ~c" Starting: " ^pr identify count ;
+:identify ^A@ 2 * spaces ~c" thread: " ^pr A@ . ~c" , I = " ^pr I@ .  cr ,;
+:count ^identify B@ mssleep I--  I@ ~if ^count ~then ,;
+:thread ~( n ms id) ^A! B! I!  ~c" Starting: " ^pr identify count ,;
 
-:th1 ^10 500 1 thread ;
-:th2 ^20 100 2 thread ;
-:th3 ^5  750 3 thread ;
-:th4 ^15 250 4 thread ;
+:th1 ^10 500 1 thread ,;
+:th2 ^20 100 2 thread ,;
+:th3 ^5  750 3 thread ,;
+:th4 ^15 250 4 thread ,;
 
 ~
 'th1 ~0 thread/run 10 mssleep

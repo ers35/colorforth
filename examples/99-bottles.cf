@@ -1,16 +1,16 @@
 %
-noname> ^dup . ~c" bottles" ^pr ;
-~noname> ~c" 1 bottle" ^pr ;
-~noname> ~c" no more bottles" ^pr ;
+noname> ^dup . ~c" bottles" ^pr ,;
+~noname> ~c" 1 bottle" ^pr ,;
+~noname> ~c" no more bottles" ^pr ,;
 ~>! >! >!  here @  3 cells -
-:.bottles ^dup 2 min cells ~[,] ^+ @ execute ;
+:.bottles ^dup 2 min cells ~[,] ^+ @ execute ,;
 
-:.beer ^.bottles ~c"  of beer " ^pr ;
-:.wall ^.beer ~c" on the wall " ^prn ;
-:.take ~c" Take one down, pass it around" ^pr ;
+:.beer ^.bottles ~c"  of beer " ^pr ,;
+:.wall ^.beer ~c" on the wall " ^prn ,;
+:.take ~c" Take one down, pass it around" ^pr ,;
 :.verse ^.wall .beer cr
-      1- .take cr .wall ;
-:.verses ^cr .verse dup ~if ^.verses ~then ^;
+      1- .take cr .wall ,;
+:.verses ^cr .verse dup ~if ^.verses ~then ,;
 ~
 99 .verses
 bye

@@ -1,93 +1,93 @@
 %
-:nb ^10000000 ;
+:nb ^10000000 ,;
 
 ~" * Variable:" ~prn
-:tm ~time/start ^;
+:tm ~time/start ,;
 
-:v1 ~0 variable ^;
-:v-inc ^v1 @ 1+ v1 ! ;
-:loop ^v-inc -done?; loop ;
+:v1 ~0 variable ,;
+:v-inc ^v1 @ 1+ v1 ! ,;
+:loop ^v-inc -done?; loop ,;
 
-:test ^nb loop v1 @ . ;
+:test ^nb loop v1 @ . ,;
 ~
 test
 tm time/end
 
 
 ~" * register load/store" ~nprn
-:tm ~time/start ^;
+:tm ~time/start ,;
 
-:v-inc ^A@ 1+ A! ;
-:loop ^v-inc -done?; loop ;
+:v-inc ^A@ 1+ A! ,;
+:loop ^v-inc -done?; loop ,;
 
-:test ^0 A! nb loop A@ . ;
+:test ^0 A! nb loop A@ . ,;
 ~
 test
 tm time/end
 
 
 ~" * register add" ~nprn
-:tm ~time/start ^;
-:v-inc ^1 A+! ;
-:loop ^v-inc -done?; loop ;
+:tm ~time/start ,;
+:v-inc ^1 A+! ,;
+:loop ^v-inc -done?; loop ,;
 
-:test ^0 A! nb loop A@ . ;
+:test ^0 A! nb loop A@ . ,;
 ~
 test
 tm time/end
 
 
 ~" * register inc" ~nprn
-:tm ~time/start ^;
+:tm ~time/start ,;
 
-:v-inc ,A++ ^;
-:loop ^v-inc -done?; loop ;
+:v-inc ,A++ ,;
+:loop ^v-inc -done?; loop ,;
 
-:test ^0 A! nb loop A@ . ;
+:test ^0 A! nb loop A@ . ,;
 ~
 test
 tm time/end
 
 
 ~" * inline register inc" ~nprn
-:tm ~time/start ^;
+:tm ~time/start ,;
 
-:loop ,v-inc ^-done?; loop ;
+:loop ,v-inc ^-done?; loop ,;
 
-:test ^0 ,A! ^nb loop ,A@ ^. ;
+:test ^0 ,A! ^nb loop ,A@ ^. ,;
 ~
 test
 tm time/end
 
 
 ~" * inline  -done?;" ~nprn
-:tm ~time/start ^;
+:tm ~time/start ,;
 
-:loop ,v-inc ^1 - dup ~if ^loop ~then ^;
+:loop ,v-inc ^1 - dup ~if ^loop ~then ,;
 
-:test ^0 ,A! ^nb loop ,A@ ^. ;
+:test ^0 ,A! ^nb loop ,A@ ^. ,;
 ~
 test
 tm time/end
 
 
 ~" * second register for counter" ~nprn
-:tm ~time/start ^;
+:tm ~time/start ,;
 
-:loop ,v-inc B-- B@ ~if ^loop ~then ^;
+:loop ,v-inc B-- B@ ~if ^loop ~then ,;
 
-:test ^0 ,A! ^nb ,B! ^loop ,A@ ^. ;
+:test ^0 ,A! ^nb ,B! ^loop ,A@ ^. ,;
 ~
 test
 tm time/end
 
 
 ~" * inline register manually (same as above normally)" ~nprn
-:tm ~time/start ^;
+:tm ~time/start ,;
 
-:loop ,A++ B-- B@ ~if ^loop ~then ^;
+:loop ,A++ B-- B@ ~if ^loop ~then ,;
 
-:test ^0 ,A! ^nb ,B! ^loop ,A@ ^. ;
+:test ^0 ,A! ^nb ,B! ^loop ,A@ ^. ,;
 ~
 test
 tm time/end

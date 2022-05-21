@@ -1,12 +1,12 @@
 %
-:v ~77 variable ^;
+:v ~77 variable ,;
 
 ~
 v ?
 100 v !
 v ?
 
-:vars ~10 variables ^;
+:vars ~10 variables ,;
 
 ~
 10 vars !

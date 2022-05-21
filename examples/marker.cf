@@ -1,8 +1,8 @@
 %
-:first-word ~c" The first word" ^prn ;
+:first-word ~c" The first word" ^prn ,;
 
 ~\ Store the current state in a 3 cells word
-:mark-1 ~marker ^;
+:mark-1 ~marker ,;
 
 ~room
 
@@ -11,7 +11,7 @@
 
 ~\ Allocate and create more words
 ~20000 alloc
-:second-word ~c" The second word" ^prn ;
+:second-word ~c" The second word" ^prn ,;
 
 ~cr first-word second-word
 cr room
@@ -19,12 +19,12 @@ cr room
 ~" Forget all above mark-1:" ~nprn
 mark-1  forget
 
-:third-word ~c" The third word" ^prn ;
+:third-word ~c" The third word" ^prn ,;
 
-|an-inlined-word ^first-word ;
-|and-another ^2 2 + . ;
+|an-inlined-word ^first-word ,;
+|and-another ^2 2 + . ,;
 
-:a-word ^and-another ;
+:a-word ^and-another ,;
 
 ~first-word second-word third-word
 
