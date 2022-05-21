@@ -42,7 +42,6 @@ typedef unsigned long hash_t;
 #define CODE_LEN_HASH                  (hash_t) 0x310AB088C3
 #define HERE_HASH                      (hash_t) 0x17C97D3A9
 #define LATEST_HASH                    (hash_t) 0x6530AE8CA72
-#define I_LATEST_HASH                  (hash_t) 0x1AE713EDBA0DE8
 #define GET_ENTRY_CODE_HASH            (hash_t) 0x310F3D0EBE
 #define EXECUTE_HASH                   (hash_t) 0xD0B281C09678
 #define COMPILE_HASH                   (hash_t) 0xB88427B
