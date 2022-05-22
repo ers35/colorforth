@@ -488,7 +488,7 @@ execute_(struct state *s, struct entry *entry)
   register cell J = 0;
 #endif
 
-  // don't forget to compile a return!!!!
+  // don't forget to INLINE a return!!!!
   while(1)
   {
     switch (pc->opcode)

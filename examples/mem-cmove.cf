@@ -22,7 +22,7 @@ key E buf 4 + c!
    ^buf   buf 72 +  5 cmove>  buf 72 +  buf 73 +  5 cmove> ~( src dst < => ok )
    ^cr buf?
    .s
-;
+,;
 
 
 ~test-cmove
