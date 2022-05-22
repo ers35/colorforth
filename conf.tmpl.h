@@ -5,6 +5,9 @@
 typedef long cell;
 #define CELL_FMT "%ld"
 
+// Max number of branch in a word
+#define MAXBRANCH 100
+
 // Unsafe mode: disable stack underflow/overflow check
 // #define UNSAFE_MODE
 

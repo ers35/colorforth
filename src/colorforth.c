@@ -43,7 +43,7 @@ cf_print_cell(struct state *state, cell cell)
   {
     case 16:
     {
-      cf_printf(state, "$%lX ", cell);
+      cf_printf(state, "$%lX", cell);
       break;
     }
     case 2:
@@ -61,13 +61,12 @@ cf_print_cell(struct state *state, cell cell)
           if (n) output = 1;
           if (output) cf_putchar(state, '0' + n);
         }
-        cf_putchar(state, ' ');
       }
       break;
     }
     default:
     {
-      cf_printf(state, CELL_FMT" ", cell);
+      cf_printf(state, CELL_FMT, cell);
       break;
     }
   }
@@ -151,6 +150,7 @@ dot_s(struct state *state, struct stack *stack)
   for (int i = 0; i < stack->sp ; i++)
   {
     cf_print_cell(state, stack->cells[i]);
+    cf_printf(state, " ");
   }
   cf_printf(state, "<tos\n");
 }
@@ -807,6 +807,7 @@ execute_(struct state *s, struct entry *entry)
       case OP_PRINT_TOS:
       {
         cf_print_cell(s,pop(s->stack));
+        cf_printf(s, " ");
         cf_fflush();
         break;
       }
