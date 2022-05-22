@@ -6,5 +6,21 @@
 'aa ~see
 'tt ~see
 'xx ~see
+cr cr
 
+:zz ^10 ~for ,I@ ^. cr ~next ,;
+
+'zz ~see
+
+~zz cr
+
+:inner ^10 ~for ,I@ J@ * . ~next ,;
+:outer ,J>R ^3 ~for ,I@ 1+ dup J! . ^inner cr ~next ,R>J ,;
+:call ^111 J! outer J@ . cr ,;
+
+'inner ~see
+'outer ~see
+
+~cr call
+~
 bye
