@@ -1066,7 +1066,7 @@ colorforth_newstate(void)
   define_primitive(state, LATEST_HASH,            ENTRY_NAME("latest"), OP_LATEST);
 
   define_primitive(state, COMPILE_HASH,           ENTRY_NAME("[^]"), OP_COMPILE);
-  define_primitive(state, COMPILE_INLINE_HASH,    ENTRY_NAME("[`]"), OP_COMPILE_INLINE); //=> ancien compile
+  define_primitive(state, COMPILE_INLINE_HASH,    ENTRY_NAME("[`]"), OP_COMPILE_INLINE);
   define_primitive(state, COMPILE_LITERAL_HASH,   ENTRY_NAME("[,]"), OP_COMPILE_LITERAL);
   define_primitive(state, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
   define_primitive(state, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
