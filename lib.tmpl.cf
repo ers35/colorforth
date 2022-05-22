@@ -8,6 +8,9 @@
 :then ^here @ swap cva> ! ,;
 :else ^here @ `branch ^[`]  swap here @ swap cva> ! ,;
 
+:for `I>R ^[`] `I! ^[`] ^here @ `I-- ^[`] ,;
+:next `I@ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
+
 :\ ^key 10 = ~-if ^\ ~then ,;
 :( ^key 41 = ~-if ^( ~then ,;
 ~( The two lines above defines comments. We do not have them till there )
