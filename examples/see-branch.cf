@@ -1,0 +1,10 @@
+%
+:aa ~begin ^10 . ~again ,;
+:tt ^1 ~if ^10 . ~else ^20 . ~then ,;
+:xx ^111 ~begin ^1 ~if ^10 . ,; ~else ^20 . ~then ^222 ~again ,;
+
+'aa ~see
+'tt ~see
+'xx ~see
+
+bye
