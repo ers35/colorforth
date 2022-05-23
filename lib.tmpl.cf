@@ -8,8 +8,11 @@
 :then ^here @ swap cva> ! ,;
 :else ^here @ `branch ^[`]  swap here @ swap cva> ! ,;
 
-:for `I>R ^[`] `I! ^[`] ^here @ `I-- ^[`] ,;
+:do `I>R ^[`] `I! ^[`] ^here @ ,;
+:for ,do `I-- ^[`] ,;
 :next `I@ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
+:?loop `I@ ^[`] `- ^[`] `I++ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
+:+?loop `I@ ^[`] `- ^[`] `swap ^[`] `I+! ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
 
 :\ ^key 10 = ~-if ^\ ~then ,;
 :( ^key 41 = ~-if ^( ~then ,;
