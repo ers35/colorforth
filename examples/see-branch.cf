@@ -22,5 +22,18 @@ cr cr
 'outer ~see
 
 ~cr call
+
+
+:test1 ^1  ~do ,I@ .   ^  10 ~?loop ,;  ~\ 1 2 3 4 5 6 7 8 9 10
+:test2 ^0  ~do ,I@ .   ^10 2 ~+?loop ,; ~\ 0 2 4 6 8 10
+:test3 ^12 ~do ,I@ .   ^2 -2 ~+?loop ,; ~\ 12 10 8 6 4 2
+
+'test1 ~see
+'test2 ~see
+'test3 ~see
+
+test1 cr
+test2 cr
+test3 cr
 ~
 bye
