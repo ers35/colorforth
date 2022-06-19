@@ -221,5 +221,6 @@ typedef unsigned long hash_t;
 #define SERVER_ACCEPT_HASH             (hash_t) 0x3562A75940BA01F9
 #define SOCKET_SEND_HASH               (hash_t) 0xC0D1B4F8D1074A65
 #define SOCKET_SEND_CHAR_HASH          (hash_t) 0x106927251A24F110
+#define SOCKET_RECV_HASH               (hash_t) 0xC0D1B4F8D106BCAB
 
 #endif /* __HASH_DEF_64 */

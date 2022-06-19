@@ -13,7 +13,7 @@
 
 static char initialized = 0;
 
-#define PERROR(msg) cf_printf(s, "ERROR: %s: %s\n", strerror(errno)); push(s->stack, 0)
+#define PERROR(msg) cf_printf(s, "ERROR: %s: %s\n", msg, strerror(errno)); push(s->stack, 0)
 
 void
 server_start(struct state *s) {
@@ -101,7 +101,7 @@ server_accept(struct state *s) {
 		return;
 	}
 
-	cf_printf(s, "Connection accepted");
+	cf_printf(s, "Connection accepted\n");
 
 	push(s->stack, new_socket);
 }
@@ -133,6 +133,26 @@ socket_send_char (struct state *s) {
 }
 
 void
+socket_recv(struct state *s) {
+  cell socket = pop(s->stack);
+  cell len = pop(s->stack);
+  char *buffer = (char *)pop(s->stack);
+
+  buffer[0] = recv(socket, CFSTRING2C(buffer), len, 0);
+
+	if (buffer[0] < 0) {
+		if (errno == EAGAIN) {
+      push(s->stack, 0);
+			return;
+		}
+		PERROR("recv failed");
+		return;
+	}
+
+  push(s->stack, -1);
+}
+
+void
 require_network_fn(struct state *state)
 {
   if (initialized) return;
@@ -144,6 +164,7 @@ require_network_fn(struct state *state)
 
   define_primitive_extension(state, SOCKET_SEND_HASH,           ENTRY_NAME("socket-send"), socket_send);
   define_primitive_extension(state, SOCKET_SEND_CHAR_HASH,      ENTRY_NAME("socket-send-char"), socket_send_char);
+  define_primitive_extension(state, SOCKET_RECV_HASH,           ENTRY_NAME("socket-recv"), socket_recv);
 
   initialized = 1;
 }
