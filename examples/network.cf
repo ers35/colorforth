@@ -3,7 +3,7 @@ require-network
 
 :loop ^loop ,;
 
-: main ^8000 server-start .s 10 sleep server-stop loop ,;
+: main ^8000 server-start .s server-nonblocking 10 sleep server-stop loop ,;
 
 ~main
 bye

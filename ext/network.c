@@ -8,6 +8,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
 
 static char initialized = 0;
 
@@ -69,6 +71,21 @@ server_stop(struct state *s) {
   push(s->stack, 0);
 }
 
+void
+server_nonblocking(struct state *s) {
+  cell fd = pop(s->stack);
+
+	int status = fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
+
+	if (status == -1){
+		PERROR("calling fcntl");
+		return;
+	}
+
+	cf_printf(s, "FD made nonblocking\n");
+
+	push(s->stack, fd);
+}
 
 
 void
@@ -76,8 +93,9 @@ require_network_fn(struct state *state)
 {
   if (initialized) return;
 
-  define_primitive_extension(state, SERVER_START_HASH,      ENTRY_NAME("server-start"), server_start);
-  define_primitive_extension(state, SERVER_STOP_HASH,       ENTRY_NAME("server-stop"), server_stop);
+  define_primitive_extension(state, SERVER_START_HASH,          ENTRY_NAME("server-start"), server_start);
+  define_primitive_extension(state, SERVER_STOP_HASH,           ENTRY_NAME("server-stop"), server_stop);
+  define_primitive_extension(state, SERVER_NONBLOCKING_HASH,    ENTRY_NAME("server-nonblocking"), server_nonblocking);
 
   initialized = 1;
 }
