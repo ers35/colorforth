@@ -113,6 +113,7 @@ typedef unsigned long hash_t;
 #define REQUIRE_EXT_MATH_HASH          (hash_t) 0xD1C9B8A3ECDA3577
 #define REQUIRE_MP_MATH_HASH           (hash_t) 0x8A3C6A73E3170C03
 #define REQUIRE_THREADS_HASH           (hash_t) 0x8A3C6A75F021A5FA
+#define REQUIRE_NETWORK_HASH           (hash_t) 0x8A3C6A741B730CB9
 
 // OS
 #define SYSTEM_HASH                    (hash_t) 0x6531CEEE48A
@@ -212,5 +213,9 @@ typedef unsigned long hash_t;
 #define THREAD__KILL_HASH              (hash_t) 0xC0D611682ABE0B38
 #define THREAD__LOCK_HASH              (hash_t) 0xC0D611682ABEAFF5
 #define THREAD__UNLOCK_HASH            (hash_t) 0x4EA00C1DEA1BE3F8
+
+// Network
+#define SERVER_START_HASH              (hash_t) 0xDAD471AD605C6997
+#define SERVER_STOP_HASH               (hash_t) 0xC0D022799E12528F
 
 #endif /* __HASH_DEF_64 */

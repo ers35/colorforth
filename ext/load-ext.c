@@ -10,6 +10,7 @@ extern void require_math_fn(struct state *s);
 extern void require_ext_math_fn(struct state *state);
 extern void require_mp_math_fn(struct state *state);
 extern void require_threads_fn(struct state *state);
+extern void require_network_fn(struct state *state);
 
 
 void
@@ -24,4 +25,5 @@ load_extensions(struct state *state)
   define_primitive_extension(state, REQUIRE_EXT_MATH_HASH,    ENTRY_NAME("require-ext-math"), require_ext_math_fn);
   define_primitive_extension(state, REQUIRE_MP_MATH_HASH,     ENTRY_NAME("require-mp-math"), require_mp_math_fn);
   define_primitive_extension(state, REQUIRE_THREADS_HASH,     ENTRY_NAME("require-threads"), require_threads_fn);
+  define_primitive_extension(state, REQUIRE_NETWORK_HASH,     ENTRY_NAME("require-network"), require_network_fn);
 }

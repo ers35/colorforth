@@ -17,7 +17,8 @@ SRC=src/main.c src/colorforth.c \
 	ext/math.c \
 	ext/ext-math.c \
 	ext/mp-math.c \
-	ext/threads.c
+	ext/threads.c \
+	ext/network.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
