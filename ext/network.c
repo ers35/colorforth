@@ -122,13 +122,9 @@ socket_send (struct state *s) {
 void
 socket_send_char (struct state *s) {
   cell socket = pop(s->stack);
+  char c = pop(s->stack);
 
-  char msg[2];
-  msg[0] = pop(s->stack);
-  msg[1] = 0;
-
-
-	if (send(socket, msg, strlen(msg), 0) < 0) {
+	if (send(socket, &c, 1, 0) < 0) {
 		PERROR("send failed");
 		return;
 	}
