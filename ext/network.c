@@ -13,7 +13,7 @@
 
 static char initialized = 0;
 
-#define PERROR(msg) cf_printf(s, "ERROR: %s: %s\n", strerror(errno)); push(s->stack, -1)
+#define PERROR(msg) cf_printf(s, "ERROR: %s: %s\n", strerror(errno)); push(s->stack, 0)
 
 void
 server_start(struct state *s) {
@@ -68,7 +68,7 @@ server_stop(struct state *s) {
 
 	cf_printf(s, "FD closed. Server stopped\n");
 
-  push(s->stack, 0);
+  push(s->stack, -1);
 }
 
 void
@@ -89,6 +89,54 @@ server_nonblocking(struct state *s) {
 
 
 void
+server_accept(struct state *s) {
+  cell server_fd = pop(s->stack);
+
+	struct sockaddr_in address;
+	int addrlen = sizeof(address);
+	cell new_socket;
+
+	if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
+		PERROR("accept");
+		return;
+	}
+
+	cf_printf(s, "Connection accepted");
+
+	push(s->stack, new_socket);
+}
+
+void
+socket_send (struct state *s) {
+  cell socket = pop(s->stack);
+  char * msg = CFSTRING2C(pop(s->stack));
+
+	if (send(socket, msg, strlen(msg), 0) < 0) {
+		PERROR("send failed");
+		return;
+	}
+
+	push(s->stack, -1);
+}
+
+void
+socket_send_char (struct state *s) {
+  cell socket = pop(s->stack);
+
+  char msg[2];
+  msg[0] = pop(s->stack);
+  msg[1] = 0;
+
+
+	if (send(socket, msg, strlen(msg), 0) < 0) {
+		PERROR("send failed");
+		return;
+	}
+
+	push(s->stack, -1);
+}
+
+void
 require_network_fn(struct state *state)
 {
   if (initialized) return;
@@ -96,6 +144,10 @@ require_network_fn(struct state *state)
   define_primitive_extension(state, SERVER_START_HASH,          ENTRY_NAME("server-start"), server_start);
   define_primitive_extension(state, SERVER_STOP_HASH,           ENTRY_NAME("server-stop"), server_stop);
   define_primitive_extension(state, SERVER_NONBLOCKING_HASH,    ENTRY_NAME("server-nonblocking"), server_nonblocking);
+  define_primitive_extension(state, SERVER_ACCEPT_HASH,         ENTRY_NAME("server-accept"), server_accept);
+
+  define_primitive_extension(state, SOCKET_SEND_HASH,           ENTRY_NAME("socket-send"), socket_send);
+  define_primitive_extension(state, SOCKET_SEND_CHAR_HASH,      ENTRY_NAME("socket-send-char"), socket_send_char);
 
   initialized = 1;
 }

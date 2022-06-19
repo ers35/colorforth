@@ -218,5 +218,8 @@ typedef unsigned long hash_t;
 #define SERVER_START_HASH              (hash_t) 0xDAD471AD605C6997
 #define SERVER_STOP_HASH               (hash_t) 0xC0D022799E12528F
 #define SERVER_NONBLOCKING_HASH        (hash_t) 0x409DE8055967B95D
+#define SERVER_ACCEPT_HASH             (hash_t) 0x3562A75940BA01F9
+#define SOCKET_SEND_HASH               (hash_t) 0xC0D1B4F8D1074A65
+#define SOCKET_SEND_CHAR_HASH          (hash_t) 0x106927251A24F110
 
 #endif /* __HASH_DEF_64 */

@@ -1,9 +1,22 @@
 %
 require-network
 
-:loop ^loop ,;
+:server ~0 variable ,;
+:sock ~0 variable ,;
 
-: main ^8000 server-start .s server-nonblocking 10 sleep server-stop loop ,;
+:send ^sock @ socket-send drop ,;
+:send-nl ^10 sock @ socket-send-char drop ,;
+
+: main ^
+   8000 server-start .s server !
+   server @ server-accept .s sock !
+   ~c" test on one line" ^send
+   ~c"  more chars" ^send  send-nl
+   ~c" test on a second line" ^send   send-nl
+   1 sleep
+   server @ server-stop drop
+   .s
+,;
 
 ~main
 bye
