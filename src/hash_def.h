@@ -216,6 +216,7 @@ typedef unsigned long hash_t;
 
 // Network
 #define SERVER_START_HASH              (hash_t) 0xDAD471AD605C6997
+#define CLIENT_START_HASH              (hash_t) 0xCFBFFAACFE51E27F
 #define SERVER_STOP_HASH               (hash_t) 0xC0D022799E12528F
 #define SERVER_NONBLOCKING_HASH        (hash_t) 0x409DE8055967B95D
 #define SERVER_ACCEPT_HASH             (hash_t) 0x3562A75940BA01F9

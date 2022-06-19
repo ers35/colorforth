@@ -58,6 +58,42 @@ server_start(struct state *s) {
 }
 
 void
+client_start(struct state * s) {
+  cell port = pop(s->stack);
+  char * host = CFSTRING2C(pop(s->stack));
+
+  cf_printf(s, "client: %s  %d\n", host, port);
+
+	int sock = 0;
+	struct sockaddr_in serv_addr;
+
+	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		PERROR("Socket creation error");
+		return;
+	}
+
+	memset(&serv_addr, '0', sizeof(serv_addr));
+
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_port = htons(port);
+
+	// Convert IPv4 and IPv6 addresses from text to binary form
+	if(inet_pton(AF_INET, host, &serv_addr.sin_addr) <= 0) {
+		PERROR("Invalid address/ Address not supported");
+		return;
+	}
+
+	if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+		PERROR("Connection Failed");
+		return;
+	}
+
+  cf_printf(s, "Client connected on %s on port %d\n", host, port);
+
+  push(s->stack, sock);
+}
+
+void
 server_stop(struct state *s) {
   cell fd = pop(s->stack);
 
@@ -158,6 +194,7 @@ require_network_fn(struct state *state)
   if (initialized) return;
 
   define_primitive_extension(state, SERVER_START_HASH,          ENTRY_NAME("server-start"), server_start);
+  define_primitive_extension(state, CLIENT_START_HASH,          ENTRY_NAME("client-start"), client_start);
   define_primitive_extension(state, SERVER_STOP_HASH,           ENTRY_NAME("server-stop"), server_stop);
   define_primitive_extension(state, SERVER_NONBLOCKING_HASH,    ENTRY_NAME("server-nonblocking"), server_nonblocking);
   define_primitive_extension(state, SERVER_ACCEPT_HASH,         ENTRY_NAME("server-accept"), server_accept);

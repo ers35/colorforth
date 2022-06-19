@@ -1,7 +1,6 @@
 %
 require-network
 
-:server ~0 variable ,;
 :sock ~0 variable ,;
 
 :buffer ~1024 dalloc [,] ,;
@@ -11,18 +10,16 @@ require-network
 :recv ~( buffer -) ^1024 sock @ socket-recv drop ,;
 
 :main ^
-   8000 server-start .s server !
-   server @ server-accept .s sock !
+   ~c" 127.0.0.1" ^8000 client-start .s sock !
 
-   ~c" test on one line" ^send
-   ~c" test on a second line" ^send
+   buffer recv buffer prn
+   buffer recv buffer prn
 
-   buffer recv
-   cr buffer dump cr buffer prn cr
+   ~c" Hello from client!" ^send send-nl
 
    ^1 sleep
 
-   server @ server-stop drop
+   sock @ server-stop drop
    .s
 ,;
 
