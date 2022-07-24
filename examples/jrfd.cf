@@ -27,7 +27,7 @@ Example:
 
 ~time srand
 
-:q: ^key dup emit 63 = ~-if ^q: ~then ,;
+:q: ^key dup emit 63 = ~nif ^q: ~then ,;
 
 :.OK  ~c" Yes :-)" ^pr ,;
 :.KO  ~c" No :-("  ^pr ,;

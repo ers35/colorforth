@@ -4,7 +4,7 @@
 :again  ^here @ `branch ^[`] cva> ! ,;
 
 :if ^here @ `0branch ^[`] ,;
-:-if ^here @ `nbranch ^[`] ,;
+:nif ^here @ `nbranch ^[`] ,;
 :then ^here @ swap cva> ! ,;
 :else ^here @ `branch ^[`]  swap here @ swap cva> ! ,;
 
@@ -15,7 +15,7 @@
 :+?loop `I@ ^[`] `- ^[`] `swap ^[`] `I+! ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
 
 (One line comment)
-:\ ^key 10 = ~-if ^\ ~then ,;
+:\ ^key 10 = ~nif ^\ ~then ,;
 
 ~( boolean constant )
 :true   ^1 ,;
@@ -69,7 +69,7 @@
 :emit. ^ drop 46 emit ,;
 :v-emit ~( c - ) ^
   dup  32 < ~if ^emit. ,; ~then ^
-  dup 128 < ~-if ^emit. ,; ~then ^
+  dup 128 < ~nif ^emit. ,; ~then ^
   emit ,;
 
 :dumpc ^swap dup c@ dup v-emit space . tab  1+ swap ,;
@@ -160,12 +160,12 @@
 
 ~( math )
 :sign-0; ^drop 0 ,;; ,;
-:sign ^dup ~-if ^drop 0 ,; ~then ^0 < ~if ^-1 ~else ^1 ~then ,;
+:sign ^dup ~nif ^drop 0 ,; ~then ^0 < ~if ^-1 ~else ^1 ~then ,;
 
 ~( eval )
 :ptr ~0 variable ,;
 :count ~0 variable ,;
-:loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ ~-if ,; ~then ^loop ,;
+:loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ ~nif ,; ~then ^loop ,;
 :eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  loop  32 parse ,;
 'ptr ~entry/hide  'count ~entry/hide  'loop ~entry/hide
 

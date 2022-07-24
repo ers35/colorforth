@@ -1,6 +1,6 @@
 %
 :fib-loop ^
-   ,>R   ^swap over + dup .  ,R> ^1- dup 1 = ~-if ^fib-loop ~then ^drop ,;
+   ,>R   ^swap over + dup .  ,R> ^1- dup 1 = ~nif ^fib-loop ~then ^drop ,;
 :fib ,>R  ^0 . 1 .  0 1  ,R> ^fib-loop ,;
 
 ~92 fib cr cr . cr

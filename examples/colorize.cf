@@ -17,7 +17,7 @@
 :cyan!    ^[esc ~key 6 [,] ^esc] ,;
 :white!   ^[esc1 ~key 3 [,] ^emit ~key 7 [,] ^esc] ,;
 
-:dump-loop ^getchar dup emit over = ~-if ^dump-loop ~then ^drop ,;
+:dump-loop ^getchar dup emit over = ~nif ^dump-loop ~then ^drop ,;
 :dump-to-char ^swap emit dump-loop yellow! ,;
 
 :<stop>

@@ -13,7 +13,7 @@
 
 :time-in-alt?! ^
    time-in-alt @ ~if ,; ~then ^
-   dup N @ < ~-if ,; ~then ^
+   dup N @ < ~nif ,; ~then ^
    n @ time-in-alt ! ,;
 
 :max-alt?! ^

@@ -8,18 +8,18 @@
 
 ~\ test
 
-:test-if ^111 . cr ~if ^2 2 + . cr ~then ^222 . cr ,;
+:testnif ^111 . cr ~if ^2 2 + . cr ~then ^222 . cr ,;
 
 ~
-cr 1 test-if
-cr 0 test-if
+cr 1 testnif
+cr 0 testnif
 
 cr
-:test-not-if ^111 . cr ~-if ^2 2 + . cr ~then ^222 . cr ,;
+:test-notnif ^111 . cr ~nif ^2 2 + . cr ~then ^222 . cr ,;
 
 ~
-cr 1 test-not-if
-cr 0 test-not-if
+cr 1 test-notnif
+cr 0 test-notnif
 
 cr
 :test-else ^333 . cr ~if ^3 3 + . cr ~else ^4 4 + . cr ~then     ^444 . cr ,;
@@ -31,13 +31,13 @@ cr 0 test-else
 
 
 cr
-:test-not-else ^333 . cr ~-if ^3 3 + . cr ~else ^4 4 + . cr ~then     ^444 . cr ,;
+:test-not-else ^333 . cr ~nif ^3 3 + . cr ~else ^4 4 + . cr ~then     ^444 . cr ,;
 
 ~
 cr 1 test-not-else
 cr 0 test-not-else
 
-'test-if ~see
+'testnif ~see
 
 ~
 bye
