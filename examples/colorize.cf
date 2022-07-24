@@ -1,8 +1,8 @@
 %
-~\ usage: cat lib.cf | ./colorforth examples/colorize.cf -e colorize
+~\ usage: cat lib.cf | ./colorforth examples/colorize.cf
 
 :[esc0 ^27 emit ~key [ [,] ^emit ~key 0 [,] ,;
-:[esc1 ^[esc0 emit ~key 1 [,] ^emit ~key ,; [,] ^emit ,;
+:[esc1 ^[esc0 emit ~key 1 [,] ^emit ~key ; [,] ^emit ,;
 :[esc  ^[esc1 ~key 9 [,] ^emit ,;
 :esc]  ^emit ~key m [,] ^emit ,;
 
@@ -17,24 +17,29 @@
 :cyan!    ^[esc ~key 6 [,] ^esc] ,;
 :white!   ^[esc1 ~key 3 [,] ^emit ~key 7 [,] ^esc] ,;
 
-:dump-comment ^key dup emit 10 = unless dump-comment ,;
-:line-comment ^white! emit dump-comment yellow! ,;
+:dump-loop ^getchar dup emit over = ~-if ^dump-loop ~then ^drop ,;
+:dump-to-char ^swap emit dump-loop yellow! ,;
 
-:dump-string ^key dup emit dup ~key " [,] ^ = when ,; 10 = when ,; dump-string ,;
-:line-string ^magenta! emit dump-string yellow! ,;; ,;
+:<stop>
+:stop ^drop ;;; ,;
+:with-prefix ^`nop `<stop> ^is ,;
+:without-prefix ^`stop `<stop> ^is ,;
 
+:.char
+   ^dup eof? ~if ^clear! bye ~then
+   ^dup ~key : [,] ^= ~if ^red! <stop> ~then
+   ^dup ~key ^ [,] ^= ~if ^green! <stop> ~then
+   ^dup ~key ~ [,] ^= ~if ^yellow! <stop> ~then
+   ^dup ~key ' [,] ^= ~if ^blue! <stop> ~then
+   ^dup ~key ` [,] ^= ~if ^blue! <stop> ~then
+   ^dup ~key , [,] ^= ~if ^cyan! <stop> ~then
+   ^dup ~key ( [,] ^= ~if ^white! <stop> ~then
 
-:.key
-  ^dup ~key : [,] ^= when red!
-  ^dup ~key | [,] ^= when magenta!
-  ^dup ~key ^ [,] ^= when green!
-  ^dup ~key ~ [,] ^= when yellow!
-  ^dup ~key % [,] ^= when yellow!
-  ^dup ~key ' [,] ^= when blue!
-  ^dup ~key , [,] ^= when cyan!
-  ^dup ~key ( [,] ^= when white!
-  ^dup ~key \ [,] ^= when line-comment
-  ^dup ~key " [,] ^= when line-string
-  ^dup emit ,;
+   ^dup ~key \ [,] ^= ~if ^10 white! dump-to-char ,; ~then
+   ^dup ~key " [,] ^= ~if key " [,] ^magenta! dump-to-char ,; ~then
 
-:colorize ^key .key eof? unless colorize clear! bye ,;
+   ^emit ,;
+
+:colorize ^getchar .char colorize ,;
+
+~without-prefix colorize

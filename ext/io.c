@@ -5,6 +5,12 @@
 static char initialized = 0;
 
 void
+get_char(struct state *s)
+{
+  push(s->stack, getchar());
+}
+
+void
 parse_from_file(struct state *s, char *filename)
 {
   s->tib.len = 0;
@@ -132,6 +138,7 @@ require_io_fn(struct state *state)
 {
   if (initialized) return;
 
+  define_primitive_extension(state, GETCHAR_HASH,        ENTRY_NAME("getchar"), get_char);
   define_primitive_extension(state, ECHO_ADDR_HASH,      ENTRY_NAME("echo"), echo_addr);
   define_primitive_extension(state, FILE_SUBSIZE_HASH,   ENTRY_NAME("file-size"), file_size_fn);
   define_primitive_extension(state, FILE_LOAD_HASH,      ENTRY_NAME("load"), load_file);

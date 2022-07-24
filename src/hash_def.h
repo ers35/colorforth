@@ -127,6 +127,7 @@ typedef unsigned long hash_t;
 #define ENTRY__PATCH_HASH              (hash_t) 0xC08573511B46B7F6
 
 // IO
+#define GETCHAR_HASH                   (hash_t) 0xD0B2F07241E3
 #define ECHO_ADDR_HASH                 (hash_t) 0x17C9624C4
 #define FILE_SUBSIZE_HASH              (hash_t) 0x377C80EAB4BB74D
 #define FILE_LOAD_HASH                 (hash_t) 0x17C9A2D85
