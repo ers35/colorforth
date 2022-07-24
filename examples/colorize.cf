@@ -33,7 +33,7 @@
    ^dup ~key ' [,] ^= ~if ^blue! <stop> ~then
    ^dup ~key ` [,] ^= ~if ^blue! <stop> ~then
    ^dup ~key , [,] ^= ~if ^cyan! <stop> ~then
-   ^dup ~key ( [,] ^= ~if ^white! <stop> ~then
+   ^dup ~key ( [,] ^= ~if ^white! ~then
 
    ^dup ~key \ [,] ^= ~if ^10 white! dump-to-char ,; ~then
    ^dup ~key " [,] ^= ~if key " [,] ^magenta! dump-to-char ,; ~then

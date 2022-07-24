@@ -879,6 +879,12 @@ compile_tick(struct state *s)
   }
 }
 
+static void
+comment(struct state *s)
+{
+
+}
+
 void
 parse_colorforth(struct state *state, int c)
 {
@@ -1037,6 +1043,7 @@ colorforth_newstate(void)
   define_prefix('\'', tick,          COLOR_BLUE,    0);
   define_prefix('`', compile_tick,   COLOR_BLUE,    0);
   define_prefix(',', compile_inline, COLOR_CYAN,    0);
+  define_prefix('(', comment,        COLOR_WHITE,   0);
 
   define_primitive(state, NOP_HASH,               ENTRY_NAME("nop"), OP_NOP);
   define_primitive(state, PRINT_TOS_HASH,         ENTRY_NAME("."), OP_PRINT_TOS);

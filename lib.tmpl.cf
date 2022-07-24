@@ -14,9 +14,8 @@
 :?loop `I@ ^[`] `- ^[`] `I++ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
 :+?loop `I@ ^[`] `- ^[`] `swap ^[`] `I+! ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
 
+(One line comment)
 :\ ^key 10 = ~-if ^\ ~then ,;
-:( ^key 41 = ~-if ^( ~then ,;
-~( The two lines above defines comments. We do not have them till there )
 
 ~( boolean constant )
 :true   ^1 ,;
