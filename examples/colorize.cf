@@ -17,16 +17,27 @@
 :cyan!    ^[esc ~key 6 [,] ^esc] ,;
 :white!   ^[esc1 ~key 3 [,] ^emit ~key 7 [,] ^esc] ,;
 
-:dump-loop ^getchar dup emit over = ~nif ^dump-loop ~then ^drop ,;
-:dump-to-char ^swap emit dump-loop yellow! ,;
+:prefix? ~1 variable ,;
 
 :<stop>
-:stop ^drop ;;; ,;
-:with-prefix ^`nop `<stop> ^is ,;
-:without-prefix ^`stop `<stop> ^is ,;
+:stop ^0 prefix? ! drop ;;; ,;
+:stop-with ^0 prefix? ! ,;
+
+:without-prefix `stop `<stop> ^is ,;
+:with-prefix `stop-with `<stop> ^is ,;
+
+:dump-loop ^getchar dup emit over = ~nif ^dump-loop ~then ^drop ,;
+:dump-to-char ^swap emit dump-loop yellow! 1 prefix? ! ,;
 
 :.char
    ^dup eof? ~if ^clear! bye ~then
+   ^dup 32 = over 10 = or ~if ^1 prefix? ! emit ,; ~then
+
+   ^dup ~key \ [,] ^= ~if ^10 white! dump-to-char ,; ~then
+   ^dup ~key " [,] ^= ~if key " [,] ^magenta! dump-to-char ,; ~then
+
+   ^prefix? @ ~nif ^emit ,; ~then
+
    ^dup ~key : [,] ^= ~if ^red! <stop> ~then
    ^dup ~key ^ [,] ^= ~if ^green! <stop> ~then
    ^dup ~key ~ [,] ^= ~if ^yellow! <stop> ~then
@@ -34,9 +45,6 @@
    ^dup ~key ` [,] ^= ~if ^blue! <stop> ~then
    ^dup ~key , [,] ^= ~if ^cyan! <stop> ~then
    ^dup ~key ( [,] ^= ~if ^white! ~then
-
-   ^dup ~key \ [,] ^= ~if ^10 white! dump-to-char ,; ~then
-   ^dup ~key " [,] ^= ~if key " [,] ^magenta! dump-to-char ,; ~then
 
    ^emit ,;
 
