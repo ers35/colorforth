@@ -16,8 +16,7 @@ conf.tmpl.h:
 	sed -i 's%\(#define __MP_MATH\)%// \1%' arduino/conf.h
 	sed -i 's%\(#define __THREADS\)%// \1%' arduino/conf.h
 	sed -i 's%\(extern .*\)%// \1%' arduino/conf.h
-	sed -i 's%\(#define LOAD_EXTENTIONS\).*\\%\1%' arduino/conf.h
-	sed -i 's%.*\(init_.*;\).*%// \1%' arduino/conf.h
+	sed -i 's%\(#define __USE_EXTENSIONS\)%// \1%' arduino/conf.h
 
 nano: conf.tmpl.h
 	sed -i 's%\(.*STACK_SIZE\).*%\1 10%' arduino/conf.h
