@@ -1103,7 +1103,9 @@ colorforth_newstate(void)
   // A, B, C, X, Y just register
 #endif
 
+#ifdef __USE_EXTENSIONS
   load_extensions(state);
+#endif
 
 #ifdef __EMBED_LIB_CF
   parse_from_embed_lib_cf(state);

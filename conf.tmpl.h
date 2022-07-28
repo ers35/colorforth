@@ -28,6 +28,9 @@ typedef long cell;
 // Embed lib.cf
 #define __EMBED_LIB_CF
 
+// Use extensions
+#define __USE_EXTENSIONS
+
 // Extended math
 #define __EXTENDED_MATH
 
