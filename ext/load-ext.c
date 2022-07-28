@@ -22,8 +22,16 @@ load_extensions(struct state *state)
   define_primitive_extension(state, REQUIRE_PARSER_HASH,      ENTRY_NAME("require-parser"), require_parser_fn);
   define_primitive_extension(state, REQUIRE_TIME_HASH,        ENTRY_NAME("require-time"), require_time_fn);
   define_primitive_extension(state, REQUIRE_MATH_HASH,        ENTRY_NAME("require-math"), require_math_fn);
+#ifdef __EXTENDED_MATH
   define_primitive_extension(state, REQUIRE_EXT_MATH_HASH,    ENTRY_NAME("require-ext-math"), require_ext_math_fn);
+#endif
+#ifdef __MP_MATH
   define_primitive_extension(state, REQUIRE_MP_MATH_HASH,     ENTRY_NAME("require-mp-math"), require_mp_math_fn);
+#endif
+#ifdef __THREADS
   define_primitive_extension(state, REQUIRE_THREADS_HASH,     ENTRY_NAME("require-threads"), require_threads_fn);
+#endif
+#ifdef __NETWORK
   define_primitive_extension(state, REQUIRE_NETWORK_HASH,     ENTRY_NAME("require-network"), require_network_fn);
+#endif
 }

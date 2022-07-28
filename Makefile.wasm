@@ -15,7 +15,8 @@ SRC=wasm/main-wasm.c src/colorforth.c \
 	ext/math.c \
 	ext/ext-math.c
 #	ext/mp-math.c
-#   ext/threads.c
+#	ext/threads.c
+#	ext/network.c
 
 SRC_WASM=wasm/html_template/shell.html wasm/html_template/shell.js wasm/html_template/shell.css
 
@@ -29,11 +30,8 @@ SRC_H=src/colorforth.h \
 wasm/conf.h: conf.tmpl.h
 	cp conf.tmpl.h wasm/conf.h
 	sed -i 's%\(#.*MP_MATH\)%// \1%' wasm/conf.h
-	sed -i 's%\(extern .*init_mp_math_utils\)%// \1%' wasm/conf.h
-	sed -i 's%\(extern .*init_threads_utils\)%// \1%' wasm/conf.h
-	sed -i 's%\(init_ext_math_utils.*;\).*\\%\1%' wasm/conf.h
-	sed -i 's%\(init_mp_math_utils.*;\).*\\%// \1%' wasm/conf.h
-	sed -i 's%\(init_threads_utils\)%// \1%' wasm/conf.h
+	sed -i 's%\(#.*THREADS\)%// \1%' wasm/conf.h
+	sed -i 's%\(#.*NETWORK\)%// \1%' wasm/conf.h
 
 src/lib.cf.h: lib.tmpl.cf
 	cp lib.tmpl.cf lib.cf

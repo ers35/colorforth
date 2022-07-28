@@ -48,6 +48,8 @@ typedef double number_t;
 #define MAX_THREAD 10
 #define MAX_LOCK 10
 
+// NETWORK
+#define __NETWORK
 
 // Various sizes
 #define STACK_SIZE 30
