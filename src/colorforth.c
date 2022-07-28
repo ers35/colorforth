@@ -879,10 +879,11 @@ compile_tick(struct state *s)
   }
 }
 
+#define UNUSED(x) (void)x
 static void
 comment(struct state *s)
 {
-
+  UNUSED(s);
 }
 
 void
