@@ -35,6 +35,6 @@ Example:
 :.??  ^2dup  ~c"    " ^pr  .  ~c" / " ^pr  . ,;
 :check? ^<= ~if ^.OK ~else ^.KO ~then ,;
 
-:?? ~( n -) ^100 random .?? check? cr ,;
+:?? ( n -) ^100 random .?? check? cr ,;
 
 ~rules echo on

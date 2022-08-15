@@ -37,12 +37,12 @@
 
 :next ^dup 2 mod ~if ^odd ~else ^even ~then ,;
 
-:loop ~( n - ) ^record dup 1 = ~if ,; ~then ^next loop ,;
+:loop ( n - ) ^record dup 1 = ~if ,; ~then ^next loop ,;
 
 :init ^N !  -1 n !  0 time-in-alt !  0 max-alt ! ,;
 
 :sy
-:syracuse ~( n - ) ^init  N @ loop  resume ,;
+:syracuse ( n - ) ^init  N @ loop  resume ,;
 
 ~
 " Usage: <N> sy(racuse)" nprn cr
