@@ -1,0 +1,19 @@
+%
+droom cr
+
+"   This is a test" prn
+droom cr
+
+"forget
+droom cr
+
+"   This is another test" prn "forget
+droom cr
+
+"   And another long long long test" prn
+droom cr
+
+"forget
+
+droom
+bye
