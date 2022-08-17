@@ -31,8 +31,10 @@
 :dump-loop ^<getchar> dup emit over = ~nif ^dump-loop ~then ^drop ,;
 :dump-to-char ^swap emit dump-loop yellow! 1 prefix? ! ,;
 
+:done? ^dup eof? ~if ^drop clear! ;;; ~then ,;
+
+:<.char>
 :.char
-   ^dup eof? ~if ^clear! ;;; ~then
    ^string? @ ~if
       ^dup 32 = ~if key " [,] ^magenta! dump-to-char ~else ^emit ~then
       ^0 string? ! ,;
@@ -57,4 +59,4 @@
 
    ^emit ,;
 
-:colorize ^<getchar> .char colorize ,;
+:colorize ^<getchar> done? <.char> colorize ,;
