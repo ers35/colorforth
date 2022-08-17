@@ -26,7 +26,9 @@
 :without-prefix `stop `<stop> ^is ,;
 :with-prefix `nop `<stop> ^is ,;
 
-:dump-loop ^getchar dup emit over = ~nif ^dump-loop ~then ^drop ,;
+:<getchar> ^getchar ,;
+
+:dump-loop ^<getchar> dup emit over = ~nif ^dump-loop ~then ^drop ,;
 :dump-to-char ^swap emit dump-loop yellow! 1 prefix? ! ,;
 
 :.char
@@ -55,4 +57,4 @@
 
    ^emit ,;
 
-:colorize ^getchar .char colorize ,;
+:colorize ^<getchar> .char colorize ,;
