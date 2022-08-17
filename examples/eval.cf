@@ -1,7 +1,7 @@
 %
 :sum ^2 2 + . ,;
 :yes ~c" YES!!!!" ^cr prn ,;
-:add9 ^3 3 + + . ,;
+:add9 ^3 3 * + . ,;
 
 :str ~c" ~sum sum yes 123 add9 222" ,;
 
