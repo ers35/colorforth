@@ -176,3 +176,6 @@
 ( hash )
 :hash" ^" hash ,;
 :.hash" ^base c@  hash" hex cr . cr base c! ,;
+
+( include and require )
+:include" ^" included ,;

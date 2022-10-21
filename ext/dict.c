@@ -47,6 +47,7 @@ see(struct state *s, struct entry *entry)
     }
 
     cf_printf(s, ":%s ", entry->name == NULL ? "???" : entry->name);
+
     for (size_t i = 0; i < maxcode; i++)
     {
       struct entry *entry_ = (struct entry*) entry->code[i].value;
@@ -74,7 +75,7 @@ see(struct state *s, struct entry *entry)
         }
         case OP_TAIL_CALL:
         {
-          cf_printf(s, "%s¬", entry->name == NULL ? "???" : entry_->name);
+          cf_printf(s, "%s¬", entry_->name == NULL ? "???" : entry_->name);
           break;
         }
 
