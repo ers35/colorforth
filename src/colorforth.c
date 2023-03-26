@@ -709,6 +709,77 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_WHEN:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f) {
+          push(s->r_stack, (cell)pc);
+          pc = entry_->code - 1;
+        }
+
+        break;
+      }
+
+      case OP_WHEN_EXIT:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f) {
+          push(s->r_stack, (cell)pc);
+          pc = entry_->code - 1;
+          pop(s->r_stack);
+        }
+
+        break;
+      }
+
+      case OP_UNLESS:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f == 0) {
+          push(s->r_stack, (cell)pc);
+          pc = entry_->code - 1;
+        }
+
+        break;
+      }
+
+      case OP_UNLESS_EXIT:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f == 0) {
+          push(s->r_stack, (cell)pc);
+          pc = entry_->code - 1;
+          pop(s->r_stack);
+        }
+
+        break;
+      }
+
+      case OP_IF_ELSE:
+      {
+        struct entry *entry_false_ = (struct entry*)pop(s->stack);
+        struct entry *entry_true_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        push(s->r_stack, (cell)pc);
+        if (f) {
+          pc = entry_true_->code - 1;
+        }
+        else {
+          pc = entry_false_->code - 1;
+        }
+
+        break;
+      }
+
       case OP_EMIT:
       {
         cf_putchar(s, (char)pop(s->stack));
@@ -1082,6 +1153,11 @@ colorforth_newstate(void)
   define_primitive(state, BRANCH_HASH,            ENTRY_NAME("branch"), OP_BRANCH);
   define_primitive(state, ZBRANCH_HASH,           ENTRY_NAME("0branch"), OP_ZBRANCH);
   define_primitive(state, NBRANCH_HASH,           ENTRY_NAME("nbranch"), OP_NBRANCH);
+  define_primitive(state, WHEN_HASH,              ENTRY_NAME("when"), OP_WHEN);
+  define_primitive(state, WHEN_EXIT_HASH,         ENTRY_NAME("when;"), OP_WHEN_EXIT);
+  define_primitive(state, UNLESS_HASH,            ENTRY_NAME("unless"), OP_UNLESS);
+  define_primitive(state, UNLESS_EXIT_HASH,       ENTRY_NAME("unless;"), OP_UNLESS_EXIT);
+  define_primitive(state, IF_ELSE_HASH,           ENTRY_NAME("if-else"), OP_IF_ELSE);
   define_primitive(state, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
 
   define_primitive(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);

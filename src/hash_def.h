@@ -29,6 +29,11 @@ typedef unsigned long hash_t;
 #define BRANCH_HASH                    (hash_t) 0x652F4BE8DB3
 #define ZBRANCH_HASH                   (hash_t) 0xD0A25F8A8A83
 #define NBRANCH_HASH                   (hash_t) 0xD0B504254141
+#define WHEN_HASH                      (hash_t) 0x17CA01877
+#define WHEN_EXIT_HASH                 (hash_t) 0x3110A32792
+#define UNLESS_HASH                    (hash_t) 0x65320CE139F
+#define UNLESS_EXIT_HASH               (hash_t) 0xD0B73A9087BA
+#define IF_ELSE_HASH                   (hash_t) 0xD0B387B8444A
 #define GET_CVA_HASH                   (hash_t) 0x17C955BBD
 #define BYE_HASH                       (hash_t) 0xB8863C5
 #define WORDS_HASH                     (hash_t) 0x3110A73474

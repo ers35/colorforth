@@ -56,6 +56,11 @@ enum opcode
   OP_BRANCH,
   OP_ZBRANCH,
   OP_NBRANCH,
+  OP_WHEN,
+  OP_WHEN_EXIT,
+  OP_UNLESS,
+  OP_UNLESS_EXIT,
+  OP_IF_ELSE,
   OP_GET_CVA, // Code value address
   // call defined word
   OP_CALL,
