@@ -53,14 +53,23 @@ enum opcode
   OP_CSTORE,
   OP_CELL,
   OP_CODE_LEN,
+
   OP_BRANCH,
   OP_ZBRANCH,
   OP_NBRANCH,
+
   OP_WHEN,
   OP_WHEN_EXIT,
   OP_UNLESS,
   OP_UNLESS_EXIT,
+
+  OP_WHEN_STAR,
+  OP_WHEN_STAR_EXIT,
+  OP_UNLESS_STAR,
+  OP_UNLESS_STAR_EXIT,
+
   OP_IF_ELSE,
+
   OP_GET_CVA, // Code value address
   // call defined word
   OP_CALL,

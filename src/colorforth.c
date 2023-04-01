@@ -763,6 +763,52 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+    case OP_WHEN_STAR:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f) pc = entry_->code - 1;
+
+        break;
+      }
+
+      case OP_WHEN_STAR_EXIT:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f) {
+          pc = entry_->code - 1;
+          pop(s->r_stack);
+        }
+
+        break;
+      }
+
+      case OP_UNLESS_STAR:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f == 0) pc = entry_->code - 1;
+
+        break;
+      }
+
+      case OP_UNLESS_STAR_EXIT:
+      {
+        struct entry *entry_ = (struct entry*)pop(s->stack);
+        const cell f = pop(s->stack);
+
+        if (f == 0) {
+          pc = entry_->code - 1;
+          pop(s->r_stack);
+        }
+
+        break;
+      }
+
       case OP_IF_ELSE:
       {
         struct entry *entry_false_ = (struct entry*)pop(s->stack);
@@ -1150,21 +1196,30 @@ colorforth_newstate(void)
   define_primitive(state, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
   define_primitive(state, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
   define_primitive(state, GET_CVA_HASH,           ENTRY_NAME("cva>"), OP_GET_CVA);
+
   define_primitive(state, BRANCH_HASH,            ENTRY_NAME("branch"), OP_BRANCH);
   define_primitive(state, ZBRANCH_HASH,           ENTRY_NAME("0branch"), OP_ZBRANCH);
   define_primitive(state, NBRANCH_HASH,           ENTRY_NAME("nbranch"), OP_NBRANCH);
+
   define_primitive(state, WHEN_HASH,              ENTRY_NAME("when"), OP_WHEN);
   define_primitive(state, WHEN_EXIT_HASH,         ENTRY_NAME("when;"), OP_WHEN_EXIT);
   define_primitive(state, UNLESS_HASH,            ENTRY_NAME("unless"), OP_UNLESS);
   define_primitive(state, UNLESS_EXIT_HASH,       ENTRY_NAME("unless;"), OP_UNLESS_EXIT);
+
+  define_primitive(state, WHEN_STAR_HASH,         ENTRY_NAME("when*"), OP_WHEN_STAR);
+  define_primitive(state, WHEN_EXIT_STAR_HASH,    ENTRY_NAME("when*;"), OP_WHEN_STAR_EXIT);
+  define_primitive(state, UNLESS_STAR_HASH,       ENTRY_NAME("unless*"), OP_UNLESS_STAR);
+  define_primitive(state, UNLESS_EXIT_STAR_HASH,  ENTRY_NAME("unless*;"), OP_UNLESS_STAR_EXIT);
+
   define_primitive(state, IF_ELSE_HASH,           ENTRY_NAME("if-else"), OP_IF_ELSE);
+
   define_primitive(state, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
 
-  define_primitive(state, RETURN_HASH,    ENTRY_NAME(";"), OP_RETURN);
+  define_primitive(state, RETURN_HASH,            ENTRY_NAME(";"), OP_RETURN);
 
-  define_primitive(state, R_PUSH_HASH,    ENTRY_NAME(">R"), OP_R_PUSH);
-  define_primitive(state, R_POP_HASH,     ENTRY_NAME("R>"), OP_R_POP);
-  define_primitive(state, R_FETCH_HASH,   ENTRY_NAME("R@"), OP_R_FETCH);
+  define_primitive(state, R_PUSH_HASH,            ENTRY_NAME(">R"), OP_R_PUSH);
+  define_primitive(state, R_POP_HASH,             ENTRY_NAME("R>"), OP_R_POP);
+  define_primitive(state, R_FETCH_HASH,           ENTRY_NAME("R@"), OP_R_FETCH);
 
   init_lib(state);
 
