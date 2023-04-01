@@ -41,7 +41,7 @@ wasm/colorforth.html: Makefile.wasm $(SRC) $(SRC_H) $(SRC_WASM)
 	emcc.sh -o wasm/colorforth.html $(SRC) -O3 -s WASM=1 -s NO_EXIT_RUNTIME=1 --shell-file wasm/html_template/shell.html -Isrc -Iext -Iwasm
 
 clean:
-	rm -f colorforth
+	rm -f wasm/colorforth.html wasm/colorforth.wasm
 
 mrproper: clean
 	rm -f conf.h src/lib.cf src/lib.cf.h
