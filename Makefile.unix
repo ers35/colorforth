@@ -77,7 +77,7 @@ cleanelf: colorforth
 	termux-elf-cleaner colorforth
 
 clean:
-	rm -f colorforth
+	rm -f colorforth colorforth-unsafe
 
 mrproper: clean
 	rm -f conf.h src/lib.cf src/lib.cf.h

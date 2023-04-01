@@ -10,6 +10,8 @@ typedef long cell;
 
 
 // Uncomment for a minimal build with only mandatory extensions
+// Build with:
+//   make EXTRA_CFLAGS=-D__MINIMAL_BUILD EXT_SRC=
 // #define __MINIMAL_BUILD
 
 // Unsafe mode: disable stack underflow/overflow check
