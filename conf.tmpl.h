@@ -18,12 +18,12 @@ typedef long cell;
 // Uncomment to display name <-> hash relationship
 // #define __SHOW_MISSING_HASH
 
+// Enable hashed names: reduce memory size but break words/see/disasemble
+#define __KEEP_ENTRY_NAMES
+
 #include "hash_def.h"
 
 #ifndef __MINIMAL_BUILD
-
-// Enable hashed names: reduce memory size but break words/see/disasemble
-#define __KEEP_ENTRY_NAMES
 
 // Enable register variable
 #define __USE_REGISTER
