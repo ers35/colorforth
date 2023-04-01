@@ -57,9 +57,11 @@ room (struct state *s)
   const unsigned int cell_bytes = sizeof(cell);
   const unsigned int cell_bits = sizeof(cell) * 8;
 
+#ifdef __KEEP_ENTRY_NAMES
   cf_printf(s, "Entries: %u/%d %u%%|Heap (bytes): %u/%d %u%%|Cell: %u bytes, %u bits\n",
             defined, DICT_SIZE, (defined*100/DICT_SIZE),
             used, HEAP_SIZE,(used*100/HEAP_SIZE), cell_bytes, cell_bits);
+#endif /* __KEEP_ENTRY_NAMES */
 
   push(s->stack, cell_bits);
   push(s->stack, cell_bytes);
