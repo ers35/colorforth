@@ -320,9 +320,9 @@ define_primitive_generic(struct state *s, struct dictionary *dict,
     entry->name_hash = hash(name);
   }
 
-  entry->name_len = strlen(name);
+  entry->name_len = strlen(NON_NULL(name));
   entry->name = cf_calloc(s, 1, entry->name_len, PRIMITIVE_ERROR);
-  memcpy(entry->name, name, entry->name_len);
+  memcpy(entry->name, NON_NULL(name), entry->name_len);
 #endif
 
 #ifdef __SHOW_MISSING_HASH

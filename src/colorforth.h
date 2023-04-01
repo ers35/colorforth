@@ -26,6 +26,8 @@ extern "C" {
 #define define_register_OP(N) OP_##N##_LOAD, OP_##N##_STORE, OP_##N##_ADD, \
     OP_##N##_INC, OP_##N##_DEC, OP_##N##_R_PUSH, OP_##N##_R_POP
 
+#define NON_NULL(x) ((x) ? (x) : "")
+
 enum opcode
 {
   OP_NOP,
