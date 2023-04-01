@@ -9,10 +9,11 @@ SRC=src/main.c src/colorforth.c \
 	src/color.c \
 	src/lib.c \
 	ext/load-ext.c \
-	ext/os.c \
-	ext/dict.c \
 	ext/io.c \
-	ext/parser.c \
+	ext/parser.c
+
+EXT_SRC=ext/os.c \
+	ext/dict.c \
 	ext/time.c \
 	ext/math.c \
 	ext/ext-math.c \
@@ -43,10 +44,11 @@ src/lib.cf.h: lib.tmpl.cf
 	cp lib.tmpl.cf lib.cf
 	xxd -i lib.cf src/lib.cf.h
 
-colorforth: Makefile $(SRC) $(SRC_H)
-	gcc $(FLAGS) $(EXTRA_CFLAGS) -o colorforth $(SRC) $(EXTRA_CLIBS)
-	gcc -DUNSAFE_MODE=1 $(FLAGS) $(EXTRA_CFLAGS) -o colorforth-unsafe $(SRC) $(EXTRA_CLIBS)
+colorforth: Makefile $(SRC) $(EXT_SRC) $(SRC_H)
+	gcc $(FLAGS) $(EXTRA_CFLAGS) -o colorforth $(SRC) $(EXT_SRC) $(EXTRA_CLIBS)
 
+colorforth-unsafe: Makefile $(SRC) $(SRC_H)
+	gcc -DUNSAFE_MODE=1 $(FLAGS) $(EXTRA_CFLAGS) -o colorforth-unsafe $(SRC) $(EXT_SRC) $(EXTRA_CLIBS)
 
 optimize: colorforth
 	@#readelf -l colorforth
@@ -56,6 +58,14 @@ optimize: colorforth
 	colorforth
 	objcopy -I elf64-x86-64 -O elf64-x86-64 --section-alignment 512 colorforth colorforth
 	@#xcc -std=c99 -Os -Wno-missing-braces -target=XS1-L16A-128-QF124-C10 colorforth.c -o colorforth.xe
+
+optimize-unsafe: colorforth-unsafe
+	@#readelf -l colorforth-unsafe
+	@# required: .gnu.version .gnu.version_r
+	strip --strip-all colorforth-unsafe
+	strip -R.comment -R.note -R.eh_frame_hdr -R.eh_frame -R.note.ABI-tag -R.jcr \
+	colorforth-unsafe
+	objcopy -I elf64-x86-64 -O elf64-x86-64 --section-alignment 512 colorforth-unsafe colorforth-unsafe
 
 dump: colorforth
 	 objdump -d -M intel colorforth | less

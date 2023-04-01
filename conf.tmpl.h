@@ -8,16 +8,22 @@ typedef long cell;
 // Max number of branch in a word
 #define MAXBRANCH 100
 
+
+// Uncomment for a minimal build with only mandatory extensions
+// #define __MINIMAL_BUILD
+
 // Unsafe mode: disable stack underflow/overflow check
 // #define UNSAFE_MODE
-
-// Enable hashed names: reduce memory size but break words/see/disasemble
-#define __KEEP_ENTRY_NAMES
 
 // Uncomment to display name <-> hash relationship
 // #define __SHOW_MISSING_HASH
 
 #include "hash_def.h"
+
+#ifndef __MINIMAL_BUILD
+
+// Enable hashed names: reduce memory size but break words/see/disasemble
+#define __KEEP_ENTRY_NAMES
 
 // Enable register variable
 #define __USE_REGISTER
@@ -33,6 +39,9 @@ typedef long cell;
 
 // Extended math
 #define __EXTENDED_MATH
+
+#endif /* __MINIMAL_BUILD */
+
 
 #define FSTACK_SIZE 30
 typedef double number_t;
