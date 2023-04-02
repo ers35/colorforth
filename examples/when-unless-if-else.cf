@@ -1,0 +1,74 @@
+%
+:true ~c" true " ^pr ,;
+:false ~c" false " ^pr ,;
+:end ~c" end" ^pr ,;
+
+:.f ^dup . ,;
+:nl ~c"  | " ^pr ,;
+
+:test-when ^.f `true ,when  ^end ,;
+:test-unless ^.f `false ,unless ^end ,;
+
+:test-when; ^.f `true ,when;  ^end ,;
+:test-unless; ^.f `false ,unless; ^end ,;
+
+:test-if-else ^.f `true `false ,if-else  ^end ,;
+
+~" ** Basic tests:" ~pr
+cr " when     " pr
+0 test-when nl    1 test-when nl    10 test-when nl    -10 test-when nl
+
+" unless   " npr
+0 test-unless nl   1 test-unless nl   10 test-unless nl   -10 test-unless nl
+
+" when     " npr
+0   test-when; nl   1 test-when; nl   10 test-when; nl   -10 test-when; nl
+
+" unless;  " npr
+0   test-unless; nl   1 test-unless; nl   10 test-unless; nl   -10 test-unless; nl
+
+" if-else  " npr
+0   test-if-else nl   1 test-if-else nl   10 test-if-else nl   -10 test-if-else nl
+
+
+cr cr " ** Tail optimized explanation:"  ~prn
+" use star version when tail call is needed." ~prn
+" For example, this will blow the stack:" ~prn
+
+:go ^1 dup . `go ,when ,;
+'go ~see
+
+~" this version will not:" ~prn
+:go* ^1 dup . `go* ,when* ,;
+'go* ~see
+
+
+cr " ** Macro examples" prn
+:nope ~c" nope | " ^pr ,;
+:A ~c" I'm A | " ^pr ,;
+:B ~c" I'm B | " ^pr ,;
+
+:orNope ^rot . `nope ^if-else ,;
+
+:isA ^dup 2 = `A ,orNope ,;
+:isB ^dup 3 = `B ,orNope ,;
+
+
+~'isA ~see   'isB ~see  cr
+
+~1 isA 2 isA 3 isA cr
+~1 isB 2 isB 3 isB
+
+cr cr " ** Another macro examples" prn
+:isOrNope ^rot dup .  rot = swap `nope ^if-else ,;
+
+:isA ^2 `A ,isOrNope ,;
+:isB ^3 `B ,isOrNope ,;
+
+
+~'isA ~see 'isB ~see  cr
+
+~1 isA 2 isA 3 isA cr
+~1 isB 2 isB 3 isB
+
+bye
