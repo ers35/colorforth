@@ -60,13 +60,13 @@ cr " ** Macro examples" prn
 ~1 isB 2 isB 3 isB
 
 cr cr " ** Another macro examples" prn
-:isOrNope ^rot dup .  rot = swap `nope ^if-else ,;
+:isOrNope  ^rot dup . = swap `nope ^if-else ,;
 
-:isA ^2 `A ,isOrNope ,;
-:isB ^3 `B ,isOrNope ,;
+:isA `A ^2 ,isOrNope ,;
+:isB `B ^3 ,isOrNope ,;
 
 
-~'isA ~see 'isB ~see  cr
+~'isA ~see  'isB ~see  cr
 
 ~1 isA 2 isA 3 isA cr
 ~1 isB 2 isB 3 isB
