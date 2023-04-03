@@ -39,8 +39,8 @@ cr cr " ** Tail optimized explanation:"  ~prn
 'go ~see
 
 ~" this version will not:" ~prn
-:go* ^1 dup . `go* ,when* ,;
-'go* ~see
+:go ^1 dup . `go ,when* ,;
+'go ~see
 
 
 cr " ** Macro examples" prn
