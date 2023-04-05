@@ -204,18 +204,13 @@ patch_entry (struct state *s)
   struct entry *to = (struct entry*)pop(s->stack);
   struct entry *from = (struct entry*)pop(s->stack);
 
-  char is_test = 0;
-
   for (size_t i = 0, done = 0; !done; i++)
   {
     switch(entry->code[i].opcode)
     {
       case OP_RETURN:
       {
-        if (!is_test)
-        {
-          done = 1;
-        }
+        done = 1;
         break;
       }
 
@@ -232,8 +227,6 @@ patch_entry (struct state *s)
       {
       }
     }
-
-    is_test = (entry->code[i].opcode == OP_IF || entry->code[i].opcode == OP_IF_NOT) ? 1 : 0;
   }
 }
 

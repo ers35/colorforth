@@ -90,9 +90,6 @@ enum opcode
 
   /* inlined */
   OP_RETURN,
-  OP_IF,
-  OP_IF_NOT,
-  OP_ELSE,
 
   OP_R_PUSH,
   OP_R_POP,
