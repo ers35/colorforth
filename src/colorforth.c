@@ -711,7 +711,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_WHEN:
+      case OP_IF:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -724,7 +724,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_WHEN_EXIT:
+      case OP_IF_EXIT:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -738,7 +738,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_UNLESS:
+      case OP_IF_NOT:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -751,7 +751,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_UNLESS_EXIT:
+      case OP_IF_NOT_EXIT:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -765,7 +765,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-    case OP_WHEN_STAR:
+    case OP_IF_STAR:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -775,7 +775,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_WHEN_STAR_EXIT:
+      case OP_IF_STAR_EXIT:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -788,7 +788,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_UNLESS_STAR:
+      case OP_IF_NOT_STAR:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -798,7 +798,7 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
-      case OP_UNLESS_STAR_EXIT:
+      case OP_IF_NOT_STAR_EXIT:
       {
         struct entry *entry_ = (struct entry*)pop(s->stack);
         const cell f = pop(s->stack);
@@ -1203,15 +1203,15 @@ colorforth_newstate(void)
   define_primitive(state, ZBRANCH_HASH,           ENTRY_NAME("0branch"), OP_ZBRANCH);
   define_primitive(state, NBRANCH_HASH,           ENTRY_NAME("nbranch"), OP_NBRANCH);
 
-  define_primitive(state, WHEN_HASH,              ENTRY_NAME("when"), OP_WHEN);
-  define_primitive(state, WHEN_EXIT_HASH,         ENTRY_NAME("when;"), OP_WHEN_EXIT);
-  define_primitive(state, UNLESS_HASH,            ENTRY_NAME("unless"), OP_UNLESS);
-  define_primitive(state, UNLESS_EXIT_HASH,       ENTRY_NAME("unless;"), OP_UNLESS_EXIT);
+  define_primitive(state, IF_HASH,                ENTRY_NAME("if"), OP_IF);
+  define_primitive(state, IF_EXIT_HASH,           ENTRY_NAME("if;"), OP_IF_EXIT);
+  define_primitive(state, IF_NOT_HASH,            ENTRY_NAME("if-not"), OP_IF_NOT);
+  define_primitive(state, IF_NOT_EXIT_HASH,       ENTRY_NAME("if-not;"), OP_IF_NOT_EXIT);
 
-  define_primitive(state, WHEN_STAR_HASH,         ENTRY_NAME("when*"), OP_WHEN_STAR);
-  define_primitive(state, WHEN_EXIT_STAR_HASH,    ENTRY_NAME("when*;"), OP_WHEN_STAR_EXIT);
-  define_primitive(state, UNLESS_STAR_HASH,       ENTRY_NAME("unless*"), OP_UNLESS_STAR);
-  define_primitive(state, UNLESS_EXIT_STAR_HASH,  ENTRY_NAME("unless*;"), OP_UNLESS_STAR_EXIT);
+  define_primitive(state, IF_STAR_HASH,           ENTRY_NAME("if*"), OP_IF_STAR);
+  define_primitive(state, IF_EXIT_STAR_HASH,      ENTRY_NAME("if*;"), OP_IF_STAR_EXIT);
+  define_primitive(state, IF_NOT_STAR_HASH,       ENTRY_NAME("if-not*"), OP_IF_NOT_STAR);
+  define_primitive(state, IF_NOT_EXIT_STAR_HASH,  ENTRY_NAME("if-not*;"), OP_IF_NOT_STAR_EXIT);
 
   define_primitive(state, IF_ELSE_HASH,           ENTRY_NAME("if-else"), OP_IF_ELSE);
 

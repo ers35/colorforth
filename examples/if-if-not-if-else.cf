@@ -6,40 +6,40 @@
 :.f ^dup . ,;
 :nl ~c"  | " ^pr ,;
 
-:test-when ^.f `true ,when  ^end ,;
-:test-unless ^.f `false ,unless ^end ,;
+:test-if ^.f `true ,if  ^end ,;
+:test-if-not ^.f `false ,if-not ^end ,;
 
-:test-when; ^.f `true ,when;  ^end ,;
-:test-unless; ^.f `false ,unless; ^end ,;
+:test-if; ^.f `true ,if;  ^end ,;
+:test-if-not; ^.f `false ,if-not; ^end ,;
 
 :test-if-else ^.f `true `false ,if-else  ^end ,;
 
 ~" ** Basic tests:" ~pr
-cr " when     " pr
-0 test-when nl    1 test-when nl    10 test-when nl    -10 test-when nl
+cr " if     " pr
+0 test-if nl    1 test-if nl    10 test-if nl    -10 test-if nl
 
-" unless   " npr
-0 test-unless nl   1 test-unless nl   10 test-unless nl   -10 test-unless nl
+" if-not   " npr
+0 test-if-not nl   1 test-if-not nl   10 test-if-not nl   -10 test-if-not nl
 
-" when     " npr
-0   test-when; nl   1 test-when; nl   10 test-when; nl   -10 test-when; nl
+" if     " npr
+0   test-if; nl   1 test-if; nl   10 test-if; nl   -10 test-if; nl
 
-" unless;  " npr
-0   test-unless; nl   1 test-unless; nl   10 test-unless; nl   -10 test-unless; nl
+" if-not;  " npr
+0   test-if-not; nl   1 test-if-not; nl   10 test-if-not; nl   -10 test-if-not; nl
 
 " if-else  " npr
 0   test-if-else nl   1 test-if-else nl   10 test-if-else nl   -10 test-if-else nl
 
 
 cr cr " ** Tail optimized explanation:"  ~prn
-" use star version when tail call is needed." ~prn
+" use star version if tail call is needed." ~prn
 " For example, this will blow the stack:" ~prn
 
-:go ^1 dup . `go ,when ,;
+:go ^1 dup . `go ,if ,;
 'go ~see
 
 ~" this version will not:" ~prn
-:go ^1 dup . `go ,when* ,;
+:go ^1 dup . `go ,if* ,;
 'go ~see
 
 
