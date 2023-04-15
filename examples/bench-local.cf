@@ -6,64 +6,59 @@
 
 :v1 ~0 variable ,;
 :v-inc ^v1 @ 1+ v1 ! ,;
-:loop ^v-inc -done?; loop ,;
+:loop ^v-inc 1- dup `loop ,if* ^drop ,;
 
 :test ^nb loop v1 @ . ,;
 ~
 test
 tm time/end
 
-
 ~" * register load/store" ~nprn
 :tm ~time/start ,;
 
 :v-inc ^A@ 1+ A! ,;
-:loop ^v-inc -done?; loop ,;
+:loop ^v-inc 1- dup `loop ,if* ^drop ,;
 
 :test ^0 A! nb loop A@ . ,;
 ~
 test
 tm time/end
-
 
 ~" * register add" ~nprn
 :tm ~time/start ,;
 :v-inc ^1 A+! ,;
-:loop ^v-inc -done?; loop ,;
+:loop ^v-inc 1- dup `loop ,if* ^drop ,;
 
 :test ^0 A! nb loop A@ . ,;
 ~
 test
 tm time/end
-
 
 ~" * register inc" ~nprn
 :tm ~time/start ,;
 
 :v-inc ,A++ ,;
-:loop ^v-inc -done?; loop ,;
+:loop ^v-inc 1- dup `loop ,if* ^drop ,;
 
 :test ^0 A! nb loop A@ . ,;
 ~
 test
 tm time/end
 
-
 ~" * inline register inc" ~nprn
 :tm ~time/start ,;
 
-:loop ,v-inc ^-done?; loop ,;
+:loop ,v-inc ^1- dup `loop ,if* ^drop ,;
 
 :test ^0 ,A! ^nb loop ,A@ ^. ,;
 ~
 test
 tm time/end
 
-
-~" * inline  -done?;" ~nprn
+~" * inline  1 -" ~nprn
 :tm ~time/start ,;
 
-:loop ,v-inc ^1 - dup ~if ^loop ~then ,;
+:loop ,v-inc ^1 - dup `loop ,if* ^drop ,;
 
 :test ^0 ,A! ^nb loop ,A@ ^. ,;
 ~
@@ -74,18 +69,17 @@ tm time/end
 ~" * second register for counter" ~nprn
 :tm ~time/start ,;
 
-:loop ,v-inc B-- B@ ~if ^loop ~then ,;
+:loop ,v-inc B-- B@ `loop ,if* ,;
 
 :test ^0 ,A! ^nb ,B! ^loop ,A@ ^. ,;
 ~
 test
 tm time/end
 
-
-~" * inline register manually (same as above normally)" ~nprn
+~" * inline register manually" ~nprn
 :tm ~time/start ,;
 
-:loop ,A++ B-- B@ ~if ^loop ~then ,;
+:loop ,A++ B-- B@ `loop ,if* ,;
 
 :test ^0 ,A! ^nb ,B! ^loop ,A@ ^. ,;
 ~
