@@ -6,8 +6,8 @@
 :test-yes ^yes ,;
 :test-no  ^no  ,;
 
-:choose-yes ^1 ~if ^yes ~else ^no ~then ^done ,;
-:choose-no  ^0 ~if ^yes ~else ^no ~then ^done ,;
+:choose-yes ^1 `yes `no ,if-else ^done ,;
+:choose-no  ^0 `yes `no ,if-else ^done ,;
 
 'choose-yes ~see
 
@@ -16,13 +16,5 @@
 " -----" prn
 
 choose-yes  choose-no
-
-" =========" prn
-
-:choose-lit-yes ^1 ~if ^2 ~else ^3 ~then ^.s done ,;
-:choose-lit-no  ^0 ~if ^2 ~else ^3 ~then ^.s done ,;
-
-~choose-lit-yes
-~choose-lit-no
 
 bye
