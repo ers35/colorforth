@@ -1,0 +1,25 @@
+%
+:wa ^2 2 + 3 - . ,;
+:wb ^3 3 + 4 - . ,;
+:wc ^4 4 + 5 - . ,;
+
+:wx ^4 5 + . ,;
+
+:test ^wa wb wc wa wa wb wb wc cr ,;
+
+~
+'test ~see test
+
+'wa 'wx 'test ~entry/patch cr
+'test ~see test
+
+'wx 'wa 'test ~entry/patch cr
+'test ~see test
+
+'wb 'wx 'test ~entry/patch cr
+'test ~see test
+
+'wc 'wx 'test ~entry/patch cr
+'test ~see test
+
+bye
