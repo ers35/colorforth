@@ -1,22 +1,21 @@
 %
 \ Convert the template in expected.txt with numbers in numbers.txt
 
-:.spaces; ~c"       " ^pr ,;; ,;
-:cr; ^cr ,;; ,;
+:.spaces ~c"       " ^pr ,;
 
 :expected ~" expected.txt" aload variable ,;
 :number ~" numbers.txt" aload  cell + variable ,;
 
 :.number ^number @ c@ emit  number 1+! ,;
-:.numbers ^.number -done?; .numbers ,;
+:.numbers ^.number 1- dup `.numbers ,if* ^drop ,;
 
 :nemit ^
-   dup 32 = when .spaces;
-   dup 10 = when cr;
+   dup 32 = `.spaces ,if; ^
+   dup 10 = `cr ,if; ^
    6 .numbers ,;
 
 :treat ^expected @ c@ nemit drop  expected 1+! ,;
-:loop ^treat -done?; loop ,;
+:loop ^treat 1- dup `loop ,if* ^drop ,;
 
 :go ^
    expected @ @   expected cell+!

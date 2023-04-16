@@ -3,19 +3,19 @@
 
 :star ~key # [,] ^emit ,;
 
-:stars  ^star  -done?;  stars ,;
-:lines  ^cr    -done?;  lines ,;
+:stars  ^star  1- dup `stars ,if* ^drop ,;
+:lines  ^cr    1- dup  `lines ,if* ^drop ,;
 
 :.lines ^40 - lines ,;
 :.spaces ^20 - spaces ,;
 
 :print ^
-  dup 60 > ~if ,; ~then ^
-  dup 40 > ~if ^.lines ,; ~then ^
-  dup 20 > ~if ^.spaces ,; ~then ^
+  dup 60 > `nop     ,if; ^
+  dup 40 > `.lines  ,if; ^
+  dup 20 > `.spaces ,if; ^
   stars ,;
 
-:00 ^swap print -done?;  00 ,;
+:00 ^swap print 1- dup `00 ,if* ^drop ,;
 
 
 ~
