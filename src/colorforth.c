@@ -105,14 +105,16 @@ cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned char id)
 hash_t
 hash(char *str)
 {
-  if (!str) return 0;
+  hash_t h = 0x12345678;
 
-  hash_t hash = 5381;
-  int c;
-
-  while ((c = *str++)) hash = ((hash << 5) + hash) + c;
-
-  return hash;
+  // One-byte-at-a-time hash based on Murmur's mix
+  // Source: https://github.com/aappleby/smhasher/blob/master/src/Hashes.cpp
+  for (; *str; ++str) {
+    h ^= *str;
+    h *= 0x5bd1e995;
+    h ^= h >> 15;
+  }
+  return h;
 }
 
 void
