@@ -12,6 +12,8 @@ typedef unsigned long hash_t;
 // Define __SHOW_MISSING_HASH in conf.h to display name <-> hash relationship
 //
 // Use `.hash" <string to hash>"` to find them in colorForth
+
+// <-- BEGIN AUTOGEN PART -->
 #define NOP_HASH                       (hash_t) 0xB889592
 #define PRINT_TOS_HASH                 (hash_t) 0x2B5D3
 #define DUP_HASH                       (hash_t) 0xB886BCE
@@ -238,5 +240,7 @@ typedef unsigned long hash_t;
 #define SOCKET_SEND_HASH               (hash_t) 0xC0D1B4F8D1074A65
 #define SOCKET_SEND_CHAR_HASH          (hash_t) 0x106927251A24F110
 #define SOCKET_RECV_HASH               (hash_t) 0xC0D1B4F8D106BCAB
+
+// <-- END AUTOGEN PART -->
 
 #endif /* __HASH_DEF_64 */

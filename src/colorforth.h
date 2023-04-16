@@ -215,6 +215,8 @@ struct prefix_map
 
 extern struct prefix_map prefix_map[];
 
+extern hash_t hash(char *str);
+
 extern void cf_print_cell(struct state *state, cell cell);
 
 extern void push(struct stack *stack, const cell n);

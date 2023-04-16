@@ -33,6 +33,11 @@ parse_command_line(struct state *state, int argc, char *argv[])
 int
 main(int argc, char *argv[])
 {
+   if (argc ==3 && memcmp(argv[1], "--hash", 2) == 0) {
+     printf("0x%lX", hash(argv[2]));
+     return 0;
+   }
+
   init_terminal();
 
   struct state *state = colorforth_newstate();
