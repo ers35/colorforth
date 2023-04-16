@@ -25,9 +25,13 @@ build_reg() {
 
 OUTFILE=hash_def-tmp.h
 
+echo "Ensure last hash version"
+make
+
 awk 'BEGIN{p=1} p==1 {print $0} /BEGIN AUTOGEN PART/ {p=0}' src/hash_def.h > $OUTFILE
 
 for f in $(grep -rl define_primitive src/*.c ext/*.c); do
+  echo "Parsing: $f"
   printf "\n// $f\n" >> $OUTFILE
 
   grep -r define_primitive $f | awk '/HASH/ && !/##/ {print $2" "$3}' | while read -r hash_def name; do
@@ -58,3 +62,6 @@ done
 awk 'BEGIN{p=0} /END AUTOGEN PART/ {p=1} p==1 {print $0}' src/hash_def.h >> $OUTFILE
 
 mv $OUTFILE src/hash_def.h
+
+echo "Rebuilding with new hash definitions"
+make
