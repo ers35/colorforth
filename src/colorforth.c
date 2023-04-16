@@ -307,7 +307,18 @@ define_primitive_generic(struct state *s, struct dictionary *dict,
                          hash_t hashed_name, char name[] __attribute__((unused)),
                          const enum opcode opcode, void (*fn)(struct state *s))
 {
-  if (hashed_name && find_entry_by_hash(dict, hashed_name)) cf_fatal_error(s, DUPLICATE_HASH_ERROR);
+  if (hashed_name)
+  {
+    struct entry *found_entry = find_entry_by_hash(dict, hashed_name);
+    if (found_entry)
+    {
+#ifdef __KEEP_ENTRY_NAMES
+      cf_printf(s, "'%s' clash with '%s'\n", name, found_entry->name);
+#endif /* __KEEP_ENTRY_NAMES */
+
+      cf_fatal_error(s, DUPLICATE_HASH_ERROR);
+    }
+  }
 
   dict->latest++;
   struct entry *entry = dict->latest;
