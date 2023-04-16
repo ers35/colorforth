@@ -1,11 +1,5 @@
 ~require-os require-dict require-io require-parser require-time require-math
 
-:do `I>R ^[`] `I! ^[`] ^here @ ,;
-:for ,do `I-- ^[`] ,;
-:next `I@ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
-:?loop `I@ ^[`] `- ^[`] `I++ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
-:+?loop `I@ ^[`] `- ^[`] `swap ^[`] `I+! ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
-
 (One line comment)
 :\ ^key 10 = `\ ,if-not* ,;
 

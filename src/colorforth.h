@@ -56,10 +56,6 @@ enum opcode
   OP_CELL,
   OP_CODE_LEN,
 
-  OP_BRANCH,
-  OP_ZBRANCH,
-  OP_NBRANCH,
-
   OP_IF,
   OP_IF_EXIT,
   OP_IF_NOT,

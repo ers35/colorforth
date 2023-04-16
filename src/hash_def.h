@@ -48,9 +48,6 @@ typedef unsigned long hash_t;
 #define GET_ENTRY_CODE_HASH            (hash_t) 0x349734B66EE516ED        // code>
 #define EXECUTE_HASH                   (hash_t) 0x16ECB1185CE6CF7D        // execute
 #define GET_CVA_HASH                   (hash_t) 0x7F76FB8CC9A1FC19        // cva>
-#define BRANCH_HASH                    (hash_t) 0xA5AA826E0EAAC82D        // branch
-#define ZBRANCH_HASH                   (hash_t) 0x2235384E16532903        // 0branch
-#define NBRANCH_HASH                   (hash_t) 0xE44C301ECA3FEAB7        // nbranch
 #define IF_HASH                        (hash_t) 0xB7355B43DE5A4FF8        // if
 #define IF_EXIT_HASH                   (hash_t) 0xD4902CD507B7FFC8        // if;
 #define IF_NOT_HASH                    (hash_t) 0x944A67FD6A77B88B        // if-not

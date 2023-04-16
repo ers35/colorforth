@@ -12,76 +12,44 @@ see(struct state *s, struct entry *entry)
 #ifdef __KEEP_ENTRY_NAMES
   if (entry)
   {
+    char display_next_sc = 0;
+
     if (!entry->code)
     {
       cf_printf(s, "<empty>\n");
       return;
     }
 
-    cell branches[MAXBRANCH];
-    int currentbranch = 0;
-    int forwardbranch = 0;
-    size_t maxcode = 0;
-    for (size_t i = 0; ; i++)
-    {
-      for (int j = 0; j < currentbranch; j++)
-      {
-        if ((cell)&entry->code[i] == branches[j])
-        {
-          forwardbranch -= 1;
-        }
-      }
-
-      if (entry->code[i].opcode == OP_RETURN && forwardbranch == 0)
-      {
-        maxcode = i + 1;
-        break;
-      }
-
-      if (entry->code[i].opcode == OP_BRANCH || entry->code[i].opcode == OP_ZBRANCH || entry->code[i].opcode == OP_NBRANCH)
-      {
-        branches[currentbranch] = entry->code[i].value;
-        currentbranch += 1;
-        if ((cell)&entry->code[i] < entry->code[i].value) forwardbranch += 1;
-      }
-    }
-
     cf_printf(s, ":%s ", entry->name == NULL ? "???" : entry->name);
-
-    for (size_t i = 0; i < maxcode; i++)
+    for (size_t i = 0, done = 0; !done; i++)
     {
       struct entry *entry_ = (struct entry*) entry->code[i].value;
-
-      for (int j = 0; j < currentbranch; j++)
-      {
-        if (branches[j] == (cell)&entry->code[i])
-        {
-          cf_printf(s, "<%d> ", j+1);
-        }
-      }
-
       switch(entry->code[i].opcode)
       {
         case OP_RETURN:
         {
-          cf_printf(s, ";");
+          cf_printf(s, "; ");
+          if (!display_next_sc)
+          {
+            done = 1;
+          }
           break;
         }
 
         case OP_CALL:
         {
-          cf_printf(s, "%s", entry_->name == NULL ? "???" : entry_->name);
+          cf_printf(s, "%s ", entry_->name == NULL ? "???" : entry_->name);
           break;
         }
         case OP_TAIL_CALL:
         {
-          cf_printf(s, "%s¬", entry_->name == NULL ? "???" : entry_->name);
+          cf_printf(s, "%s¬ ", entry->name == NULL ? "???" : entry_->name);
           break;
         }
 
         case OP_TICK_NUMBER:
         {
-          cf_printf(s, "`%s", entry_->name);
+          cf_printf(s, "`%s ", entry_->name);
           break;
         }
 
@@ -96,7 +64,7 @@ see(struct state *s, struct entry *entry)
           struct entry *entry_by_fn = find_entry_by_fn(&s->dict, &entry->code[i]);
           if (entry_by_fn)
           {
-            cf_printf(s, "%s", entry_by_fn->name);
+            cf_printf(s, "%s ", entry_by_fn->name);
           }
           else
           {
@@ -110,7 +78,7 @@ see(struct state *s, struct entry *entry)
           struct entry *entry_by_code = find_entry_by_code(&s->dict, &entry->code[i]);
           if (entry_by_code)
           {
-            cf_printf(s, "%s", entry_by_code->name);
+            cf_printf(s, "%s ", entry_by_code->name);
           }
           else
           {
@@ -119,18 +87,7 @@ see(struct state *s, struct entry *entry)
         }
       }
 
-      if (entry->code[i].opcode == OP_BRANCH || entry->code[i].opcode == OP_ZBRANCH || entry->code[i].opcode == OP_NBRANCH)
-      {
-        for (int j = 0; j < currentbranch; j++)
-        {
-          if (branches[j] == entry->code[i].value)
-          {
-            cf_printf(s, "<%d>", j+1);
-          }
-        }
-      }
-
-      cf_printf(s, " ");
+      display_next_sc = (entry->code[i].opcode == OP_IF || entry->code[i].opcode == OP_IF_NOT) ? 1 : 0;
     }
     cf_printf(s, "\n");
   }
