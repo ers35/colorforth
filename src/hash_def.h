@@ -77,6 +77,7 @@ typedef unsigned long hash_t;
 #define DISASSEMBLE_HASH               (hash_t) 0xC07F2D5B2CDA32F1        // disassemble
 #define FULLROOM_HASH                  (hash_t) 0x1AE70BD01BC455          // fullroom
 #define ENTRY__PATCH_HASH              (hash_t) 0xC08573511B46B7F6        // entry/patch
+#define CHECK_DICT_HASH                (hash_t) 0x727049B5100F4E94        // check-dict
 
 // ext/ext-math.c
 #define FLOAT_HASH                     (hash_t) 0x310F71E19B              // float

@@ -30,6 +30,9 @@ typedef long cell;
 // Enable register variable
 #define __USE_REGISTER
 
+// Enable dictionary clash check
+#define __CHECK_DICT
+
 // Enable colors in the terminal
 #define __ECHO_COLOR
 

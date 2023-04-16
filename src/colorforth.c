@@ -16,6 +16,11 @@
 
 extern void load_extensions(struct state *state);
 
+#ifdef __CHECK_DICT
+extern char check_entry(struct state *s, struct entry *check_entry);
+extern void display_clash_found(struct state *s, char clash_found);
+#endif /* __CHECK_DICT */
+
 struct prefix_map prefix_map[MAX_PREFIX];
 
 #define define_register(N)                                              \
@@ -400,6 +405,10 @@ define_generic(struct state *s, struct dictionary *dict)
   entry->name_len = s->tib.len;
   entry->name = cf_calloc(s, 1, entry->name_len, DEFINE_ERROR);
   memcpy(entry->name, s->tib.buf, s->tib.len);
+
+#ifdef __CHECK_DICT
+  if (check_entry(s, entry)) display_clash_found(s, 1);
+#endif /* __CHECK_DICT */
 #endif
 
   entry->code = s->here;

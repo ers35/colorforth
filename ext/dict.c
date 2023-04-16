@@ -187,6 +187,59 @@ patch_entry (struct state *s)
   }
 }
 
+#ifdef __CHECK_DICT
+#ifdef __KEEP_ENTRY_NAMES
+char
+check_entry(struct state *s, struct entry *check_entry)
+{
+  char clash_found = 0;
+
+  for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
+  {
+    if (entry->name_len == 0) continue;
+
+    if (entry->name_hash == check_entry->name_hash &&
+        entry->name_len == check_entry->name_len &&
+        memcmp(entry->name, check_entry->name, entry->name_len))
+    {
+      clash_found = 1;
+      cf_printf(s, "'%s'  0x%lX clash with '%s'  0x%lX\n", entry->name, entry->name_hash, check_entry->name, check_entry->name_hash);
+    }
+  }
+
+  return clash_found;
+}
+
+void
+display_clash_found(struct state *s, char clash_found)
+{
+  if (clash_found)
+  {
+    cf_printf(s, "\nWARNING: Clash found in the dictionary\n");
+  }
+  else
+  {
+    cf_printf(s, "No clash found in the dictionary\n");
+  }
+}
+
+void
+check_dict(struct state *s)
+{
+  char clash_found = 0;
+
+  for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
+  {
+    if (entry->name_len == 0) continue;
+
+    if (check_entry(s, entry)) clash_found = 1;
+  }
+
+  display_clash_found(s, clash_found);
+}
+#endif /* __KEEP_ENTRY_NAMES */
+#endif /* __CHECK_DICT */
+
 void
 require_dict_fn(struct state *state)
 {
@@ -196,6 +249,12 @@ require_dict_fn(struct state *state)
   define_primitive_extension(state, DISASSEMBLE_HASH,   ENTRY_NAME("disassemble"), disassemble);
   define_primitive_extension(state, FULLROOM_HASH,      ENTRY_NAME("fullroom"), fullroom);
   define_primitive_extension(state, ENTRY__PATCH_HASH, ENTRY_NAME("entry/patch"), patch_entry);
+
+#ifdef __CHECK_DICT
+#ifdef __KEEP_ENTRY_NAMES
+  define_primitive_extension(state, CHECK_DICT_HASH, ENTRY_NAME("check-dict"), check_dict);
+#endif /* __KEEP_ENTRY_NAMES */
+#endif /* __CHECK_DICT */
 
   initialized = 1;
 }
