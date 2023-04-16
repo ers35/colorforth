@@ -1,5 +1,5 @@
 %
-\ Usage: colorforth drod.cf levels/level-1.cf -e run
+\ Usage: colorforth drod.cf levels/level-1.cf
 
 :c>! ^code> >! ,;
 
@@ -21,9 +21,9 @@
 
 :<world-h> ,; :<world-v> ,;
 
-:world-loop-h ^I@ J@ <world-h> I++  I@ width @ < when world-loop-h ,;
-:world-loop-v ^0 I! world-loop-h <world-v> J++ J@ height @ < when world-loop-v ,;
-:world-loop ^I>R J>R 0 J! world-loop-v R>J R>I ,;
+:world-loop-h ^I@ J@ <world-h> I++  I@ width @ < `world-loop-h ,if* ,;
+:world-loop-v ^0 I! world-loop-h <world-v> J++ J@ height @ < `world-loop-v ,if* ,;
+:world-loop  ,I>R J>R ^0 J! world-loop-v ,R>J R>I ,;
 
 :esc ^27 emit ,;
 :cls ^esc ~c" [2J" ^pr ,;
@@ -77,45 +77,45 @@
 
 
 :turn ^player dir @ + 8 mod player dir ! ,;
-:turn-left; ^-1 turn ,;; ,;
-:turn-right; ^1 turn ,;; ,;
+:turn-left ^-1 turn ,;
+:turn-right ^1 turn ,;
 
 :player-x! ^player x ! ,;
 :player-y! ^player y ! ,;
 
 :valid? ^static-world@ 0 = ,;
 
-:move-x ^player x @ + width  @ mod   dup player y @  valid? if player-x! else drop ,;
-:move-y ^player y @ + height @ mod   player x @ over valid? if player-y! else drop ,;
+:move-x ^player x @ + width  @ mod   dup player y @  valid? `player-x! drop ,if-else ,;
+:move-y ^player y @ + height @ mod   player x @ over valid? `player-y! drop ,if-else ,;
 
-:move-left;  ^-1 move-x ,;; ,;
-:move-right; ^ 1 move-x ,;; ,;
-:move-down;  ^ 1 move-y ,;; ,;
-:move-up;    ^-1 move-y ,;; ,;
+:move-left  ^-1 move-x ,;
+:move-right ^ 1 move-x ,;
+:move-down  ^ 1 move-y ,;
+:move-up    ^-1 move-y ,;
 
-:move-up-left;    ^-1 move-x  -1 move-y ,;; ,;
-:move-up-right;   ^ 1 move-x  -1 move-y ,;; ,;
-:move-down-left;  ^-1 move-x   1 move-y ,;; ,;
-:move-down-right; ^ 1 move-x   1 move-y ,;; ,;
+:move-up-left    ^-1 move-x  -1 move-y ,;
+:move-up-right   ^ 1 move-x  -1 move-y ,;
+:move-down-left  ^-1 move-x   1 move-y ,;
+:move-down-right ^ 1 move-x   1 move-y ,;
 
 :move ^
-   dup ~key s [,] ^= when turn-left;
-   dup ~key * [,] ^= when turn-left;
-   dup ~key d [,] ^= when turn-right;
-   dup ~key / [,] ^= when turn-right;
-   dup ~key 4 [,] ^= when move-left;
-   dup ~key 6 [,] ^= when move-right;
-   dup ~key 2 [,] ^= when move-down;
-   dup ~key 8 [,] ^= when move-up;
-   dup ~key 7 [,] ^= when move-up-left;
-   dup ~key 9 [,] ^= when move-up-right;
-   dup ~key 1 [,] ^= when move-down-left;
-   dup ~key 3 [,] ^= when move-down-right;
-   dup 27 = when bye
+   dup ~key s [,] ^= `turn-left ,if; ^
+   dup ~key * [,] ^= `turn-left ,if; ^
+   dup ~key d [,] ^= `turn-right ,if; ^
+   dup ~key / [,] ^= `turn-right ,if; ^
+   dup ~key 4 [,] ^= `move-left ,if; ^
+   dup ~key 6 [,] ^= `move-right ,if; ^
+   dup ~key 2 [,] ^= `move-down ,if; ^
+   dup ~key 8 [,] ^= `move-up ,if; ^
+   dup ~key 7 [,] ^= `move-up-left ,if; ^
+   dup ~key 9 [,] ^= `move-up-right ,if; ^
+   dup ~key 1 [,] ^= `move-down-left ,if; ^
+   dup ~key 3 [,] ^= `move-down-right ,if; ^
+   dup 27 = `bye ,if
 ;
 
-:run ^render-world .world  key move drop run ,;
-
+:game-loop ^render-world .world  key move drop game-loop ,;
+:run ^cls game-loop ,;
 
 ~\ Patterns
 :world-ox ~0 variable ,;
@@ -133,8 +133,8 @@
 :* ^2 world!! ,; ~\ TODO: enemy
 :P ^world-x @ player x !   world-y @ player y ! ,;
 
-:.s ( n -) ^. 1- dup when .s drop ,;
-:h-+ ( n -) ^+   1- dup when h-+ drop ,;
-:v-+ ( n -) ^+ / 1- dup when v-+ drop ,;
+:.s ( n -) ^. 1- dup `.s ,if* ^drop ,;
+:h-+ ( n -) ^+   1- dup `h-+ ,if* ^drop ,;
+:v-+ ( n -) ^+ / 1- dup `v-+ ,if* ^drop ,;
 
-~cls
+~" Launch the game with `run`" ~prn
