@@ -1,7 +1,9 @@
+%
 ~\ Hash clash checker
 ~\ Usage:
 ~\   cf examples/hash-clash.cf | cf
-~\ For long words, increase DICT_SIZE to 4000000 and disable __LIVE_CHECK_DICT in conf.h
+~\ For long words, increase DICT_SIZE to 4000000
+~\ and disable __LIVE_CHECK_DICT and __ECHO_COLOR in conf.h
 
 " abcdefghijklmnopqrstuvwxyz+-*/@!$?" dup
 :len ~@ constant ,;
@@ -19,16 +21,16 @@
 
 :l4 ^.d .3 cr  3 ++ ,;
 
-~\ :l3 ^.d .2 cr   len `l4 ^times   3 rz  2 ++ ,;
+~\ :l3 ^.d .2 cr   `l4 ^len times   3 rz  2 ++ ,;
 :l3 ^.d .2 cr  2 ++ ,;
 
-:l2 ^.d .1 cr   len `l3 ^times   2 rz  1 ++ ,;
+:l2 ^.d .1 cr   `l3 ^len times   2 rz  1 ++ ,;
 ~\ :l2 ^.d .1 cr  1 ++ ,;
 
-:l1 ^.d .0 cr   len `l2 ^times   1 rz  0 ++ ,;
+:l1 ^.d .0 cr   `l2 ^len times   1 rz  0 ++ ,;
 ~\ :l1 ^.d .0 cr  0 ++ ,;
 
-:main ^len `l1 ^times ,;
+:main `l1 ^len times ,;
 ~
 main
 
