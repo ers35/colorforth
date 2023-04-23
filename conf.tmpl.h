@@ -5,10 +5,6 @@
 typedef long cell;
 #define CELL_FMT "%ld"
 
-// Max number of branch in a word
-#define MAXBRANCH 100
-
-
 // Uncomment for a minimal build with only mandatory extensions
 // Build with:
 //   make EXTRA_CFLAGS=-D__MINIMAL_BUILD EXT_SRC=
