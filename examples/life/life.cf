@@ -29,8 +29,8 @@
 
 :world ~w h * 2 * dalloc [,] ,;
 :world# ^h mod row  swap w mod + world + ,;
-:world! ( n x y - ) ^world# n-world @ size * + c! ,;
-:world@ ( x y ) ^world# 1 n-world @ - size * + c@ ,;
+:world! ~( n x y - ) ^world# n-world @ size * + c! ,;
+:world@ ~( x y ) ^world# 1 n-world @ - size * + c@ ,;
 
 :<world-h> ,; :<world-v> ,;
 
@@ -45,7 +45,7 @@
 
 :.star  ^star-color ~key * [,] ^emit ,;
 :.blank ^blank-color ~key . [,] ^emit ,;
-:.cell ( x y - ) ^world@ `.star .blank ,if-else ,;
+:.cell ~( x y - ) ^world@ `.star .blank ,if-else ,;
 
 :.world ^at-00
   `.cell `<world-h> ^is   `cr `<world-v> ^is
@@ -55,7 +55,7 @@
 
 :cls ^esc ~c" [2J" ^pr .world ,;
 
-:sum-neighbor ( x y - n ) ^
+:sum-neighbor ~( x y - n ) ^
    ,I>R J>R   J! I! ^
    ,I@ ^1- ,J@ ^1- world@     ,I@ J@ ^1- world@ +   ,I@ ^1+ ,J@ ^1- world@ +
    ,I@ ^1- ,J@ ^   world@ +                         ,I@ ^1+ ,J@ ^   world@ +
@@ -63,9 +63,9 @@
    ,R>J R>I ,;
 
 :*1 ^1 ,; :*0 ^0 ,;
-:apply-alive ( n - ) ^dup 2 = swap 3 = or `*1 *0 ,if-else ,;
-:apply-dead ( n - ) ^3 = `*1 *0 ,if-else  ,;
-:apply ( x y - ) ^
+:apply-alive ~( n - ) ^dup 2 = swap 3 = or `*1 *0 ,if-else ,;
+:apply-dead ~( n - ) ^3 = `*1 *0 ,if-else  ,;
+:apply ~( x y - ) ^
    2dup 2dup sum-neighbor -rot
    world@ `apply-alive apply-dead ,if-else ^
    -rot world! ,;
@@ -77,7 +77,7 @@
 :g ^gen flip .world delay @  mssleep ,;
 
 :gg
-:gens ( n -- ) ^g 1- dup `gens ,if* ^drop cls ,;
+:gens ~( n -- ) ^g 1- dup `gens ,if* ^drop cls ,;
 
 :life ^flip cls echo on help ,;
 
@@ -87,11 +87,11 @@
 :y ~0 variable ,;
 
 :ox! ^x @ ox ! ,;
-:at ( x y - ) ^y ! x ! ox! ,;
+:at ~( x y - ) ^y ! x ! ox! ,;
 :world!! ^x @ y @ world! x 1+! ,;
 :* ^1 world!! ,;
 :. ^0 world!! ,;
-:.s ( n -) ^. 1- dup `.s ,if* ^drop ,;
+:.s ~( n -) ^. 1- dup `.s ,if* ^drop ,;
 :/ ^ox @ x !  y 1+! ,;
 
 :blinker ^* * * ,;

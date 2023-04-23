@@ -4,7 +4,7 @@
 
 :identify ^A@ 2 * spaces ~c" thread: " ^pr A@ . ~c" , I = " ^pr I@ .  cr ,;
 :count ^identify B@ mssleep I--  I@ `count ,if* ,;
-:thread ( n ms id) ^A! B! I!  ~c" Starting: " ^pr identify count ,;
+:thread ~( n ms id) ^A! B! I!  ~c" Starting: " ^pr identify count ,;
 
 :th1 ^10 500 1 thread ,;
 :th2 ^20 100 2 thread ,;

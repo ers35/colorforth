@@ -1,9 +1,12 @@
 ~require-os require-dict require-io require-parser require-time require-math
 
-(One line comment)
 :\ ^key 10 = `\ ,if-not* ,;
+~\ One line comment
 
-( boolean constant )
+:( ^key ~key ) [,] ^= `( ,if-not* ,;
+~( multilines comment )
+
+~( boolean constant )
 :true   ^1 ,;
 :false  ^0 ,;
 
@@ -17,7 +20,7 @@
 
 :% ^echo off ,;
 
-( helper words )
+~( helper words )
 :2dup ^over over ,;
 :2drop ^drop drop ,;
 
@@ -36,21 +39,21 @@
 
 :noname> ^here @ ,;
 
-( loop )
-:times-loop ( xt n - ) ^1- over execute dup `times-loop ,if* ,;
-:times ( ent n - ) ^swap code> swap
-:ctimes ( xt n - ) ^times-loop 2drop ,;
+~( loop )
+:times-loop ~( xt n - ) ^1- over execute dup `times-loop ,if* ,;
+:times ~( ent n - ) ^swap code> swap
+:ctimes ~( xt n - ) ^times-loop 2drop ,;
 'times-loop ~entry/hide
 
-( rendering )
+~( rendering )
 :cr ^10 emit ,;
 :tab ^9 emit ,;
 :space ^32 emit ,;
 :spaces ^space 1- dup `spaces ,if* ^drop ,;
 
-( dump word )
+~( dump word )
 :emit. ^ drop 46 emit ,;
-:v-emit ( c - ) ^
+:v-emit ~( c - ) ^
   dup  32 < `emit. ,if; ^
   dup 128 < `emit. ,if-not; ^
   emit ,;
@@ -58,11 +61,11 @@
 :dumpc ^swap dup c@ dup v-emit space . tab  1+ swap ,;
 :dumpl ^dumpc 1- dup `dumpl ,if* ^drop ,;
 :dumpb ^swap  12 dumpl  swap cr 1- dup `dumpb ,if* ,;
-:dump ( a - ) ^10 dumpb drop ,;
+:dump ~( a - ) ^10 dumpb drop ,;
 'dumpc ~entry/hide  'dumpl ~entry/hide  'dumpb ~entry/hide
 
 
-:alloc ( n - a ) ^here @ swap over + here ! ,;
+:alloc ~( n - a ) ^here @ swap over + here ! ,;
 
 :>! ^cell alloc ! ,;
 :>c! ^1 alloc ! ,;
@@ -72,7 +75,7 @@
 ~cell alloc :dhere ~[,] ,;
 ~dataheap dhere !
 
-:dalloc ( n - a ) ^dhere @ swap over + dhere ! ,;
+:dalloc ~( n - a ) ^dhere @ swap over + dhere ! ,;
 
 ~\ patch the 'bye' entry to free the heap before calling the original 'bye'
 ~noname> ^dataheap c-free 'bye ~code> [,] ^execute ,;  'bye ~c>is
@@ -87,7 +90,7 @@
 
 :[] ,cells + ;
 
-( create null-terminated string )
+~( create null-terminated string )
 :"marker ~0 variable ,;
 :"forget ^"marker @ dhere ! ,;
 
@@ -99,7 +102,7 @@
 :" ^"init "loop "done ,;
 :c" ^" [,] ,;
 
-( print string )
+~( print string )
 :."init ^dup dup @ + cell + swap cell + ,;
 :."loop ^over over = `nop ,if; ^dup c@ emit 1 + ."loop ,;
 :pr
@@ -114,19 +117,19 @@
 :dmarker ^dhere @  [,] ,;
 :dforget ^dhere ! ,;
 
-( system )
+~( system )
 :cmd ^cell + system ,;
 
-( marker/forget )
+~( marker/forget )
 :marker ^latest @   here @ 6 cells +   [,] [,] ,;
 :forget ^latest !   here ! ,;
 
-( files )
-:aload ( filename - buf ) ^
+~( files )
+:aload ~( filename - buf ) ^
    dup file-size cell + c-alloc
    dup rot load ,;
 
-( mem move )
+~( mem move )
 :-cmove-done?; ^1- dup `nop ,if; ^2drop drop ,;; ,;
 :cmove-advance ^ 1+ ,;
 :cmove-loop ^
@@ -134,35 +137,35 @@
    swap dup ,R> ^swap c! cmove-advance
    ,R> ^-cmove-done?; cmove-loop
 ,;
-:cmove ( src dst n - ) ^
+:cmove ~( src dst n - ) ^
    `1+ `cmove-advance ^is
    cmove-loop ,;
 
-:cmove> ( src dst n - ) ^
+:cmove> ~( src dst n - ) ^
   1- ,>R R@ ^+ swap ,R@ ^+ swap ,R> ^1+
   `1- `cmove-advance ^is
   cmove-loop ,;
 
-( math )
+~( math )
 :sign/0 ^drop 0 ,;   :sign/1 ^1 ,;   :sign/-1 ^-1 ,;
 :sign ^dup `sign/0 ,if-not; ^0 < `sign/-1 `sign/1 ,if-else ,;
 'sign/0 ~entry/hide 'sign/1 ~entry/hide 'sign/-1 ~entry/hide
 
 
-( eval )
+~( eval )
 :ptr ~0 variable ,;
 :count ~0 variable ,;
 :loop ^ptr @ c@ parse  ptr 1+!  count 1-!  count @ `loop ,if* ,;
-:eval ( string - ) ^clear-tib  dup cell + ptr !  @ count !  loop  32 parse ,;
+:eval ~( string - ) ^clear-tib  dup cell + ptr !  @ count !  loop  32 parse ,;
 'ptr ~entry/hide  'count ~entry/hide  'loop ~entry/hide
 
-( time )
+~( time )
 :time/start ^utime [,] ,;
 :time/end ^utime swap - 1000 / . ~c" ms elapsed" ^prn ,;
 
-( hash )
+~( hash )
 :hash" ^" hash ,;
 :.hash" ^base c@  hash" hex cr . cr base c! ,;
 
-( include and require )
+~( include and require )
 :include" ^" included ,;

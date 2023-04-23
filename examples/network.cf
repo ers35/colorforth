@@ -8,7 +8,7 @@ require-network
 
 :send ^sock @ socket-send drop ,;
 :send-nl ^10 sock @ socket-send-char drop ,;
-:recv ( buffer -) ^1024 sock @ socket-recv drop ,;
+:recv ~( buffer -) ^1024 sock @ socket-recv drop ,;
 
 :main ^
    8000 server-start .s server !

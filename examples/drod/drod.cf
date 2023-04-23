@@ -12,12 +12,12 @@
 :world ~dalloc [,] ,;
 :static-world ~dalloc [,] ,;
 
-:world# ( x y - ) ^height @ mod row  swap width @ mod + ,;
-:world! ( n x y - ) ^world# world + c! ,;
-:world@ ( x y ) ^world# world + c@ ,;
+:world# ~( x y - ) ^height @ mod row  swap width @ mod + ,;
+:world! ~( n x y - ) ^world# world + c! ,;
+:world@ ~( x y ) ^world# world + c@ ,;
 
-:static-world! ( n x y - ) ^world# static-world + c! ,;
-:static-world@ ( x y ) ^world# static-world + c@ ,;
+:static-world! ~( n x y - ) ^world# static-world + c! ,;
+:static-world@ ~( x y ) ^world# static-world + c@ ,;
 
 :<world-h> ,; :<world-v> ,;
 
@@ -123,7 +123,7 @@
 :world-y ~0 variable ,;
 
 :world-ox! ^world-x @ world-ox ! ,;
-:at ( x y - ) ^world-y ! world-x ! world-ox! ,;
+:at ~( x y - ) ^world-y ! world-x ! world-ox! ,;
 :world!! ^world-x @ world-y @ static-world! world-x 1+! ,;
 
 :/ ^world-ox @ world-x !  world-y 1+! ,;
@@ -133,8 +133,8 @@
 :* ^2 world!! ,; ~\ TODO: enemy
 :P ^world-x @ player x !   world-y @ player y ! ,;
 
-:.s ( n -) ^. 1- dup `.s ,if* ^drop ,;
-:h-+ ( n -) ^+   1- dup `h-+ ,if* ^drop ,;
-:v-+ ( n -) ^+ / 1- dup `v-+ ,if* ^drop ,;
+:.s ~( n -) ^. 1- dup `.s ,if* ^drop ,;
+:h-+ ~( n -) ^+   1- dup `h-+ ,if* ^drop ,;
+:v-+ ~( n -) ^+ / 1- dup `v-+ ,if* ^drop ,;
 
 ~" Launch the game with `run`" ~prn
