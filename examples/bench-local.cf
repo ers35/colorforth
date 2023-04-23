@@ -86,4 +86,14 @@ tm time/end
 test
 tm time/end
 
+
+~" * times loop" ~nprn
+:tm ~time/start ,;
+
+:loop ,A++ ,;
+:test ^0 ,A! `loop ^nb times ,A@ ^. ,;
+~
+test
+tm time/end
+
 bye

@@ -40,9 +40,9 @@
 :noname> ^here @ ,;
 
 ~( loop )
-:times-loop ~( xt n - ) ^1- over execute dup `times-loop ,if* ,;
-:times ~( ent n - ) ^swap code> swap
-:ctimes ~( xt n - ) ^times-loop 2drop ,;
+:times-loop ~( xt - ) ,dup  execute I-- I@ `times-loop ,if* ,;
+:times ~( ent n - ) ,I>R I! ^code> times-loop drop ,R>I ,;
+:ctimes ~( xt n - ) ,I>R I! ^times-loop drop ,R>I ,;
 'times-loop ~entry/hide
 
 ~( rendering )
