@@ -189,10 +189,10 @@ patch_entry (struct state *s)
 
 #ifdef __CHECK_DICT
 #ifdef __KEEP_ENTRY_NAMES
-char
+unsigned int
 check_entry(struct state *s, struct entry *check_entry)
 {
-  char clash_found = 0;
+  unsigned int clash_found = 0;
 
   for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
   {
@@ -202,7 +202,7 @@ check_entry(struct state *s, struct entry *check_entry)
         entry->name_len == check_entry->name_len &&
         memcmp(entry->name, check_entry->name, entry->name_len))
     {
-      clash_found = 1;
+      clash_found += 1;
       cf_printf(s, "'%s'  0x%lX clash with '%s'  0x%lX\n", entry->name, entry->name_hash, check_entry->name, check_entry->name_hash);
     }
   }
@@ -211,11 +211,11 @@ check_entry(struct state *s, struct entry *check_entry)
 }
 
 void
-display_clash_found(struct state *s, char clash_found)
+display_clash_found(struct state *s, unsigned int clash_found)
 {
   if (clash_found)
   {
-    cf_printf(s, "\nWARNING: Clash found in the dictionary\n");
+    cf_printf(s, "\nWARNING: %d Clash found in the dictionary\n", clash_found);
   }
   else
   {
@@ -226,14 +226,16 @@ display_clash_found(struct state *s, char clash_found)
 void
 check_dict(struct state *s)
 {
-  char clash_found = 0;
+  unsigned int clash_found = 0;
 
   for (struct entry *entry = s->dict.latest; entry != s->dict.entries - 1; entry--)
   {
     if (entry->name_len == 0) continue;
 
-    if (check_entry(s, entry)) clash_found = 1;
+    if (check_entry(s, entry)) clash_found += 1;
   }
+
+  clash_found = clash_found / 2;
 
   display_clash_found(s, clash_found);
 }

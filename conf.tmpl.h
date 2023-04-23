@@ -33,6 +33,10 @@ typedef long cell;
 // Enable dictionary clash check
 #define __CHECK_DICT
 
+#ifdef __CHECK_DICT
+#define __LIVE_CHECK_DICT
+#endif /* __CHECK_DICT */
+
 // Enable colors in the terminal
 #define __ECHO_COLOR
 
@@ -69,8 +73,8 @@ typedef double number_t;
 #define STACK_SIZE 30
 #define R_STACK_SIZE 30
 
-#define DICT_SIZE 400
-#define INLINED_DICT_SIZE 100
+#define DICT_SIZE 10000
+#define INLINED_DICT_SIZE 1000
 
 #define HEAP_SIZE 40960
 

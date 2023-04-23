@@ -406,9 +406,9 @@ define_generic(struct state *s, struct dictionary *dict)
   entry->name = cf_calloc(s, 1, entry->name_len, DEFINE_ERROR);
   memcpy(entry->name, s->tib.buf, s->tib.len);
 
-#ifdef __CHECK_DICT
+#ifdef __LIVE_CHECK_DICT
   if (check_entry(s, entry)) display_clash_found(s, 1);
-#endif /* __CHECK_DICT */
+#endif /* __LIVE_CHECK_DICT */
 #endif
 
   entry->code = s->here;

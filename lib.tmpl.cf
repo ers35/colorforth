@@ -37,7 +37,7 @@
 :noname> ^here @ ,;
 
 ( loop )
-:times-loop ( xt n - ) ^1- over execute dup `times-loop ,if ,;
+:times-loop ( xt n - ) ^1- over execute dup `times-loop ,if* ,;
 :times ( ent n - ) ^swap code> swap
 :ctimes ( xt n - ) ^times-loop 2drop ,;
 'times-loop ~entry/hide
@@ -83,6 +83,7 @@
 :? ^@ . ,;
 :variable ^cell dalloc dup [,] ! ,;
 :variables ^cells dalloc [,] ,;
+:constant ^[,] ,;
 
 :[] ,cells + ;
 

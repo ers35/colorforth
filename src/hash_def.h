@@ -1,7 +1,9 @@
 #ifndef __HASH_DEF_64
 #define __HASH_DEF_64
 
-typedef unsigned long hash_t;
+#include <stdint.h>
+
+typedef uint64_t  hash_t;
 
 #ifdef __KEEP_ENTRY_NAMES
 #define ENTRY_NAME(x) (x)
