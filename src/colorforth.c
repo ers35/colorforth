@@ -107,17 +107,25 @@ cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned char id)
   return ptr;
 }
 
+
+#define FNV_32_PRIME ((hash_t)0x01000193)
+
 hash_t
 hash(char *str)
 {
   if (!str) return 0;
 
-   hash_t hash = 5381;
-   int c;
+  unsigned char *s = (unsigned char *)str;
+  hash_t hval = 0;
 
-   while ((c = *str++)) hash = ((hash << 5) + hash) + c;
+  while (*s) {
+    hval ^= (hash_t)*s++;
 
-   return hash;
+    /* multiply by the 32 bit FNV magic prime mod 2^32 */
+    hval *= FNV_32_PRIME;
+  }
+
+  return hval;
 }
 
 void

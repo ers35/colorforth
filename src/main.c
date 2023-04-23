@@ -34,7 +34,7 @@ int
 main(int argc, char *argv[])
 {
    if (argc ==3 && memcmp(argv[1], "--hash", 2) == 0) {
-     printf("0x%lX", hash(argv[2]));
+     printf("0x%X", hash(argv[2]));
      return 0;
    }
 

@@ -16,9 +16,9 @@ int
 main(int argc, char *argv[])
 {
   state = colorforth_newstate();
-  parse_from_string(state, "( This is a colorForth inspired implementation )\n");
-  parse_from_string(state, "( source code: https://github.com/pbrochard/colorforth-pbr )\n");
-  parse_from_string(state, "( try for example: 2 2 + . )\n");
-  parse_from_string(state, "( here are the defined words )\n\n");
-  parse_from_string(state, "~ words\n\n");
+  parse_from_string(state, "% cr \" This is a colorForth inspired implementation\" prn\n");
+  parse_from_string(state, "\"   source code: https://github.com/pbrochard/colorforth-pbr\" prn\n");
+  parse_from_string(state, "\" Try for example: 2 2 + .\" prn\n");
+  parse_from_string(state, "cr \" Here are the defined words:\" prn\n\n");
+  parse_from_string(state, "~ echo on words\n\n");
 }

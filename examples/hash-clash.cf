@@ -42,12 +42,19 @@ main
 ** DJB Hash Function
   3 letters length:
     WARNING: 11275 Clash found in the dictionary
-    real    0m3.163s
 
   2 letters length:
     WARNING: 183 Clash found in the dictionary
-    real    0m0.011s
 
   1 letter length:
     No clash found in the dictionary
-    real    0m0.002s
+
+** FNV-1a Hash function
+  3 letters length
+    No clash found in the dictionary
+
+  2 letters length:
+    No clash found in the dictionary
+
+  1 letter length:
+    No clash found in the dictionary
