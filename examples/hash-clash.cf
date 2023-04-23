@@ -1,0 +1,51 @@
+~\ Hash clash checker
+~\ Usage:
+~\   cf examples/hash-clash.cf | cf
+~\ For long words, increase DICT_SIZE to 4000000 and disable __LIVE_CHECK_DICT in conf.h
+
+" abcdefghijklmnopqrstuvwxyz+-*/@!$?" dup
+:len ~@ constant ,;
+:chars ~cell + constant ,;
+:.c ^chars + c@ emit ,;
+
+:cnts ~5 variables ,;
+:cnt ^cells cnts + ,;
+:rz ^cnt 0 swap ! ,;
+:++ ^cnt 1+! ,;
+:.v ^cnt @ .c ,;
+
+:.3 ^3 .v   :.2 ^2 .v  :.1 ^1 .v  :.0 ^0 .v ,;
+:.d ~key : [,] ^emit ,;
+
+:l4 ^.d .3 cr  3 ++ ,;
+
+~\ :l3 ^.d .2 cr   len `l4 ^times   3 rz  2 ++ ,;
+:l3 ^.d .2 cr  2 ++ ,;
+
+:l2 ^.d .1 cr   len `l3 ^times   2 rz  1 ++ ,;
+~\ :l2 ^.d .1 cr  1 ++ ,;
+
+:l1 ^.d .0 cr   len `l2 ^times   1 rz  0 ++ ,;
+~\ :l1 ^.d .0 cr  0 ++ ,;
+
+:main ^len `l1 ^times ,;
+~
+main
+
+" ,;" ~prn
+" ~ check-dict bye" ~prn
+
+~bye
+
+** DJB Hash Function
+  3 letters length:
+    WARNING: 11275 Clash found in the dictionary
+    real    0m3.163s
+
+  2 letters length:
+    WARNING: 183 Clash found in the dictionary
+    real    0m0.011s
+
+  1 letter length:
+    No clash found in the dictionary
+    real    0m0.002s
