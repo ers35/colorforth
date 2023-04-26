@@ -960,6 +960,12 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_CLEAR:
+      {
+        SP = 0;
+        break;
+      }
+
       default:
       {
         cf_printf(s, "??");
@@ -1234,6 +1240,8 @@ colorforth_newstate(void)
   define_primitive(state, R_PUSH_HASH,            ENTRY_NAME(">R"), OP_R_PUSH);
   define_primitive(state, R_POP_HASH,             ENTRY_NAME("R>"), OP_R_POP);
   define_primitive(state, R_FETCH_HASH,           ENTRY_NAME("R@"), OP_R_FETCH);
+
+  define_primitive(state, CLEAR_HASH,             ENTRY_NAME("clear"), OP_CLEAR);
 
   init_lib(state);
 

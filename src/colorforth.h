@@ -105,6 +105,8 @@ enum opcode
   OP_R_POP,
   OP_R_FETCH,
 
+  OP_CLEAR,
+
 #ifdef __USE_REGISTER
   define_register_OP(A),
   define_register_OP(B),

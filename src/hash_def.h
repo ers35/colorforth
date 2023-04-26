@@ -65,6 +65,7 @@ typedef uint32_t  hash_t;
 #define R_PUSH_HASH                    (hash_t) 0x6299EDD8                // >R
 #define R_POP_HASH                     (hash_t) 0x3ECB51F8                // R>
 #define R_FETCH_HASH                   (hash_t) 0x6CCB9A62                // R@
+#define CLEAR_HASH                     (hash_t) 0x93C5A06D                // clear
 
 // src/lib.c
 #define HASH_HASH                      (hash_t) 0x3475B2F0                // hash
