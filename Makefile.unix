@@ -37,11 +37,11 @@ EXTRA_CLIBS=-lgmp -lpthread
 optim_cpl:
 	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)
 
-conf.h: conf.tmpl.h
-	cp conf.tmpl.h conf.h
+conf.h: src/conf.tmpl.h
+	cp src/conf.tmpl.h conf.h
 
-src/lib.cf.h: lib.tmpl.cf
-	cp lib.tmpl.cf lib.cf
+src/lib.cf.h: src/lib.tmpl.cf
+	cp src/lib.tmpl.cf lib.cf
 	xxd -i lib.cf src/lib.cf.h
 
 colorforth: Makefile $(SRC) $(EXT_SRC) $(SRC_H)

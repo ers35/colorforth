@@ -27,14 +27,14 @@ SRC_H=src/colorforth.h \
 	src/cf-stdio.h \
 	src/color.h
 
-wasm/conf.h: conf.tmpl.h
-	cp conf.tmpl.h wasm/conf.h
+wasm/conf.h: src/conf.tmpl.h
+	cp scr/conf.tmpl.h wasm/conf.h
 	sed -i 's%\(#.*MP_MATH\)%// \1%' wasm/conf.h
 	sed -i 's%\(#.*THREADS\)%// \1%' wasm/conf.h
 	sed -i 's%\(#.*NETWORK\)%// \1%' wasm/conf.h
 
-src/lib.cf.h: lib.tmpl.cf
-	cp lib.tmpl.cf lib.cf
+src/lib.cf.h: src/lib.tmpl.cf
+	cp src/lib.tmpl.cf lib.cf
 	xxd -i lib.cf src/lib.cf.h
 
 wasm/colorforth.html: Makefile.wasm $(SRC) $(SRC_H) $(SRC_WASM)

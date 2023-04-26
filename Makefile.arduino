@@ -1,9 +1,9 @@
 #-*- Makefile -*-
 
-.PHONY: conf.tmpl.h
+.PHONY: src/conf.tmpl.h
 
-conf.tmpl.h:
-	cp conf.tmpl.h arduino/conf.h
+src/conf.tmpl.h:
+	cp src/conf.tmpl.h arduino/conf.h
 	sed -i 's%typedef long cell;%typedef int cell;%' arduino/conf.h
 	sed -i 's/CELL_FMT "%ld"/CELL_FMT "%d"/' arduino/conf.h
 	sed -i 's%\(#define __KEEP_ENTRY_NAMES\)%// \1%' arduino/conf.h
@@ -18,14 +18,14 @@ conf.tmpl.h:
 	sed -i 's%\(extern .*\)%// \1%' arduino/conf.h
 	sed -i 's%\(#define __USE_EXTENSIONS\)%// \1%' arduino/conf.h
 
-nano: conf.tmpl.h
+nano: src/conf.tmpl.h
 	sed -i 's%\(.*STACK_SIZE\).*%\1 10%' arduino/conf.h
 	sed -i 's%\(.*DICT_SIZE\).*%\1 50%' arduino/conf.h
 	sed -i 's%\(.*INLINED_DICT_SIZE\).*%\1 10%' arduino/conf.h
 	sed -i 's%\(.*HEAP_SIZE\).*%\1 600%' arduino/conf.h
 	sed -i 's%\(TIB_SIZE.*\)%\1\n#define BUF_SIZE 64%' arduino/conf.h
 
-mega: conf.tmpl.h
+mega: src/conf.tmpl.h
 	sed -i 's%\(.*STACK_SIZE\).*%\1 30%' arduino/conf.h
 	sed -i 's%\(.*DICT_SIZE\).*%\1 80%' arduino/conf.h
 	sed -i 's%\(.*INLINED_DICT_SIZE\).*%\1 20%' arduino/conf.h
