@@ -49,6 +49,7 @@ typedef uint32_t  hash_t;
 #define COMPILE_LITERAL_HASH           (hash_t) 0x176F15FE                // [,]
 #define GET_ENTRY_CODE_HASH            (hash_t) 0x3BC9871                 // code>
 #define EXECUTE_HASH                   (hash_t) 0x54DA4CCF                // execute
+#define EXECUTE_STAR_HASH              (hash_t) 0x78A70C7F                // execute*
 #define GET_CVA_HASH                   (hash_t) 0x5E52BA1E                // cva>
 #define IF_HASH                        (hash_t) 0x790405D7                // if
 #define IF_EXIT_HASH                   (hash_t) 0x6D555284                // if;

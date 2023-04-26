@@ -40,7 +40,7 @@
 :noname> ^here @ ,;
 
 ~( loop )
-:times-loop ~( xt - ) ,I-- dup  execute I@ `times-loop ,if* ,;
+:times-loop ~( - ) ,I-- execute* I@ `times-loop ,if* ,;
 :times ~( ent n - ) ,I>R I! ^code> times-loop drop ,R>I ,;
 :ctimes ~( xt n - ) ,I>R I! ^times-loop drop ,R>I ,;
 'times-loop ~entry/hide

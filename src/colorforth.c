@@ -875,6 +875,14 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      // Like execute but leave xt on the stack
+      case OP_EXECUTE_STAR:
+      {
+        push(s->r_stack, (cell)pc);
+        pc = (struct code*)s->stack->cells[s->stack->sp - 1] - 1;
+        break;
+      }
+
       case OP_HERE:
       {
         push(s->stack, (cell)&s->here);
@@ -1197,6 +1205,7 @@ colorforth_newstate(void)
   define_primitive(state, COMPILE_LITERAL_HASH,   ENTRY_NAME("[,]"), OP_COMPILE_LITERAL);
   define_primitive(state, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
   define_primitive(state, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
+  define_primitive(state, EXECUTE_STAR_HASH,      ENTRY_NAME("execute*"), OP_EXECUTE_STAR);
   define_primitive(state, GET_CVA_HASH,           ENTRY_NAME("cva>"), OP_GET_CVA);
 
   define_primitive(state, IF_HASH,                ENTRY_NAME("if"), OP_IF);
