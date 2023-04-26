@@ -23,6 +23,19 @@ extern "C" {
 
 #define MAX_PREFIX 10
 
+#define CELLS s->stack->cells
+// SP is the next free cell in CELLS
+#define SP s->stack->sp
+#define LIM s->stack->lim
+
+#ifndef UNSAFE_MODE
+#define ENSURE_STACK_MIN(x) if (SP < x) { cf_printf(NULL, "ES<!\n"); break; }
+#define ENSURE_STACK_MAX(x) if (SP > LIM - x) { cf_printf(NULL, "ES>!\n");  break; }
+#else
+#define ENSURE_STACK_MIN(x)
+#define ENSURE_STACK_MAX(x)
+#endif
+
 #define define_register_OP(N) OP_##N##_LOAD, OP_##N##_STORE, OP_##N##_ADD, \
     OP_##N##_INC, OP_##N##_DEC, OP_##N##_R_PUSH, OP_##N##_R_POP
 

@@ -563,90 +563,95 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_DUP:
       {
-        push(s->stack, s->stack->cells[s->stack->sp - 1]);
+        ENSURE_STACK_MIN(1);
+        ENSURE_STACK_MAX(1);
+        CELLS[SP] = CELLS[SP - 1];
+        SP += 1;
         break;
       }
 
       case OP_DROP:
       {
-        pop(s->stack);
+        ENSURE_STACK_MIN(1);
+        SP -= 1;
         break;
       }
 
       case OP_SWAP:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1);
-        push(s->stack, n2);
+        ENSURE_STACK_MIN(2);
+        const cell n = CELLS[SP - 1];
+        CELLS[SP - 1] = CELLS[SP - 2];
+        CELLS[SP - 2] = n;
         break;
       }
 
       case OP_OVER:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2);
-        push(s->stack, n1);
-        push(s->stack, n2);
+        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MAX(1);
+        CELLS[SP] = CELLS[SP - 2];
+        SP += 1;
         break;
       }
 
       case OP_ROT:
       {
-        const cell n3 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        const cell n1 = pop(s->stack);
-        push(s->stack, n2);
-        push(s->stack, n3);
-        push(s->stack, n1);
+        ENSURE_STACK_MIN(3);
+        const cell n = CELLS[SP - 3];
+        CELLS[SP - 3] = CELLS[SP - 2];
+        CELLS[SP - 2] = CELLS[SP - 1];
+        CELLS[SP - 1] = n;
         break;
       }
 
       case OP_MINUS_ROT:
       {
-        const cell n3 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        const cell n1 = pop(s->stack);
-        push(s->stack, n3);
-        push(s->stack, n1);
-        push(s->stack, n2);
+        ENSURE_STACK_MIN(3);
+        const cell n = CELLS[SP - 1];
+        CELLS[SP - 1] = CELLS[SP - 2];
+        CELLS[SP - 2] = CELLS[SP - 3];
+        CELLS[SP - 3] = n;
         break;
       }
 
       case OP_NIP:
       {
-        const cell n2 = pop(s->stack);
-        pop(s->stack);
-        push(s->stack, n2);
+        ENSURE_STACK_MIN(2);
+        CELLS[SP - 2] = CELLS[SP - 1];
+        SP -= 1;
         break;
       }
 
       case OP_LOAD:
       {
-        push(s->stack, *(cell*)pop(s->stack));
+        ENSURE_STACK_MIN(1);
+        CELLS[SP - 1] = *(cell*) CELLS[SP - 1];
         break;
       }
 
       case OP_STORE:
       {
-        cell *ptr = (cell*)pop(s->stack);
-        cell n = pop(s->stack);
-        *ptr = n;
+        ENSURE_STACK_MIN(2);
+        cell *ptr = (cell*) CELLS[SP - 1];
+        *ptr = CELLS[SP - 2];
+        SP -= 2;
         break;
       }
 
       case OP_CLOAD:
       {
-        push(s->stack, *(char*)pop(s->stack));
+        ENSURE_STACK_MIN(1);
+        CELLS[SP - 1] = *(char*) CELLS[SP - 1];
         break;
       }
 
       case OP_CSTORE:
       {
-        char *ptr = (char*)pop(s->stack);
-        char n = pop(s->stack);
-        *ptr = n;
+        ENSURE_STACK_MIN(2);
+        char *ptr = (char*) CELLS[SP - 1];
+        *ptr = CELLS[SP - 2];
+        SP -= 2;
         break;
       }
 
@@ -675,47 +680,49 @@ execute_(struct state *s, struct entry *entry)
       case OP_NUMBER:
       case OP_TICK_NUMBER:
       {
-        push(s->stack, pc->value);
+        ENSURE_STACK_MAX(1);
+        CELLS[SP] = pc->value;
+        SP += 1;
         break;
       }
 
       case OP_ADD:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1 + n2);
+        ENSURE_STACK_MIN(2);
+        CELLS[SP - 2] = CELLS[SP - 2] + CELLS[SP - 1];
+        SP -= 1;
         break;
       }
 
       case OP_SUB:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2 - n1);
+        ENSURE_STACK_MIN(2);
+        CELLS[SP - 2] = CELLS[SP - 2] - CELLS[SP - 1];
+        SP -= 1;
         break;
       }
 
       case OP_MUL:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1 * n2);
+        ENSURE_STACK_MIN(2);
+        CELLS[SP - 2] = CELLS[SP - 2] * CELLS[SP - 1];
+        SP -= 1;
         break;
       }
 
       case OP_EQUAL:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n1 == n2);
+        ENSURE_STACK_MIN(2);
+        CELLS[SP - 2] = CELLS[SP - 2] == CELLS[SP - 1];
+        SP -= 1;
         break;
       }
 
       case OP_LESS:
       {
-        const cell n1 = pop(s->stack);
-        const cell n2 = pop(s->stack);
-        push(s->stack, n2 < n1);
+        ENSURE_STACK_MIN(2);
+        CELLS[SP - 2] = CELLS[SP - 2] < CELLS[SP - 1];
+        SP -= 1;
         break;
       }
 
