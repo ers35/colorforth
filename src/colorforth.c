@@ -132,8 +132,8 @@ void
 init_stack(struct stack *stack, int len, unsigned char id)
 {
   stack->cells = cf_calloc(NULL, len, sizeof(cell), id);
-  stack->sp = 0;
-  stack->lim = len;
+  stack->sp = -1;
+  stack->lim = len - 1;
 }
 
 void
@@ -159,8 +159,8 @@ free_dictionary(struct dictionary *dict)
 static void
 dot_s(struct state *state, struct stack *stack)
 {
-  cf_printf(state, "[%d] ", stack->sp);
-  for (int i = 0; i < stack->sp ; i++)
+  cf_printf(state, "[%d] ", stack->sp + 1);
+  for (int i = 0; i < stack->sp + 1; i++)
   {
     cf_print_cell(state, stack->cells[i]);
     cf_printf(state, " ");
@@ -179,23 +179,24 @@ push(struct stack *stack, const cell n)
   }
 #endif
 
-  stack->cells[stack->sp] = n;
   stack->sp += 1;
+  stack->cells[stack->sp] = n;
 }
 
 inline cell
 pop(struct stack *stack)
 {
 #ifndef UNSAFE_MODE
-  if (stack->sp == 0)
+  if (stack->sp < 0)
   {
     cf_printf(NULL, "ES<!\n");
     return 0;
   }
 #endif
 
+  const cell ret = stack->cells[stack->sp];
   stack->sp -= 1;
-  return stack->cells[stack->sp];
+  return ret;
 }
 
 void
@@ -549,7 +550,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_R_FETCH:
       {
-        push(s->stack, s->r_stack->cells[s->r_stack->sp - 1]);
+        push(s->stack, s->r_stack->cells[s->r_stack->sp]);
         break;
       }
 
@@ -565,8 +566,8 @@ execute_(struct state *s, struct entry *entry)
       {
         ENSURE_STACK_MIN(1);
         ENSURE_STACK_MAX(1);
-        CELLS[SP] = CELLS[SP - 1];
         SP += 1;
+        CELLS[SP] = CELLS[SP - 1];
         break;
       }
 
@@ -580,9 +581,9 @@ execute_(struct state *s, struct entry *entry)
       case OP_SWAP:
       {
         ENSURE_STACK_MIN(2);
-        const cell n = CELLS[SP - 1];
-        CELLS[SP - 1] = CELLS[SP - 2];
-        CELLS[SP - 2] = n;
+        const cell n = CELLS[SP];
+        CELLS[SP] = CELLS[SP - 1];
+        CELLS[SP - 1] = n;
         break;
       }
 
@@ -590,51 +591,51 @@ execute_(struct state *s, struct entry *entry)
       {
         ENSURE_STACK_MIN(2);
         ENSURE_STACK_MAX(1);
-        CELLS[SP] = CELLS[SP - 2];
         SP += 1;
+        CELLS[SP] = CELLS[SP - 2];
         break;
       }
 
       case OP_ROT:
       {
         ENSURE_STACK_MIN(3);
-        const cell n = CELLS[SP - 3];
-        CELLS[SP - 3] = CELLS[SP - 2];
+        const cell n = CELLS[SP - 2];
         CELLS[SP - 2] = CELLS[SP - 1];
-        CELLS[SP - 1] = n;
+        CELLS[SP - 1] = CELLS[SP];
+        CELLS[SP] = n;
         break;
       }
 
       case OP_MINUS_ROT:
       {
         ENSURE_STACK_MIN(3);
-        const cell n = CELLS[SP - 1];
+        const cell n = CELLS[SP];
+        CELLS[SP] = CELLS[SP - 1];
         CELLS[SP - 1] = CELLS[SP - 2];
-        CELLS[SP - 2] = CELLS[SP - 3];
-        CELLS[SP - 3] = n;
+        CELLS[SP - 2] = n;
         break;
       }
 
       case OP_NIP:
       {
         ENSURE_STACK_MIN(2);
-        CELLS[SP - 2] = CELLS[SP - 1];
         SP -= 1;
+        CELLS[SP] = CELLS[SP + 1];
         break;
       }
 
       case OP_LOAD:
       {
         ENSURE_STACK_MIN(1);
-        CELLS[SP - 1] = *(cell*) CELLS[SP - 1];
+        CELLS[SP] = *(cell*) CELLS[SP];
         break;
       }
 
       case OP_STORE:
       {
         ENSURE_STACK_MIN(2);
-        cell *ptr = (cell*) CELLS[SP - 1];
-        *ptr = CELLS[SP - 2];
+        cell *ptr = (cell*) CELLS[SP];
+        *ptr = CELLS[SP - 1];
         SP -= 2;
         break;
       }
@@ -642,15 +643,15 @@ execute_(struct state *s, struct entry *entry)
       case OP_CLOAD:
       {
         ENSURE_STACK_MIN(1);
-        CELLS[SP - 1] = *(char*) CELLS[SP - 1];
+        CELLS[SP] = *(char*) CELLS[SP];
         break;
       }
 
       case OP_CSTORE:
       {
         ENSURE_STACK_MIN(2);
-        char *ptr = (char*) CELLS[SP - 1];
-        *ptr = CELLS[SP - 2];
+        char *ptr = (char*) CELLS[SP];
+        *ptr = CELLS[SP - 1];
         SP -= 2;
         break;
       }
@@ -681,48 +682,48 @@ execute_(struct state *s, struct entry *entry)
       case OP_TICK_NUMBER:
       {
         ENSURE_STACK_MAX(1);
-        CELLS[SP] = pc->value;
         SP += 1;
+        CELLS[SP] = pc->value;
         break;
       }
 
       case OP_ADD:
       {
         ENSURE_STACK_MIN(2);
-        CELLS[SP - 2] = CELLS[SP - 2] + CELLS[SP - 1];
         SP -= 1;
+        CELLS[SP] = CELLS[SP] + CELLS[SP + 1];
         break;
       }
 
       case OP_SUB:
       {
         ENSURE_STACK_MIN(2);
-        CELLS[SP - 2] = CELLS[SP - 2] - CELLS[SP - 1];
         SP -= 1;
+        CELLS[SP] = CELLS[SP] - CELLS[SP + 1];
         break;
       }
 
       case OP_MUL:
       {
         ENSURE_STACK_MIN(2);
-        CELLS[SP - 2] = CELLS[SP - 2] * CELLS[SP - 1];
         SP -= 1;
+        CELLS[SP] = CELLS[SP] * CELLS[SP + 1];
         break;
       }
 
       case OP_EQUAL:
       {
         ENSURE_STACK_MIN(2);
-        CELLS[SP - 2] = CELLS[SP - 2] == CELLS[SP - 1];
         SP -= 1;
+        CELLS[SP] = CELLS[SP] == CELLS[SP + 1];
         break;
       }
 
       case OP_LESS:
       {
         ENSURE_STACK_MIN(2);
-        CELLS[SP - 2] = CELLS[SP - 2] < CELLS[SP - 1];
         SP -= 1;
+        CELLS[SP] = CELLS[SP] < CELLS[SP + 1];
         break;
       }
 

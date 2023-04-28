@@ -24,12 +24,12 @@ extern "C" {
 #define MAX_PREFIX 10
 
 #define CELLS s->stack->cells
-// SP is the next free cell in CELLS
+// SP is the current cell in CELLS
 #define SP s->stack->sp
 #define LIM s->stack->lim
 
 #ifndef UNSAFE_MODE
-#define ENSURE_STACK_MIN(x) if (SP < x) { cf_printf(NULL, "ES<!\n"); break; }
+#define ENSURE_STACK_MIN(x) if (SP < x - 1) { cf_printf(NULL, "ES<!\n"); break; }
 #define ENSURE_STACK_MAX(x) if (SP > LIM - x) { cf_printf(NULL, "ES>!\n");  break; }
 #else
 #define ENSURE_STACK_MIN(x)
