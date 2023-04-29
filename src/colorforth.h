@@ -28,13 +28,35 @@ extern "C" {
 #define SP s->stack->sp
 #define LIM s->stack->lim
 
+#define R_CELLS s->r_stack->cells
+// R_SP is the current cell in R_CELLS
+#define R_SP s->r_stack->sp
+#define R_LIM s->r_stack->lim
+
+
 #ifndef UNSAFE_MODE
-#define ENSURE_STACK_MIN(x) if (SP < x - 1) { cf_printf(NULL, "ES<!\n"); break; }
-#define ENSURE_STACK_MAX(x) if (SP > LIM - x) { cf_printf(NULL, "ES>!\n");  break; }
+#define ENSURE_STACK_MIN_GEN(x, sp, msg, action) if (sp < x - 1) { cf_printf(NULL, msg); action; }
+#define ENSURE_STACK_MAX_GEN(x, sp, lim, msg, action) if (sp > lim - x) { cf_printf(NULL, msg);  action; }
+
+#define ENSURE_STACK_MIN(x, action) ENSURE_STACK_MIN_GEN(x, SP, "ES<!\n", action)
+#define ENSURE_STACK_MAX(x, action) ENSURE_STACK_MAX_GEN(x, SP, LIM, "ES>!\n", action)
+
+#define ENSURE_R_STACK_MIN(x, action) ENSURE_STACK_MIN_GEN(x, R_SP, "ERS<!\n", action)
+#define ENSURE_R_STACK_MAX(x, action) ENSURE_STACK_MAX_GEN(x, R_SP, R_LIM, "ERS>!\n", action)
 #else
-#define ENSURE_STACK_MIN(x)
-#define ENSURE_STACK_MAX(x)
+#define ENSURE_STACK_MIN(x, action)
+#define ENSURE_STACK_MAX(x, action)
+
+#define ENSURE_STACK_MIN(x, action)
+#define ENSURE_STACK_MAX(x, action)
 #endif
+
+#define POP() CELLS[SP]; SP -= 1
+#define PUSH(x) SP += 1; CELLS[SP] = (x)
+
+#define R_POP() R_CELLS[R_SP]; R_SP -= 1
+#define R_PUSH(x) R_SP += 1; R_CELLS[R_SP] = (x)
+
 
 #define define_register_OP(N) OP_##N##_LOAD, OP_##N##_STORE, OP_##N##_ADD, \
     OP_##N##_INC, OP_##N##_DEC, OP_##N##_R_PUSH, OP_##N##_R_POP

@@ -23,14 +23,14 @@ extern void display_clash_found(struct state *s, char clash_found);
 
 struct prefix_map prefix_map[MAX_PREFIX];
 
-#define define_register(N)                                              \
-  case OP_##N##_STORE: { N = pop(s->stack); break; }                    \
-  case OP_##N##_LOAD: { push(s->stack, N); break; }                     \
-  case OP_##N##_ADD: { N += pop(s->stack); break; }                     \
-  case OP_##N##_INC: { N += 1; break; }                                 \
-  case OP_##N##_DEC: { N -= 1; break; }                                 \
-  case OP_##N##_R_POP: { N = pop(s->r_stack); break; }                  \
-  case OP_##N##_R_PUSH: { push(s->r_stack, N); break; }
+#define define_register(N)                                                     \
+  case OP_##N##_STORE: { ENSURE_STACK_MIN(1, break);  N = POP(); break; }      \
+  case OP_##N##_LOAD: { ENSURE_STACK_MAX(1, break);   PUSH(N); break; }        \
+  case OP_##N##_ADD: { ENSURE_STACK_MIN(1, break);    N += POP(); break; }     \
+  case OP_##N##_INC: { N += 1; break; }                                        \
+  case OP_##N##_DEC: { N -= 1; break; }                                        \
+  case OP_##N##_R_POP: { ENSURE_R_STACK_MIN(1, break); N = R_POP(); break; }   \
+  case OP_##N##_R_PUSH: { ENSURE_R_STACK_MAX(1, break); R_PUSH(N); break; }
 
 #define define_register_primitive(N)                                    \
   define_primitive(s, REG_##N##_LOAD_HASH,        ENTRY_NAME(#N"@"), OP_##N##_LOAD); \
@@ -507,7 +507,8 @@ execute_(struct state *s, struct entry *entry)
   // cf_printf(s, "-> %s\n", entry->name);
   struct code *pc = entry->code;
 
-  push(s->r_stack, 0);
+  ENSURE_R_STACK_MAX(1, return);
+  R_PUSH(0);
 
 #ifdef __USE_REGISTER
   register cell A = 0;
@@ -524,7 +525,8 @@ execute_(struct state *s, struct entry *entry)
     {
       case OP_RETURN:
       {
-        struct code *code = (struct code *)pop(s->r_stack);
+        ENSURE_R_STACK_MIN(1, break);
+        struct code *code = (struct code *) R_POP();
         if (code)
         {
           pc = code;
@@ -538,19 +540,25 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_R_PUSH:
       {
-        push(s->r_stack, pop(s->stack));
+        ENSURE_STACK_MIN(1, break); ENSURE_R_STACK_MAX(1, break);
+        const cell n = POP();
+        R_PUSH(n);
         break;
       }
 
       case OP_R_POP:
       {
-        push(s->stack, pop(s->r_stack));
+        ENSURE_R_STACK_MIN(1, break); ENSURE_STACK_MAX(1, break);
+        const cell n = R_POP();
+        PUSH(n);
         break;
       }
 
       case OP_R_FETCH:
       {
-        push(s->stack, s->r_stack->cells[s->r_stack->sp]);
+        ENSURE_R_STACK_MIN(1, break);
+        ENSURE_STACK_MAX(1, break);
+        PUSH(R_CELLS[R_SP]);
         break;
       }
 
@@ -564,23 +572,22 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_DUP:
       {
-        ENSURE_STACK_MIN(1);
-        ENSURE_STACK_MAX(1);
-        SP += 1;
-        CELLS[SP] = CELLS[SP - 1];
+        ENSURE_STACK_MIN(1, break);
+        ENSURE_STACK_MAX(1, break);
+        PUSH(CELLS[SP - 1]);
         break;
       }
 
       case OP_DROP:
       {
-        ENSURE_STACK_MIN(1);
+        ENSURE_STACK_MIN(1, break);
         SP -= 1;
         break;
       }
 
       case OP_SWAP:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         const cell n = CELLS[SP];
         CELLS[SP] = CELLS[SP - 1];
         CELLS[SP - 1] = n;
@@ -589,16 +596,15 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_OVER:
       {
-        ENSURE_STACK_MIN(2);
-        ENSURE_STACK_MAX(1);
-        SP += 1;
-        CELLS[SP] = CELLS[SP - 2];
+        ENSURE_STACK_MIN(2, break);
+        ENSURE_STACK_MAX(1, break);
+        PUSH(CELLS[SP - 2]);
         break;
       }
 
       case OP_ROT:
       {
-        ENSURE_STACK_MIN(3);
+        ENSURE_STACK_MIN(3, break);
         const cell n = CELLS[SP - 2];
         CELLS[SP - 2] = CELLS[SP - 1];
         CELLS[SP - 1] = CELLS[SP];
@@ -608,7 +614,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_MINUS_ROT:
       {
-        ENSURE_STACK_MIN(3);
+        ENSURE_STACK_MIN(3, break);
         const cell n = CELLS[SP];
         CELLS[SP] = CELLS[SP - 1];
         CELLS[SP - 1] = CELLS[SP - 2];
@@ -618,7 +624,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_NIP:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         SP -= 1;
         CELLS[SP] = CELLS[SP + 1];
         break;
@@ -626,14 +632,14 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_LOAD:
       {
-        ENSURE_STACK_MIN(1);
+        ENSURE_STACK_MIN(1, break);
         CELLS[SP] = *(cell*) CELLS[SP];
         break;
       }
 
       case OP_STORE:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         cell *ptr = (cell*) CELLS[SP];
         *ptr = CELLS[SP - 1];
         SP -= 2;
@@ -642,14 +648,14 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_CLOAD:
       {
-        ENSURE_STACK_MIN(1);
+        ENSURE_STACK_MIN(1, break);
         CELLS[SP] = *(char*) CELLS[SP];
         break;
       }
 
       case OP_CSTORE:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         char *ptr = (char*) CELLS[SP];
         *ptr = CELLS[SP - 1];
         SP -= 2;
@@ -681,7 +687,7 @@ execute_(struct state *s, struct entry *entry)
       case OP_NUMBER:
       case OP_TICK_NUMBER:
       {
-        ENSURE_STACK_MAX(1);
+        ENSURE_STACK_MAX(1, break);
         SP += 1;
         CELLS[SP] = pc->value;
         break;
@@ -689,7 +695,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_ADD:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         SP -= 1;
         CELLS[SP] = CELLS[SP] + CELLS[SP + 1];
         break;
@@ -697,7 +703,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_SUB:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         SP -= 1;
         CELLS[SP] = CELLS[SP] - CELLS[SP + 1];
         break;
@@ -705,7 +711,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_MUL:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         SP -= 1;
         CELLS[SP] = CELLS[SP] * CELLS[SP + 1];
         break;
@@ -713,7 +719,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_EQUAL:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         SP -= 1;
         CELLS[SP] = CELLS[SP] == CELLS[SP + 1];
         break;
@@ -721,7 +727,7 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_LESS:
       {
-        ENSURE_STACK_MIN(2);
+        ENSURE_STACK_MIN(2, break);
         SP -= 1;
         CELLS[SP] = CELLS[SP] < CELLS[SP + 1];
         break;
