@@ -868,33 +868,39 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_KEY:
       {
-        push(s->stack, (char)cf_getchar(s));
+        ENSURE_STACK_MAX(1, break);
+        PUSH((char)cf_getchar(s));
         break;
       }
 
       case OP_CELL:
       {
-        push(s->stack, sizeof(cell));
+        ENSURE_STACK_MAX(1, break);
+        PUSH(sizeof(cell));
         break;
       }
 
       case OP_CODE_LEN:
       {
-        push(s->stack, sizeof(struct code));
+        ENSURE_STACK_MAX(1, break);
+        PUSH(sizeof(struct code));
         break;
       }
 
       case OP_GET_ENTRY_CODE:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        push(s->stack, (cell)entry_->code);
+        ENSURE_STACK_MIN(1, break);
+        struct entry *entry_ = (struct entry*)POP();
+        PUSH((cell)entry_->code);
         break;
       }
 
       case OP_EXECUTE:
       {
-        struct code *code_ = (struct code*)pop(s->stack);
-        push(s->r_stack, (cell)pc);
+        ENSURE_STACK_MIN(1, break);
+        ENSURE_R_STACK_MAX(1, break);
+        struct code *code_ = (struct code*)POP();
+        R_PUSH((cell)pc);
         pc = code_ - 1;
         break;
       }
@@ -902,47 +908,55 @@ execute_(struct state *s, struct entry *entry)
       // Like execute but leave xt on the stack
       case OP_EXECUTE_STAR:
       {
-        push(s->r_stack, (cell)pc);
+        ENSURE_STACK_MIN(1, break);
+        ENSURE_R_STACK_MAX(1, break);
+        R_PUSH((cell)pc);
         pc = (struct code*)CELLS[SP] - 1;
         break;
       }
 
       case OP_HERE:
       {
-        push(s->stack, (cell)&s->here);
+        ENSURE_STACK_MAX(1, break);
+        PUSH((cell)&s->here);
         break;
       }
 
       case OP_LATEST:
       {
-        push(s->stack, (cell)&s->dict.latest);
+        ENSURE_STACK_MAX(1, break);
+        PUSH((cell)&s->dict.latest);
         break;
       }
 
       case OP_GET_CVA: // Code value address
       {
-        struct code *code = (struct code *) pop(s->stack);
-        push(s->stack, (cell) &code->value);
+        ENSURE_STACK_MIN(1, break);
+        struct code *code = (struct code *) POP();
+        PUSH((cell) &code->value);
         break;
       }
 
       case OP_COMPILE:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
+        ENSURE_STACK_MIN(1, break);
+        struct entry *entry_ = (struct entry*)POP();
         compile_entry(s, entry_);
         break;
       }
 
       case OP_COMPILE_INLINE:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
+        ENSURE_STACK_MIN(1, break);
+        struct entry *entry_ = (struct entry*)POP();
         inline_entry(s, entry_);
         break;
       }
 
       case OP_COMPILE_LITERAL:
       {
-        cell n = pop(s->stack);
+        ENSURE_STACK_MIN(1, break);
+        cell n = POP();
         compile_literal(s, n);
         break;
       }
@@ -965,7 +979,9 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_PRINT_TOS:
       {
-        cf_print_cell(s,pop(s->stack));
+        ENSURE_STACK_MIN(1, break);
+        const cell n = POP();
+        cf_print_cell(s, n);
         cf_printf(s, " ");
         cf_fflush();
         break;
@@ -1007,7 +1023,8 @@ execute(struct state *s)
     cell n = 0;
     if (tib_to_number(s, &n))
     {
-      push(s->stack, n);
+      ENSURE_STACK_MAX(1, return);
+      PUSH(n);
     }
     else
     {
@@ -1022,7 +1039,8 @@ tick(struct state *s)
   struct entry *entry = find_entry(s, &s->dict);
   if (entry)
   {
-    push(s->stack, (cell)entry);
+    ENSURE_STACK_MAX(1, return);
+    PUSH((cell)entry);
   }
   else
   {
