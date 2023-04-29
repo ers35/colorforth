@@ -887,7 +887,7 @@ execute_(struct state *s, struct entry *entry)
       case OP_EXECUTE_STAR:
       {
         push(s->r_stack, (cell)pc);
-        pc = (struct code*)s->stack->cells[s->stack->sp - 1] - 1;
+        pc = (struct code*)CELLS[SP] - 1;
         break;
       }
 
