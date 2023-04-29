@@ -14,7 +14,7 @@
 #include <lib.cf.h>
 #endif /* __EMBED_LIB_CF */
 
-extern void load_extensions(struct state *state);
+extern void load_extensions(struct state *s);
 
 #ifdef __CHECK_DICT
 extern char check_entry(struct state *s, struct entry *check_entry);
@@ -33,30 +33,30 @@ struct prefix_map prefix_map[MAX_PREFIX];
   case OP_##N##_R_PUSH: { push(s->r_stack, N); break; }
 
 #define define_register_primitive(N)                                    \
-  define_primitive(state, REG_##N##_LOAD_HASH,        ENTRY_NAME(#N"@"), OP_##N##_LOAD); \
-  define_primitive(state, REG_##N##_STORE_HASH,       ENTRY_NAME(#N"!"), OP_##N##_STORE); \
-  define_primitive(state, REG_##N##_ADD_STORE_HASH,   ENTRY_NAME(#N"+!"), OP_##N##_ADD); \
-  define_primitive(state, REG_##N##_ADD_ADD_HASH,     ENTRY_NAME(#N"++"), OP_##N##_INC); \
-  define_primitive(state, REG_##N##_SUB_SUB_HASH,     ENTRY_NAME(#N"--"), OP_##N##_DEC); \
-  define_primitive(state, REG_##N##_TO_R_HASH,        ENTRY_NAME(#N">R"), OP_##N##_R_PUSH); \
-  define_primitive(state, REG_R_TO_##N##_HASH,        ENTRY_NAME("R>"#N), OP_##N##_R_POP);
+  define_primitive(s, REG_##N##_LOAD_HASH,        ENTRY_NAME(#N"@"), OP_##N##_LOAD); \
+  define_primitive(s, REG_##N##_STORE_HASH,       ENTRY_NAME(#N"!"), OP_##N##_STORE); \
+  define_primitive(s, REG_##N##_ADD_STORE_HASH,   ENTRY_NAME(#N"+!"), OP_##N##_ADD); \
+  define_primitive(s, REG_##N##_ADD_ADD_HASH,     ENTRY_NAME(#N"++"), OP_##N##_INC); \
+  define_primitive(s, REG_##N##_SUB_SUB_HASH,     ENTRY_NAME(#N"--"), OP_##N##_DEC); \
+  define_primitive(s, REG_##N##_TO_R_HASH,        ENTRY_NAME(#N">R"), OP_##N##_R_PUSH); \
+  define_primitive(s, REG_R_TO_##N##_HASH,        ENTRY_NAME("R>"#N), OP_##N##_R_POP);
 
 void
-cf_print_cell(struct state *state, cell cell)
+cf_print_cell(struct state *s, cell cell)
 {
-  switch (state->base)
+  switch (s->base)
   {
     case 16:
     {
-      cf_printf(state, "$%lX", cell);
+      cf_printf(s, "$%lX", cell);
       break;
     }
     case 2:
     {
-      cf_putchar(state, '#');
+      cf_putchar(s, '#');
       if (cell == 0)
       {
-        cf_printf(state, "0 ");
+        cf_printf(s, "0 ");
       } else {
         int i = CHAR_BIT * sizeof cell;
         char output = 0;
@@ -64,34 +64,34 @@ cf_print_cell(struct state *state, cell cell)
         {
           const char n = ((cell >> i) & 1);
           if (n) output = 1;
-          if (output) cf_putchar(state, '0' + n);
+          if (output) cf_putchar(s, '0' + n);
         }
       }
       break;
     }
     default:
     {
-      cf_printf(state, CELL_FMT, cell);
+      cf_printf(s, CELL_FMT, cell);
       break;
     }
   }
 }
 
 void
-quit(struct state *state)
+quit(struct state *s)
 {
-  state->done = 1;
-  echo_color(state, ' ', COLOR_CLEAR);
-  cf_printf(state, "\n");
+  s->done = 1;
+  echo_color(s, ' ', COLOR_CLEAR);
+  cf_printf(s, "\n");
 }
 
 void
-cf_fatal_error(struct state *state, char id)
+cf_fatal_error(struct state *s, char id)
 {
-  cf_printf(state, "E%d\n", id);
-  if (state)
+  cf_printf(s, "E%d\n", id);
+  if (s)
   {
-    echo_color(state, ' ', COLOR_CLEAR);
+    echo_color(s, ' ', COLOR_CLEAR);
   }
   cf_fflush();
   reset_terminal();
@@ -99,10 +99,10 @@ cf_fatal_error(struct state *state, char id)
 }
 
 void *
-cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned char id)
+cf_calloc(struct state *s, size_t nmemb, size_t size, unsigned char id)
 {
   void *ptr = calloc(nmemb, size);
-  if (!ptr) cf_fatal_error(state, id);
+  if (!ptr) cf_fatal_error(s, id);
 
   return ptr;
 }
@@ -157,15 +157,15 @@ free_dictionary(struct dictionary *dict)
 }
 
 static void
-dot_s(struct state *state, struct stack *stack)
+dot_s(struct state *s, struct stack *stack)
 {
-  cf_printf(state, "[%d] ", stack->sp + 1);
+  cf_printf(s, "[%d] ", stack->sp + 1);
   for (int i = 0; i < stack->sp + 1; i++)
   {
-    cf_print_cell(state, stack->cells[i]);
-    cf_printf(state, " ");
+    cf_print_cell(s, stack->cells[i]);
+    cf_printf(s, " ");
   }
-  cf_printf(state, "<tos\n");
+  cf_printf(s, "<tos\n");
 }
 
 inline void
@@ -1029,14 +1029,14 @@ compile_tick(struct state *s)
 }
 
 void
-parse_colorforth(struct state *state, int c)
+parse_colorforth(struct state *s, int c)
 {
-  if (state->tib.len == 0) {
+  if (s->tib.len == 0) {
     for (int i = 0; i < MAX_PREFIX; i++)
     {
       if (prefix_map[i].c == c) {
-        state->color = prefix_map[i].fn;
-        echo_color(state, c, prefix_map[i].color);
+        s->color = prefix_map[i].fn;
+        echo_color(s, c, prefix_map[i].color);
         return;
       }
     }
@@ -1044,20 +1044,20 @@ parse_colorforth(struct state *state, int c)
 
   if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
   {
-    echo_color(state, c, NULL);
-    if (state->tib.len == 0)
+    echo_color(s, c, NULL);
+    if (s->tib.len == 0)
     {
       // Strip leading whitespace.
     }
     else
     {
       // Have word.
-      state->color(state);
-      for(size_t i = 0; i < state->tib.len; i++)
+      s->color(s);
+      for(size_t i = 0; i < s->tib.len; i++)
       {
-        state->tib.buf[i] = 0;
+        s->tib.buf[i] = 0;
       }
-      state->tib.len = 0;
+      s->tib.len = 0;
     }
 
     return;
@@ -1065,25 +1065,25 @@ parse_colorforth(struct state *state, int c)
 
   if (c == CF_EOF)
   {
-    echo_color(state, c, COLOR_CLEAR);
+    echo_color(s, c, COLOR_CLEAR);
     return;
   }
 
   if (c == '\b' || c == 127)
   {
-    cf_printf(state, "\b \b");
-    if (state->tib.len > 0)
+    cf_printf(s, "\b \b");
+    if (s->tib.len > 0)
     {
-      state->tib.len -= 1;
+      s->tib.len -= 1;
     }
     return;
   }
 
 
-  echo_color(state, c, NULL);
-  if (state->tib.len < sizeof(state->tib.buf))
+  echo_color(s, c, NULL);
+  if (s->tib.len < sizeof(s->tib.buf))
   {
-    state->tib.buf[state->tib.len++] = c;
+    s->tib.buf[s->tib.len++] = c;
   }
 }
 
@@ -1141,14 +1141,14 @@ define_prefix(char c, void (*fn)(struct state *s), char * color, short reset)
 
 #ifdef __EMBED_LIB_CF
 void
-parse_from_embed_lib_cf(struct state *state)
+parse_from_embed_lib_cf(struct state *s)
 {
   char* str = malloc(lib_cf_len + 1);
   if (str)
   {
     strncpy(str, (char *)lib_cf, lib_cf_len);
     str[lib_cf_len] = 0;
-    parse_from_string(state, str);
+    parse_from_string(s, str);
     free(str);
   }
 }
@@ -1157,28 +1157,28 @@ parse_from_embed_lib_cf(struct state *state)
 struct state*
 colorforth_newstate(void)
 {
-  struct state *state = cf_calloc(NULL, 1, sizeof(*state), STATE_ERROR);
-  state->color = execute;
+  struct state *s = cf_calloc(NULL, 1, sizeof(*s), STATE_ERROR);
+  s->color = execute;
 
-  state->base = 10;
+  s->base = 10;
 
-  state->stack = cf_calloc(state, 1, sizeof(struct stack), STACK_ERROR);
-  init_stack(state->stack, STACK_SIZE, STACK_INIT_ERROR);
+  s->stack = cf_calloc(s, 1, sizeof(struct stack), STACK_ERROR);
+  init_stack(s->stack, STACK_SIZE, STACK_INIT_ERROR);
 
-  state->r_stack = cf_calloc(state, 1, sizeof(struct stack), RSTACK_ERROR);
-  init_stack(state->r_stack, R_STACK_SIZE, RSTACK_INIT_ERROR);
+  s->r_stack = cf_calloc(s, 1, sizeof(struct stack), RSTACK_ERROR);
+  init_stack(s->r_stack, R_STACK_SIZE, RSTACK_INIT_ERROR);
 
-  state->dict.entries = cf_calloc(state, DICT_SIZE, sizeof(struct entry), DICT_ERROR);
-  state->dict.latest = state->dict.entries - 1;
+  s->dict.entries = cf_calloc(s, DICT_SIZE, sizeof(struct entry), DICT_ERROR);
+  s->dict.latest = s->dict.entries - 1;
 
-  state->heap = cf_calloc(state, 1, HEAP_SIZE, HEAP_ERROR);
-  state->here = state->heap;
+  s->heap = cf_calloc(s, 1, HEAP_SIZE, HEAP_ERROR);
+  s->here = s->heap;
 
-  state->done = 0;
-  state->echo_on = 0;
+  s->done = 0;
+  s->echo_on = 0;
 
-  state->str_stream = NULL;
-  state->file_stream = NULL;
+  s->str_stream = NULL;
+  s->file_stream = NULL;
 
   define_prefix(':', define,         COLOR_RED,     1);
   define_prefix('^', compile,        COLOR_GREEN,   0);
@@ -1187,64 +1187,64 @@ colorforth_newstate(void)
   define_prefix('`', compile_tick,   COLOR_BLUE,    0);
   define_prefix(',', compile_inline, COLOR_CYAN,    0);
 
-  define_primitive(state, NOP_HASH,               ENTRY_NAME("nop"), OP_NOP);
-  define_primitive(state, PRINT_TOS_HASH,         ENTRY_NAME("."), OP_PRINT_TOS);
-  define_primitive(state, DUP_HASH,               ENTRY_NAME("dup"), OP_DUP);
-  define_primitive(state, OVER_HASH,              ENTRY_NAME("over"), OP_OVER);
-  define_primitive(state, SWAP_HASH,              ENTRY_NAME("swap"), OP_SWAP);
-  define_primitive(state, DROP_HASH,              ENTRY_NAME("drop"), OP_DROP);
-  define_primitive(state, ROT_HASH,               ENTRY_NAME("rot"), OP_ROT);
-  define_primitive(state, MINUS_ROT_HASH,         ENTRY_NAME("-rot"), OP_MINUS_ROT);
-  define_primitive(state, NIP_HASH,               ENTRY_NAME("nip"), OP_NIP);
-  define_primitive(state, ADD_HASH,               ENTRY_NAME("+"), OP_ADD);
-  define_primitive(state, SUB_HASH,               ENTRY_NAME("-"), OP_SUB);
-  define_primitive(state, MUL_HASH,               ENTRY_NAME("*"), OP_MUL);
-  define_primitive(state, EQUAL_HASH,             ENTRY_NAME("="), OP_EQUAL);
-  define_primitive(state, LESS_HASH,              ENTRY_NAME("<"), OP_LESS);
-  define_primitive(state, BYE_HASH,               ENTRY_NAME("bye"), OP_BYE);
-  define_primitive(state, WORDS_HASH,             ENTRY_NAME("words"), OP_WORDS);
-  define_primitive(state, EMIT_HASH,              ENTRY_NAME("emit"), OP_EMIT);
-  define_primitive(state, KEY_HASH,               ENTRY_NAME("key"), OP_KEY);
-  define_primitive(state, LOAD_HASH,              ENTRY_NAME("@"), OP_LOAD);
-  define_primitive(state, STORE_HASH,             ENTRY_NAME("!"), OP_STORE);
-  define_primitive(state, CLOAD_HASH,             ENTRY_NAME("c@"), OP_CLOAD);
-  define_primitive(state, CSTORE__HASH,           ENTRY_NAME("c!"), OP_CSTORE);
-  define_primitive(state, CELL_HASH,              ENTRY_NAME("cell"), OP_CELL);
-  define_primitive(state, CODE_LEN_HASH,          ENTRY_NAME("#code"), OP_CODE_LEN);
-  define_primitive(state, HERE_HASH,              ENTRY_NAME("here"), OP_HERE);
-  define_primitive(state, LATEST_HASH,            ENTRY_NAME("latest"), OP_LATEST);
+  define_primitive(s, NOP_HASH,               ENTRY_NAME("nop"), OP_NOP);
+  define_primitive(s, PRINT_TOS_HASH,         ENTRY_NAME("."), OP_PRINT_TOS);
+  define_primitive(s, DUP_HASH,               ENTRY_NAME("dup"), OP_DUP);
+  define_primitive(s, OVER_HASH,              ENTRY_NAME("over"), OP_OVER);
+  define_primitive(s, SWAP_HASH,              ENTRY_NAME("swap"), OP_SWAP);
+  define_primitive(s, DROP_HASH,              ENTRY_NAME("drop"), OP_DROP);
+  define_primitive(s, ROT_HASH,               ENTRY_NAME("rot"), OP_ROT);
+  define_primitive(s, MINUS_ROT_HASH,         ENTRY_NAME("-rot"), OP_MINUS_ROT);
+  define_primitive(s, NIP_HASH,               ENTRY_NAME("nip"), OP_NIP);
+  define_primitive(s, ADD_HASH,               ENTRY_NAME("+"), OP_ADD);
+  define_primitive(s, SUB_HASH,               ENTRY_NAME("-"), OP_SUB);
+  define_primitive(s, MUL_HASH,               ENTRY_NAME("*"), OP_MUL);
+  define_primitive(s, EQUAL_HASH,             ENTRY_NAME("="), OP_EQUAL);
+  define_primitive(s, LESS_HASH,              ENTRY_NAME("<"), OP_LESS);
+  define_primitive(s, BYE_HASH,               ENTRY_NAME("bye"), OP_BYE);
+  define_primitive(s, WORDS_HASH,             ENTRY_NAME("words"), OP_WORDS);
+  define_primitive(s, EMIT_HASH,              ENTRY_NAME("emit"), OP_EMIT);
+  define_primitive(s, KEY_HASH,               ENTRY_NAME("key"), OP_KEY);
+  define_primitive(s, LOAD_HASH,              ENTRY_NAME("@"), OP_LOAD);
+  define_primitive(s, STORE_HASH,             ENTRY_NAME("!"), OP_STORE);
+  define_primitive(s, CLOAD_HASH,             ENTRY_NAME("c@"), OP_CLOAD);
+  define_primitive(s, CSTORE__HASH,           ENTRY_NAME("c!"), OP_CSTORE);
+  define_primitive(s, CELL_HASH,              ENTRY_NAME("cell"), OP_CELL);
+  define_primitive(s, CODE_LEN_HASH,          ENTRY_NAME("#code"), OP_CODE_LEN);
+  define_primitive(s, HERE_HASH,              ENTRY_NAME("here"), OP_HERE);
+  define_primitive(s, LATEST_HASH,            ENTRY_NAME("latest"), OP_LATEST);
 
-  define_primitive(state, COMPILE_HASH,           ENTRY_NAME("[^]"), OP_COMPILE);
-  define_primitive(state, COMPILE_INLINE_HASH,    ENTRY_NAME("[`]"), OP_COMPILE_INLINE);
-  define_primitive(state, COMPILE_LITERAL_HASH,   ENTRY_NAME("[,]"), OP_COMPILE_LITERAL);
-  define_primitive(state, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
-  define_primitive(state, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
-  define_primitive(state, EXECUTE_STAR_HASH,      ENTRY_NAME("execute*"), OP_EXECUTE_STAR);
-  define_primitive(state, GET_CVA_HASH,           ENTRY_NAME("cva>"), OP_GET_CVA);
+  define_primitive(s, COMPILE_HASH,           ENTRY_NAME("[^]"), OP_COMPILE);
+  define_primitive(s, COMPILE_INLINE_HASH,    ENTRY_NAME("[`]"), OP_COMPILE_INLINE);
+  define_primitive(s, COMPILE_LITERAL_HASH,   ENTRY_NAME("[,]"), OP_COMPILE_LITERAL);
+  define_primitive(s, GET_ENTRY_CODE_HASH,    ENTRY_NAME("code>"), OP_GET_ENTRY_CODE);
+  define_primitive(s, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
+  define_primitive(s, EXECUTE_STAR_HASH,      ENTRY_NAME("execute*"), OP_EXECUTE_STAR);
+  define_primitive(s, GET_CVA_HASH,           ENTRY_NAME("cva>"), OP_GET_CVA);
 
-  define_primitive(state, IF_HASH,                ENTRY_NAME("if"), OP_IF);
-  define_primitive(state, IF_EXIT_HASH,           ENTRY_NAME("if;"), OP_IF_EXIT);
-  define_primitive(state, IF_NOT_HASH,            ENTRY_NAME("if-not"), OP_IF_NOT);
-  define_primitive(state, IF_NOT_EXIT_HASH,       ENTRY_NAME("if-not;"), OP_IF_NOT_EXIT);
+  define_primitive(s, IF_HASH,                ENTRY_NAME("if"), OP_IF);
+  define_primitive(s, IF_EXIT_HASH,           ENTRY_NAME("if;"), OP_IF_EXIT);
+  define_primitive(s, IF_NOT_HASH,            ENTRY_NAME("if-not"), OP_IF_NOT);
+  define_primitive(s, IF_NOT_EXIT_HASH,       ENTRY_NAME("if-not;"), OP_IF_NOT_EXIT);
 
-  define_primitive(state, IF_STAR_HASH,           ENTRY_NAME("if*"), OP_IF_STAR);
-  define_primitive(state, IF_EXIT_STAR_HASH,      ENTRY_NAME("if*;"), OP_IF_STAR_EXIT);
-  define_primitive(state, IF_NOT_STAR_HASH,       ENTRY_NAME("if-not*"), OP_IF_NOT_STAR);
-  define_primitive(state, IF_NOT_EXIT_STAR_HASH,  ENTRY_NAME("if-not*;"), OP_IF_NOT_STAR_EXIT);
+  define_primitive(s, IF_STAR_HASH,           ENTRY_NAME("if*"), OP_IF_STAR);
+  define_primitive(s, IF_EXIT_STAR_HASH,      ENTRY_NAME("if*;"), OP_IF_STAR_EXIT);
+  define_primitive(s, IF_NOT_STAR_HASH,       ENTRY_NAME("if-not*"), OP_IF_NOT_STAR);
+  define_primitive(s, IF_NOT_EXIT_STAR_HASH,  ENTRY_NAME("if-not*;"), OP_IF_NOT_STAR_EXIT);
 
-  define_primitive(state, IF_ELSE_HASH,           ENTRY_NAME("if-else"), OP_IF_ELSE);
+  define_primitive(s, IF_ELSE_HASH,           ENTRY_NAME("if-else"), OP_IF_ELSE);
 
-  define_primitive(state, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
+  define_primitive(s, DOT_S_HASH,             ENTRY_NAME(".s"), OP_DOT_S);
 
-  define_primitive(state, RETURN_HASH,            ENTRY_NAME(";"), OP_RETURN);
+  define_primitive(s, RETURN_HASH,            ENTRY_NAME(";"), OP_RETURN);
 
-  define_primitive(state, R_PUSH_HASH,            ENTRY_NAME(">R"), OP_R_PUSH);
-  define_primitive(state, R_POP_HASH,             ENTRY_NAME("R>"), OP_R_POP);
-  define_primitive(state, R_FETCH_HASH,           ENTRY_NAME("R@"), OP_R_FETCH);
+  define_primitive(s, R_PUSH_HASH,            ENTRY_NAME(">R"), OP_R_PUSH);
+  define_primitive(s, R_POP_HASH,             ENTRY_NAME("R>"), OP_R_POP);
+  define_primitive(s, R_FETCH_HASH,           ENTRY_NAME("R@"), OP_R_FETCH);
 
-  define_primitive(state, CLEAR_HASH,             ENTRY_NAME("clear"), OP_CLEAR);
+  define_primitive(s, CLEAR_HASH,             ENTRY_NAME("clear"), OP_CLEAR);
 
-  init_lib(state);
+  init_lib(s);
 
 #ifdef __USE_REGISTER
   // A, B, C, I and J registers are state global
@@ -1258,37 +1258,37 @@ colorforth_newstate(void)
 #endif
 
 #ifdef __USE_EXTENSIONS
-  load_extensions(state);
+  load_extensions(s);
 #endif
 
 #ifdef __EMBED_LIB_CF
-  parse_from_embed_lib_cf(state);
+  parse_from_embed_lib_cf(s);
 #endif /* __EMBED_LIB_CF */
 
-  state->color = execute;
-  echo_color(state, '~', COLOR_YELLOW);
-  state->echo_on = 1;
+  s->color = execute;
+  echo_color(s, '~', COLOR_YELLOW);
+  s->echo_on = 1;
 
-  return state;
+  return s;
 }
 
 void
-free_state(struct state* state)
+free_state(struct state *s)
 {
-  free(state->heap);
+  free(s->heap);
 
-  free_dictionary(&state->dict);
+  free_dictionary(&s->dict);
 
-  free_stack(state->r_stack);
-  free_stack(state->stack);
+  free_stack(s->r_stack);
+  free_stack(s->stack);
 
 #ifdef __EXTENDED_MATH
-  free(state->fstack.cells);
+  free(s->fstack.cells);
 #endif
 
 #ifdef __MP_MATH
-  free(state->mpstack.cells);
+  free(s->mpstack.cells);
 #endif
 
-  free(state);
+  free(s);
 }

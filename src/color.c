@@ -10,22 +10,22 @@
 struct termios old_tio;
 
 void
-echo_color(struct state *state, int c, char *color)
+echo_color(struct state *s, int c, char *color)
 {
-  if (state->echo_on)
+  if (s->echo_on)
   {
     if (color)
     {
-      cf_printf(state, "%s%c", color, c);
+      cf_printf(s, "%s%c", color, c);
     }
     else
     {
-      cf_printf(state, "%c", c);
+      cf_printf(s, "%c", c);
     }
   }
   else if (color)
   {
-    cf_printf(state, "%s", color);
+    cf_printf(s, "%s", color);
   }
 }
 

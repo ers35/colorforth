@@ -30,27 +30,27 @@ init_mpstack(struct mpstack *stack, int len)
 }
 
 void
-mpsize(struct state *state)
+mpsize(struct state *s)
 {
-  push(state->stack, sizeof(mpz_t));
+  push(s->stack, sizeof(mpz_t));
 }
 
 static void
-mdot_s(struct state *state)
+mdot_s(struct state *s)
 {
   char *out;
 
-  for (int i = 0, p = state->mpstack.sp + 1; i <= state->mpstack.lim; i++, p++)
+  for (int i = 0, p = s->mpstack.sp + 1; i <= s->mpstack.lim; i++, p++)
   {
-    if (p > state->mpstack.lim) p = 0;
+    if (p > s->mpstack.lim) p = 0;
 
-    if (i <= state->mpstack.lim - 8) continue;
+    if (i <= s->mpstack.lim - 8) continue;
 
-    gmp_asprintf(&out, "%Zd", state->mpstack.cells[p]);
-    cf_printf(state, "%s ", out);
+    gmp_asprintf(&out, "%Zd", s->mpstack.cells[p]);
+    cf_printf(s, "%s ", out);
     free(out);
   }
-  cf_printf(state, " <mtos\n");
+  cf_printf(s, " <mtos\n");
 }
 
 void
@@ -240,46 +240,46 @@ mcompile_literal(struct state *s)
 }
 
 void
-require_mp_math_fn(struct state *state)
+require_mp_math_fn(struct state *s)
 {
   if (initialized) return;
 
-  init_mpstack(&state->mpstack, MPSTACK_SIZE);
+  init_mpstack(&s->mpstack, MPSTACK_SIZE);
   define_prefix('#', define_mpz,  COLOR_YELLOW,     0);
 
-  define_primitive_extension(state, MPZ_HASH,       ENTRY_NAME("mpz"), mpsize);
+  define_primitive_extension(s, MPZ_HASH,       ENTRY_NAME("mpz"), mpsize);
 
-  define_primitive_extension(state, M_DOTS_HASH,    ENTRY_NAME("m.s"), mdot_s);
-  define_primitive_extension(state, M_DOT_HASH,     ENTRY_NAME("m."), print_mtos);
+  define_primitive_extension(s, M_DOTS_HASH,    ENTRY_NAME("m.s"), mdot_s);
+  define_primitive_extension(s, M_DOT_HASH,     ENTRY_NAME("m."), print_mtos);
 
-  define_primitive_extension(state, MDROP_HASH,     ENTRY_NAME("mdrop"), mdrop);
-  define_primitive_extension(state, MDUP_HASH,      ENTRY_NAME("mdup"), mdup);
-  define_primitive_extension(state, MSWAP_HASH,     ENTRY_NAME("mswap"), mswap);
-  define_primitive_extension(state, MOVER_HASH,     ENTRY_NAME("mover"), mover);
-  define_primitive_extension(state, MROT_HASH,      ENTRY_NAME("mrot"), mrot);
-  define_primitive_extension(state, M_SUBROT_HASH,  ENTRY_NAME("m-rot"), mminus_rot);
-  define_primitive_extension(state, MNIP_HASH,      ENTRY_NAME("mnip"), mnip);
+  define_primitive_extension(s, MDROP_HASH,     ENTRY_NAME("mdrop"), mdrop);
+  define_primitive_extension(s, MDUP_HASH,      ENTRY_NAME("mdup"), mdup);
+  define_primitive_extension(s, MSWAP_HASH,     ENTRY_NAME("mswap"), mswap);
+  define_primitive_extension(s, MOVER_HASH,     ENTRY_NAME("mover"), mover);
+  define_primitive_extension(s, MROT_HASH,      ENTRY_NAME("mrot"), mrot);
+  define_primitive_extension(s, M_SUBROT_HASH,  ENTRY_NAME("m-rot"), mminus_rot);
+  define_primitive_extension(s, MNIP_HASH,      ENTRY_NAME("mnip"), mnip);
 
-  define_primitive_extension(state, M_ADD_HASH,     ENTRY_NAME("m+"), madd);
-  define_primitive_extension(state, M_SUB_HASH,     ENTRY_NAME("m-"), msub);
-  define_primitive_extension(state, M_MUL_HASH,     ENTRY_NAME("m*"), mmul);
-  define_primitive_extension(state, M_DIV_HASH,     ENTRY_NAME("m/"), mdiv);
+  define_primitive_extension(s, M_ADD_HASH,     ENTRY_NAME("m+"), madd);
+  define_primitive_extension(s, M_SUB_HASH,     ENTRY_NAME("m-"), msub);
+  define_primitive_extension(s, M_MUL_HASH,     ENTRY_NAME("m*"), mmul);
+  define_primitive_extension(s, M_DIV_HASH,     ENTRY_NAME("m/"), mdiv);
 
-  define_primitive_extension(state, M_TO__HASH,     ENTRY_NAME("m>"), msup);
-  define_primitive_extension(state, M_FROM_HASH,    ENTRY_NAME("m<"), minf);
-  define_primitive_extension(state, M_EQUAL_HASH,   ENTRY_NAME("m="), mequal);
+  define_primitive_extension(s, M_TO__HASH,     ENTRY_NAME("m>"), msup);
+  define_primitive_extension(s, M_FROM_HASH,    ENTRY_NAME("m<"), minf);
+  define_primitive_extension(s, M_EQUAL_HASH,   ENTRY_NAME("m="), mequal);
 
-  define_primitive_extension(state, M_LOAD_HASH,    ENTRY_NAME("m@"), mload);
-  define_primitive_extension(state, M_STORE_HASH,   ENTRY_NAME("m!"), mstore);
+  define_primitive_extension(s, M_LOAD_HASH,    ENTRY_NAME("m@"), mload);
+  define_primitive_extension(s, M_STORE_HASH,   ENTRY_NAME("m!"), mstore);
 
-  define_primitive_extension(state, M_INLINE_HASH,  ENTRY_NAME("[m,]"), mcompile_literal);
+  define_primitive_extension(s, M_INLINE_HASH,  ENTRY_NAME("[m,]"), mcompile_literal);
 
   initialized = 1;
 }
 
 #else
 void
-init_mp_math_utils(struct state *state)
+init_mp_math_utils(struct state *s)
 {
 }
 #endif

@@ -6,7 +6,7 @@
 extern void parse_from_file(struct state *s, char *filename);
 
 void
-parse_command_line(struct state *state, int argc, char *argv[])
+parse_command_line(struct state *s, int argc, char *argv[])
 {
   char nextIsEval = 0;
   for (int i = 1; i < argc; i++)
@@ -19,15 +19,15 @@ parse_command_line(struct state *state, int argc, char *argv[])
 
     if (nextIsEval)
     {
-      parse_from_string(state, argv[i]);
+      parse_from_string(s, argv[i]);
       nextIsEval = 0;
       continue;
     }
 
-    parse_from_file(state, argv[i]);
+    parse_from_file(s, argv[i]);
   }
 
-  parse_colorforth(state, '~');
+  parse_colorforth(s, '~');
 }
 
 int
@@ -40,16 +40,16 @@ main(int argc, char *argv[])
 
   init_terminal();
 
-  struct state *state = colorforth_newstate();
+  struct state *s = colorforth_newstate();
 
-  parse_command_line(state, argc, argv);
+  parse_command_line(s, argc, argv);
 
-  while (!state->done)
+  while (!s->done)
   {
-    parse_colorforth(state, cf_getchar(state));
+    parse_colorforth(s, cf_getchar(s));
   }
 
-  free_state(state);
+  free_state(s);
 
   reset_terminal();
 

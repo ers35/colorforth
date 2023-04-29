@@ -15,20 +15,20 @@ init_fstack(struct fstack *stack, int len)
 }
 
 void
-fsize(struct state *state)
+fsize(struct state *s)
 {
-  push(state->stack, sizeof(number_t));
+  push(s->stack, sizeof(number_t));
 }
 
 static void
-fdot_s(struct state *state)
+fdot_s(struct state *s)
 {
-  cf_printf(state, "[%d] ", state->fstack.sp);
-  for (int i = 0; i < state->fstack.sp; i++)
+  cf_printf(s, "[%d] ", s->fstack.sp);
+  for (int i = 0; i < s->fstack.sp; i++)
   {
-    cf_printf(state, "%lf ", state->fstack.cells[i]);
+    cf_printf(s, "%lf ", s->fstack.cells[i]);
   }
-  cf_printf(state, "<ftos\n");
+  cf_printf(s, "<ftos\n");
 }
 
 void
@@ -216,45 +216,45 @@ fcompile_literal(struct state *s)
 }
 
 void
-require_ext_math_fn(struct state *state)
+require_ext_math_fn(struct state *s)
 {
   if (initialized) return;
 
-  init_fstack(&state->fstack, FSTACK_SIZE);
+  init_fstack(&s->fstack, FSTACK_SIZE);
   define_prefix('$', define_float,  COLOR_YELLOW,     0);
 
-  define_primitive_extension(state, FLOAT_HASH,      ENTRY_NAME("float"), fsize);
+  define_primitive_extension(s, FLOAT_HASH,      ENTRY_NAME("float"), fsize);
 
-  define_primitive_extension(state, F_DOTS_HASH,     ENTRY_NAME("f.s"), fdot_s);
-  define_primitive_extension(state, F_DOT_HASH,      ENTRY_NAME("f."), print_ftos);
+  define_primitive_extension(s, F_DOTS_HASH,     ENTRY_NAME("f.s"), fdot_s);
+  define_primitive_extension(s, F_DOT_HASH,      ENTRY_NAME("f."), print_ftos);
 
-  define_primitive_extension(state, FDROP_HASH,      ENTRY_NAME("fdrop"), fdrop);
-  define_primitive_extension(state, FDUP_HASH,       ENTRY_NAME("fdup"), fdup);
-  define_primitive_extension(state, FSWAP_HASH,      ENTRY_NAME("fswap"), fswap);
-  define_primitive_extension(state, FOVER_HASH,      ENTRY_NAME("fover"), fover);
-  define_primitive_extension(state, FROT_HASH,       ENTRY_NAME("frot"), frot);
-  define_primitive_extension(state, F_SUBROT_HASH,   ENTRY_NAME("f-rot"), fminus_rot);
-  define_primitive_extension(state, FNIP_HASH,       ENTRY_NAME("fnip"), fnip);
+  define_primitive_extension(s, FDROP_HASH,      ENTRY_NAME("fdrop"), fdrop);
+  define_primitive_extension(s, FDUP_HASH,       ENTRY_NAME("fdup"), fdup);
+  define_primitive_extension(s, FSWAP_HASH,      ENTRY_NAME("fswap"), fswap);
+  define_primitive_extension(s, FOVER_HASH,      ENTRY_NAME("fover"), fover);
+  define_primitive_extension(s, FROT_HASH,       ENTRY_NAME("frot"), frot);
+  define_primitive_extension(s, F_SUBROT_HASH,   ENTRY_NAME("f-rot"), fminus_rot);
+  define_primitive_extension(s, FNIP_HASH,       ENTRY_NAME("fnip"), fnip);
 
-  define_primitive_extension(state, F_ADD_HASH,      ENTRY_NAME("f+"), fadd);
-  define_primitive_extension(state, F_SUB_HASH,      ENTRY_NAME("f-"), fsub);
-  define_primitive_extension(state, F_MUL_HASH,      ENTRY_NAME("f*"), fmul);
-  define_primitive_extension(state, F_DIV_HASH,      ENTRY_NAME("f/"), fdiv);
+  define_primitive_extension(s, F_ADD_HASH,      ENTRY_NAME("f+"), fadd);
+  define_primitive_extension(s, F_SUB_HASH,      ENTRY_NAME("f-"), fsub);
+  define_primitive_extension(s, F_MUL_HASH,      ENTRY_NAME("f*"), fmul);
+  define_primitive_extension(s, F_DIV_HASH,      ENTRY_NAME("f/"), fdiv);
 
-  define_primitive_extension(state, F_TO__HASH,      ENTRY_NAME("f>"), fsup);
-  define_primitive_extension(state, F_FROM_HASH,     ENTRY_NAME("f<"), finf);
+  define_primitive_extension(s, F_TO__HASH,      ENTRY_NAME("f>"), fsup);
+  define_primitive_extension(s, F_FROM_HASH,     ENTRY_NAME("f<"), finf);
 
-  define_primitive_extension(state, F_LOAD_HASH,     ENTRY_NAME("f@"), fload);
-  define_primitive_extension(state, F_STORE_HASH,    ENTRY_NAME("f!"), fstore);
+  define_primitive_extension(s, F_LOAD_HASH,     ENTRY_NAME("f@"), fload);
+  define_primitive_extension(s, F_STORE_HASH,    ENTRY_NAME("f!"), fstore);
 
-  define_primitive_extension(state, F_INLINE_HASH,   ENTRY_NAME("[f,]"), fcompile_literal);
+  define_primitive_extension(s, F_INLINE_HASH,   ENTRY_NAME("[f,]"), fcompile_literal);
 
   initialized = 1;
 }
 
 #else
 void
-init_ext_math_utils(struct state *state)
+init_ext_math_utils(struct state *s)
 {
 }
 #endif

@@ -35,22 +35,22 @@ extern void execute(struct state *s);
 extern void execute_(struct state *s, struct entry *entry);
 
 struct state *
-clone_state(struct state *state)
+clone_state(struct state *s)
 {
-  struct state *clone = cf_calloc(state, 1, sizeof(*state), THREAD_CLONE_STATE_ERROR);
+  struct state *clone = cf_calloc(s, 1, sizeof(*s), THREAD_CLONE_STATE_ERROR);
   clone->color = execute;
 
-  clone->dict.entries = state->dict.entries;
-  clone->dict.latest = state->dict.latest;
+  clone->dict.entries = s->dict.entries;
+  clone->dict.latest = s->dict.latest;
 
-  clone->stack = cf_calloc(state, 1, sizeof(struct stack), THREAD_STACK_ERROR);
+  clone->stack = cf_calloc(s, 1, sizeof(struct stack), THREAD_STACK_ERROR);
   init_stack(clone->stack, STACK_SIZE, THREAD_INIT_STACK_ERROR);
 
-  clone->r_stack = cf_calloc(state, 1, sizeof(struct stack), THREAD_RSTACK_ERROR);
+  clone->r_stack = cf_calloc(s, 1, sizeof(struct stack), THREAD_RSTACK_ERROR);
   init_stack(clone->r_stack, R_STACK_SIZE, THREAD_INIT_RSTACK_ERROR);
 
-  clone->heap = state->heap;
-  clone->here = state->here;
+  clone->heap = s->heap;
+  clone->here = s->here;
 
   clone->done = 0;
   clone->echo_on = 0;
@@ -112,29 +112,29 @@ perform_thread(void *arg)
 }
 
 void
-thread_run(struct state *state)
+thread_run(struct state *s)
 {
-  cell n = pop(state->stack);
-  struct entry *entry = (struct entry *) pop(state->stack);
+  cell n = pop(s->stack);
+  struct entry *entry = (struct entry *) pop(s->stack);
 
   if (n >= MAX_THREAD) {
-    cf_printf(state, "Too many threads. At most %d allowed\n", MAX_THREAD);
-    push(state->stack, -1);
+    cf_printf(s, "Too many threads. At most %d allowed\n", MAX_THREAD);
+    push(s->stack, -1);
     return;
   }
 
-  struct state *clone = clone_state(state);
+  struct state *clone = clone_state(s);
 
   thread_args[n].clone = clone;
   thread_args[n].entry = entry;
 
   pthread_create(&thread_args[n].pthread, NULL, perform_thread, (void *) &thread_args[n]);
 
-  push(state->stack, n);
+  push(s->stack, n);
 }
 
 void
-thread_join_all(struct state *state)
+thread_join_all(struct state *s)
 {
   for (int i = 0; i < MAX_THREAD; i++)
   {
@@ -143,17 +143,17 @@ thread_join_all(struct state *state)
 }
 
 void
-thread_join(struct state *state)
+thread_join(struct state *s)
 {
-  cell n = pop(state->stack);
+  cell n = pop(s->stack);
 
   pthread_join(thread_args[n].pthread, NULL);
 }
 
 void
-thread_kill(struct state *state)
+thread_kill(struct state *s)
 {
-  cell n = pop(state->stack);
+  cell n = pop(s->stack);
 
   pthread_kill(thread_args[n].pthread, SIGUSR1);
   pthread_join(thread_args[n].pthread, NULL);
@@ -165,23 +165,23 @@ thread_kill(struct state *state)
 }
 
 void
-thread_lock(struct state *state)
+thread_lock(struct state *s)
 {
-  cell n = pop(state->stack);
+  cell n = pop(s->stack);
 
   sem_wait(&locks[n]);
 }
 
 void
-thread_unlock(struct state *state)
+thread_unlock(struct state *s)
 {
-  cell n = pop(state->stack);
+  cell n = pop(s->stack);
 
   sem_post(&locks[n]);
 }
 
 void
-require_threads_fn(struct state *state)
+require_threads_fn(struct state *s)
 {
   if (initialized) return;
 
@@ -190,19 +190,19 @@ require_threads_fn(struct state *state)
     sem_init(&locks[i], 0, 1);
   }
 
-  define_primitive_extension(state, THREAD__RUN_HASH,         ENTRY_NAME("thread/run"), thread_run);
-  define_primitive_extension(state, THREAD__JOIN_SUBALL_HASH, ENTRY_NAME("thread/join-all"), thread_join_all);
-  define_primitive_extension(state, THREAD__JOIN_HASH,        ENTRY_NAME("thread/join"), thread_join);
-  define_primitive_extension(state, THREAD__KILL_HASH,        ENTRY_NAME("thread/kill"), thread_kill);
-  define_primitive_extension(state, THREAD__LOCK_HASH,        ENTRY_NAME("thread/lock"), thread_lock);
-  define_primitive_extension(state, THREAD__UNLOCK_HASH,      ENTRY_NAME("thread/unlock"), thread_unlock);
+  define_primitive_extension(s, THREAD__RUN_HASH,         ENTRY_NAME("thread/run"), thread_run);
+  define_primitive_extension(s, THREAD__JOIN_SUBALL_HASH, ENTRY_NAME("thread/join-all"), thread_join_all);
+  define_primitive_extension(s, THREAD__JOIN_HASH,        ENTRY_NAME("thread/join"), thread_join);
+  define_primitive_extension(s, THREAD__KILL_HASH,        ENTRY_NAME("thread/kill"), thread_kill);
+  define_primitive_extension(s, THREAD__LOCK_HASH,        ENTRY_NAME("thread/lock"), thread_lock);
+  define_primitive_extension(s, THREAD__UNLOCK_HASH,      ENTRY_NAME("thread/unlock"), thread_unlock);
 
   initialized = 1;
 }
 
 #else
 void
-init_threads_utils(struct state *state)
+init_threads_utils(struct state *s)
 {
 }
 #endif
