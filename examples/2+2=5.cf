@@ -1,5 +1,6 @@
 %
 \ A joke to reinvent the world
+0
 
 " 2 + 2 = " pr   2 2 + . cr
 

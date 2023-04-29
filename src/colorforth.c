@@ -664,8 +664,9 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_CALL:
       {
+        ENSURE_STACK_MAX(1, break);
         struct entry *entry_ = (struct entry*)pc->value;
-        push(s->r_stack, (cell)pc);
+        R_PUSH((cell)pc);
         pc = entry_->code - 1;
         break;
       }
@@ -735,11 +736,12 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f) {
-          push(s->r_stack, (cell)pc);
+          R_PUSH((cell)pc);
           pc = entry_->code - 1;
         }
 
@@ -748,13 +750,14 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF_EXIT:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f) {
-          push(s->r_stack, (cell)pc);
+          R_PUSH((cell)pc);
           pc = entry_->code - 1;
-          pop(s->r_stack);
+          R_SP -= 1;
         }
 
         break;
@@ -762,11 +765,12 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF_NOT:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f == 0) {
-          push(s->r_stack, (cell)pc);
+          R_PUSH((cell)pc);
           pc = entry_->code - 1;
         }
 
@@ -775,22 +779,24 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF_NOT_EXIT:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f == 0) {
-          push(s->r_stack, (cell)pc);
+          R_PUSH((cell)pc);
           pc = entry_->code - 1;
-          pop(s->r_stack);
+          R_SP -= 1;
         }
 
         break;
       }
 
-    case OP_IF_STAR:
+      case OP_IF_STAR:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f) pc = entry_->code - 1;
 
@@ -799,12 +805,13 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF_STAR_EXIT:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f) {
           pc = entry_->code - 1;
-          pop(s->r_stack);
+          R_SP -= 1;
         }
 
         break;
@@ -812,8 +819,9 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF_NOT_STAR:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f == 0) pc = entry_->code - 1;
 
@@ -822,12 +830,13 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF_NOT_STAR_EXIT:
       {
-        struct entry *entry_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(2, break);
+        struct entry *entry_ = (struct entry*)POP();
+        const cell f = POP();
 
         if (f == 0) {
           pc = entry_->code - 1;
-          pop(s->r_stack);
+          R_SP -= 1;
         }
 
         break;
@@ -835,11 +844,12 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_IF_ELSE:
       {
-        struct entry *entry_false_ = (struct entry*)pop(s->stack);
-        struct entry *entry_true_ = (struct entry*)pop(s->stack);
-        const cell f = pop(s->stack);
+        ENSURE_STACK_MIN(3, break);
+        struct entry *entry_false_ = (struct entry*)POP();
+        struct entry *entry_true_ = (struct entry*)POP();
+        const cell f = POP();
 
-        push(s->r_stack, (cell)pc);
+        R_PUSH((cell)pc);
         if (f) {
           pc = entry_true_->code - 1;
         }
