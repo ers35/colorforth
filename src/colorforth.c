@@ -168,37 +168,6 @@ dot_s(struct state *s, struct stack *stack)
   cf_printf(s, "<tos\n");
 }
 
-inline void
-push(struct stack *stack, const cell n)
-{
-#ifndef UNSAFE_MODE
-  if (stack->sp >= stack->lim)
-  {
-    cf_printf(NULL, "ES>!\n");
-    return;
-  }
-#endif
-
-  stack->sp += 1;
-  stack->cells[stack->sp] = n;
-}
-
-inline cell
-pop(struct stack *stack)
-{
-#ifndef UNSAFE_MODE
-  if (stack->sp < 0)
-  {
-    cf_printf(NULL, "ES<!\n");
-    return 0;
-  }
-#endif
-
-  const cell ret = stack->cells[stack->sp];
-  stack->sp -= 1;
-  return ret;
-}
-
 void
 clear_tib (struct state *s){
   for(size_t i = 0; i < s->tib.len; i++)
@@ -862,7 +831,9 @@ execute_(struct state *s, struct entry *entry)
 
       case OP_EMIT:
       {
-        cf_putchar(s, (char)pop(s->stack));
+        ENSURE_STACK_MIN(1, break);
+        cf_putchar(s, (char)CELLS[SP]);
+        SP -= 1;
         break;
       }
 

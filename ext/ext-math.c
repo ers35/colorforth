@@ -17,7 +17,7 @@ init_fstack(struct fstack *stack, int len)
 void
 fsize(struct state *s)
 {
-  push(s->stack, sizeof(number_t));
+  PUSH1(sizeof(number_t));
 }
 
 static void
@@ -180,7 +180,7 @@ fsup(struct state *s)
   const number_t n1 = fpop(&s->fstack);
   const number_t n2 = fpop(&s->fstack);
 
-  push(s->stack, n2 > n1);
+  PUSH1(n2 > n1);
 }
 
 void
@@ -189,19 +189,21 @@ finf(struct state *s)
   const number_t n1 = fpop(&s->fstack);
   const number_t n2 = fpop(&s->fstack);
 
-  push(s->stack, n2 < n1);
+  PUSH1(n2 < n1);
 }
 
 void
 fload(struct state *s)
 {
-  fpush(&s->fstack, *(number_t*)pop(s->stack));
+  POP1();
+  fpush(&s->fstack, *(number_t*)p1);
 }
 
 void
 fstore(struct state *s)
 {
-  number_t *ptr = (number_t*)pop(s->stack);
+  POP1();
+  number_t *ptr = (number_t*)p1;
   number_t n = fpop(&s->fstack);
   *ptr = n;
 }

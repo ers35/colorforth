@@ -56,6 +56,7 @@ see(struct state *s, struct entry *entry)
         case OP_NUMBER:
         {
           cf_print_cell(s, entry->code[i].value);
+          cf_printf(s, " ");
           break;
         }
 
@@ -128,8 +129,8 @@ disassemble(struct state *s)
 void
 see_fn(struct state *s)
 {
-    struct entry *entry_ = (struct entry*)pop(s->stack);
-    see(s, entry_);
+  struct entry *entry_ = (struct entry*)POP();
+  see(s, entry_);
 }
 
 void
@@ -157,9 +158,10 @@ fullroom(struct state *s)
 void
 patch_entry (struct state *s)
 {
-  struct entry *entry = (struct entry*)pop(s->stack);
-  struct entry *to = (struct entry*)pop(s->stack);
-  struct entry *from = (struct entry*)pop(s->stack);
+  POP3();
+  struct entry *entry = (struct entry*)p1;
+  struct entry *to = (struct entry*)p2;
+  struct entry *from = (struct entry*)p3;
 
   for (size_t i = 0, done = 0; !done; i++)
   {

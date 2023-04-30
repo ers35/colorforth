@@ -1,5 +1,6 @@
 // The author disclaims copyright to this source code.
 #include "colorforth.h"
+#include "cf-stdio.h"
 #include <sys/time.h>
 #include <unistd.h>
 #include <time.h>
@@ -10,7 +11,7 @@ void
 time_fn(struct state *s)
 {
   time_t t;
-  push(s->stack, (unsigned) time(&t));
+  PUSH1((unsigned) time(&t));
 }
 
 void
@@ -18,24 +19,24 @@ utime_fn(struct state *s)
 {
   struct timeval tv;
   gettimeofday(&tv,NULL);
-  push(s->stack, tv.tv_sec * 1000000 + tv.tv_usec);
+  PUSH1(tv.tv_sec * 1000000 + tv.tv_usec);
 }
 
 void
 sleep_fn(struct state *s)
 {
-  cell sec = pop(s->stack);
-  sleep(sec);
+  POP1();
+  sleep(p1);
 }
 
 void
 mssleep_fn(struct state *s)
 {
-  cell usec = pop(s->stack);
+  POP1();
 
   struct timespec ts;
-  ts.tv_sec = usec / 1000;
-  ts.tv_nsec = (usec % 1000) * 1000000;
+  ts.tv_sec = p1 / 1000;
+  ts.tv_nsec = (p1 % 1000) * 1000000;
 
   nanosleep(&ts, NULL);
 }

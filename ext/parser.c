@@ -1,5 +1,6 @@
 // The author disclaims copyright to this source code.
 #include "colorforth.h"
+#include "cf-stdio.h"
 
 static char initialized = 0;
 
@@ -8,8 +9,8 @@ static char initialized = 0;
 void
 parse(struct state *s)
 {
-  const int c = pop(s->stack);
-  parse_colorforth(s, c);
+  POP1();
+  parse_colorforth(s, p1);
 }
 
 void

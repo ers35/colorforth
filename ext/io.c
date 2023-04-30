@@ -7,7 +7,7 @@ static char initialized = 0;
 void
 get_char(struct state *s)
 {
-  push(s->stack, getchar());
+  PUSH1(getchar());
 }
 
 void
@@ -38,7 +38,7 @@ parse_from_file(struct state *s, char *filename)
 void
 echo_addr(struct state *s)
 {
-  push(s->stack,(cell) &s->echo_on);
+  PUSH1((cell) &s->echo_on);
 }
 
 int
@@ -58,26 +58,28 @@ file_size(char *filename)
 void
 file_size_fn(struct state *s)
 {
-  char *filename = CFSTRING2C(pop(s->stack));
+  POP1();
+  char *filename = CFSTRING2C(p1);
 
   int size = file_size(filename);
 
   if (size == -1) cf_printf(s, "Unable to read '%s'\n", filename);
 
-  push(s->stack, file_size(filename));
+  PUSH1(file_size(filename));
 }
 
 void
 load_file(struct state *s)
 {
-  char *filename = CFSTRING2C(pop(s->stack));
-  char *buf = (char *) (pop(s->stack));
+  POP2();
+  char *filename = CFSTRING2C(p1);
+  char *buf = (char *) (p2);
   int size = file_size(filename);
 
   if (size == -1)
   {
     cf_printf(s, "Unable to read '%s'\n", filename);
-    push(s->stack, -1);
+    PUSH1(-1);
     return;
   }
 
@@ -86,7 +88,7 @@ load_file(struct state *s)
   if (!fp)
   {
     cf_printf(s, "Unable to read '%s'\n", filename);
-    push(s->stack, -1);
+    PUSH1(-1);
     return;
   }
 
@@ -95,7 +97,7 @@ load_file(struct state *s)
   {
     free(buf);
     cf_printf(s, "Unable to read '%s'\n", filename);
-    push(s->stack, -1);
+    PUSH1(-1);
     return;
   }
 
@@ -108,20 +110,20 @@ load_file(struct state *s)
 void
 save_file(struct state *s)
 {
-  char *filename = CFSTRING2C(pop(s->stack));
-  cell value = pop(s->stack);
-  char *str = CFSTRING2C(value);
+  POP2();
+  char *filename = CFSTRING2C(p1);
+  char *str = CFSTRING2C(p2);
 
   FILE *fp = fopen(filename, "w");
 
   if (!fp)
   {
     cf_printf(s, "Unable to read '%s'\n", filename);
-    push(s->stack, -1);
+    PUSH1(-1);
     return;
   }
 
-  fwrite(str, 1, *(cell *)value, fp);
+  fwrite(str, 1, *(cell *)p2, fp);
 
   fclose(fp);
 }
@@ -129,7 +131,8 @@ save_file(struct state *s)
 void
 included_file(struct state *s)
 {
-  char *filename = CFSTRING2C(pop(s->stack));
+  POP1();
+  char *filename = CFSTRING2C(p1);
   parse_from_file(s, filename);
 }
 

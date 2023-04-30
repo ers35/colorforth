@@ -114,23 +114,24 @@ perform_thread(void *arg)
 void
 thread_run(struct state *s)
 {
-  cell n = pop(s->stack);
-  struct entry *entry = (struct entry *) pop(s->stack);
+  POP2();
+  cell n = p1;
+  struct entry *entry = (struct entry *) p2;
 
   if (n >= MAX_THREAD) {
     cf_printf(s, "Too many threads. At most %d allowed\n", MAX_THREAD);
-    push(s->stack, -1);
+    PUSH1(-1);
     return;
   }
 
   struct state *clone = clone_state(s);
 
-  thread_args[n].clone = clone;
-  thread_args[n].entry = entry;
+  thread_args[p1].clone = clone;
+  thread_args[p1].entry = entry;
 
-  pthread_create(&thread_args[n].pthread, NULL, perform_thread, (void *) &thread_args[n]);
+  pthread_create(&thread_args[p1].pthread, NULL, perform_thread, (void *) &thread_args[p1]);
 
-  push(s->stack, n);
+  PUSH1(n);
 }
 
 void
@@ -145,39 +146,39 @@ thread_join_all(struct state *s)
 void
 thread_join(struct state *s)
 {
-  cell n = pop(s->stack);
+  POP1();
 
-  pthread_join(thread_args[n].pthread, NULL);
+  pthread_join(thread_args[p1].pthread, NULL);
 }
 
 void
 thread_kill(struct state *s)
 {
-  cell n = pop(s->stack);
+  POP1();
 
-  pthread_kill(thread_args[n].pthread, SIGUSR1);
-  pthread_join(thread_args[n].pthread, NULL);
+  pthread_kill(thread_args[p1].pthread, SIGUSR1);
+  pthread_join(thread_args[p1].pthread, NULL);
 
-  pthread_kill(thread_args[n].pthread, 0);
-  pthread_join(thread_args[n].pthread, NULL);
+  pthread_kill(thread_args[p1].pthread, 0);
+  pthread_join(thread_args[p1].pthread, NULL);
 
-  free_clone_state(thread_args[n].clone);
+  free_clone_state(thread_args[p1].clone);
 }
 
 void
 thread_lock(struct state *s)
 {
-  cell n = pop(s->stack);
+  POP1();
 
-  sem_wait(&locks[n]);
+  sem_wait(&locks[p1]);
 }
 
 void
 thread_unlock(struct state *s)
 {
-  cell n = pop(s->stack);
+  POP1();
 
-  sem_post(&locks[n]);
+  sem_post(&locks[p1]);
 }
 
 void

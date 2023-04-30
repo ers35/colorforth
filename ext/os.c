@@ -1,25 +1,29 @@
 // The author disclaims copyright to this source code.
 #include "colorforth.h"
+#include "cf-stdio.h"
 
 static char initialized = 0;
 
 void
 system_fn(struct state *s)
 {
-  push(s->stack, system((char*)pop(s->stack)));
+  POP1();
+  PUSH1(system((char*)p1));
 }
 
 void
 c_alloc(struct state *s)
 {
-  const unsigned int size = (unsigned int)pop(s->stack);
-  push(s->stack, (cell)cf_calloc(s, 1, size, CALLOC_ERROR));
+  POP1();
+  const unsigned int size = (unsigned int)p1;
+  PUSH1((cell)cf_calloc(s, 1, size, CALLOC_ERROR));
 }
 
 void
 c_free(struct state *s)
 {
-  free((char *)pop(s->stack));
+  POP1();
+  free((char *)p1);
 }
 
 void

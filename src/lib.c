@@ -7,22 +7,24 @@ extern hash_t hash(char *str);
 void
 hash_fn (struct state *s)
 {
-  char *input = CFSTRING2C(pop(s->stack));
-  push(s->stack, hash(input));
+  POP1();
+  char *input = CFSTRING2C(p1);
+  PUSH(hash(input));
 }
 
 void
 get_base_addr (struct state *s)
 {
 
-  push(s->stack, (cell) &s->base);
+  PUSH((cell) &s->base);
 }
 
 void
 is (struct state *s)
 {
-  struct entry *entry_from = (struct entry*)pop(s->stack);
-  struct entry *entry_to = (struct entry*)pop(s->stack);
+  POP2();
+  struct entry *entry_from = (struct entry*)p1;
+  struct entry *entry_to = (struct entry*)p2;
 
   entry_from->code = entry_to->code;
 }
@@ -30,8 +32,9 @@ is (struct state *s)
 void
 c_is (struct state *s)
 {
-  struct entry *entry_from = (struct entry*)pop(s->stack);
-  struct code *code_to = (struct code*)pop(s->stack);
+  POP2();
+  struct entry *entry_from = (struct entry*)p1;
+  struct code *code_to = (struct code*)p2;
 
   entry_from->code = code_to;
 }
@@ -39,7 +42,7 @@ c_is (struct state *s)
 void
 hide_entry (struct state *s)
 {
-  struct entry *entry = (struct entry*)pop(s->stack);
+  struct entry *entry = (struct entry*)POP();
 
   entry->name_hash = 0;
 #ifdef __KEEP_ENTRY_NAMES
@@ -63,21 +66,15 @@ room (struct state *s)
             used, HEAP_SIZE,(used*100/HEAP_SIZE), cell_bytes, cell_bits);
 #endif /* __KEEP_ENTRY_NAMES */
 
-  push(s->stack, cell_bits);
-  push(s->stack, cell_bytes);
-  push(s->stack, HEAP_SIZE);
-  push(s->stack, used);
-  push(s->stack, DICT_SIZE);
-  push(s->stack, defined);
+  PUSH3(cell_bits, cell_bytes, HEAP_SIZE);
+  PUSH3(used, DICT_SIZE, defined);
 }
 
 void
 drop_room (struct state *s)
 {
-  for (int i = 0; i < 6; i++)
-  {
-    pop(s->stack);
-  }
+  ENSURE_STACK_MIN(6, return);
+  SP -= 6;
 }
 
 void

@@ -13,11 +13,12 @@
 
 static char initialized = 0;
 
-#define PERROR(msg) cf_printf(s, "ERROR: %s: %s\n", msg, strerror(errno)); push(s->stack, 0)
+#define PERROR(msg) cf_printf(s, "ERROR: %s: %s\n", msg, strerror(errno)); PUSH1(0)
 
 void
 server_start(struct state *s) {
-  cell port = pop(s->stack);
+  POP1();
+  cell port = p1;
 
 	cell server_fd;
 	struct sockaddr_in address;
@@ -54,13 +55,14 @@ server_start(struct state *s) {
 
 	cf_printf(s, "Server started on port: %d\n", port);
 
-  push(s->stack, server_fd);
+  PUSH1(server_fd);
 }
 
 void
 client_start(struct state * s) {
-  cell port = pop(s->stack);
-  char * host = CFSTRING2C(pop(s->stack));
+  POP2();
+  cell port = p1;
+  char * host = CFSTRING2C(p2);
 
   cf_printf(s, "client: %s  %d\n", host, port);
 
@@ -90,12 +92,13 @@ client_start(struct state * s) {
 
   cf_printf(s, "Client connected on %s on port %d\n", host, port);
 
-  push(s->stack, sock);
+  PUSH1(sock);
 }
 
 void
 server_stop(struct state *s) {
-  cell fd = pop(s->stack);
+  POP1();
+  cell fd = p1;
 
 	if (close(fd)) {
 		PERROR("socket close");
@@ -104,12 +107,13 @@ server_stop(struct state *s) {
 
 	cf_printf(s, "FD closed. Server stopped\n");
 
-  push(s->stack, -1);
+  PUSH1(-1);
 }
 
 void
 server_nonblocking(struct state *s) {
-  cell fd = pop(s->stack);
+  POP1();
+  cell fd = p1;
 
 	int status = fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
 
@@ -120,13 +124,14 @@ server_nonblocking(struct state *s) {
 
 	cf_printf(s, "FD made nonblocking\n");
 
-	push(s->stack, fd);
+	PUSH1(fd);
 }
 
 
 void
 server_accept(struct state *s) {
-  cell server_fd = pop(s->stack);
+  POP1();
+  cell server_fd = p1;
 
 	struct sockaddr_in address;
 	int addrlen = sizeof(address);
@@ -139,53 +144,56 @@ server_accept(struct state *s) {
 
 	cf_printf(s, "Connection accepted\n");
 
-	push(s->stack, new_socket);
+	PUSH1(new_socket);
 }
 
 void
 socket_send (struct state *s) {
-  cell socket = pop(s->stack);
-  char * msg = CFSTRING2C(pop(s->stack));
+  POP2();
+  cell socket = p1;
+  char * msg = CFSTRING2C(p2);
 
 	if (send(socket, msg, strlen(msg), 0) < 0) {
 		PERROR("send failed");
 		return;
 	}
 
-	push(s->stack, -1);
+	PUSH1(-1);
 }
 
 void
 socket_send_char (struct state *s) {
-  cell socket = pop(s->stack);
-  char c = pop(s->stack);
+  POP2();
+  cell socket = p1;
+  char c = p2;
 
 	if (send(socket, &c, 1, 0) < 0) {
 		PERROR("send failed");
 		return;
 	}
 
-	push(s->stack, -1);
+	PUSH1(-1);
 }
 
 void
 socket_recv(struct state *s) {
-  cell socket = pop(s->stack);
-  cell len = pop(s->stack);
-  char *buffer = (char *)pop(s->stack);
+  POP3();
+  cell socket = p1;
+  cell len = p2;
+  char *buffer = (char *)p3;
 
   buffer[0] = recv(socket, CFSTRING2C(buffer), len, 0);
 
 	if (buffer[0] < 0) {
 		if (errno == EAGAIN) {
-      push(s->stack, 0);
+      PUSH1(0);
 			return;
 		}
 		PERROR("recv failed");
 		return;
 	}
 
-  push(s->stack, -1);
+  PUSH1(-1);
 }
 
 void

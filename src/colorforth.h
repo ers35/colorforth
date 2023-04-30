@@ -57,6 +57,14 @@ extern "C" {
 #define R_POP() R_CELLS[R_SP]; R_SP -= 1
 #define R_PUSH(x) R_SP += 1; R_CELLS[R_SP] = (x)
 
+#define POP1() ENSURE_STACK_MIN(1, return); cell p1=POP()
+#define POP2() ENSURE_STACK_MIN(2, return); cell p1=CELLS[SP], p2=CELLS[SP-1]; SP-=2
+#define POP3() ENSURE_STACK_MIN(3, return); cell p1=CELLS[SP], p2=CELLS[SP-1], p3=CELLS[SP-2]; SP-=3
+
+#define PUSH1(p1) ENSURE_STACK_MAX(1, return); PUSH(p1)
+#define PUSH2(p1, p2) ENSURE_STACK_MAX(2, return); SP+=2; CELLS[SP-1]=p1;  CELLS[SP]=p2
+#define PUSH3(p1, p2, p3) ENSURE_STACK_MAX(3, return); SP+=3; CELLS[SP-2]=p1; CELLS[SP-1]=p2; CELLS[SP]=p3
+
 
 #define define_register_OP(N) OP_##N##_LOAD, OP_##N##_STORE, OP_##N##_ADD, \
     OP_##N##_INC, OP_##N##_DEC, OP_##N##_R_PUSH, OP_##N##_R_POP
