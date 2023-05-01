@@ -1,0 +1,21 @@
+%
+:test ~( n f - ) ^2 swap ~iif ^+ ~else ^- ~then ^. ,;
+~
+3 1 test
+3 0 test cr
+
+:test-begin-again ^3 ~begin ^dup .  1+   dup 10 > ~iif ^drop ,; ~then again ,;
+~test-begin-again cr
+
+:test-for-next ^10 ~for ^I@ . ~next ,;
+~test-for-next cr
+
+:test-do-loop ^10 ~do ^I@ . 13 ~?loop ,;
+~test-do-loop cr
+
+:+?loop ~( Step Nmax) `I@ ^[`] `- ^[`] `swap ^[`] `I+! ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
+
+:test-do-+loop ^10 ~do ^I@ . 3 22 ~+?loop ,;
+~test-do-+loop cr
+
+bye

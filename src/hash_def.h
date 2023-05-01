@@ -51,6 +51,9 @@ typedef uint32_t  hash_t;
 #define EXECUTE_HASH                   (hash_t) 0x54DA4CCF                // execute
 #define EXECUTE_STAR_HASH              (hash_t) 0x78A70C7F                // execute*
 #define GET_CVA_HASH                   (hash_t) 0x5E52BA1E                // cva>
+#define BRANCH_HASH                    (hash_t) 0x65C38130                // branch
+#define ZBRANCH_HASH                   (hash_t) 0x84502A20                // 0branch
+#define NBRANCH_HASH                   (hash_t) 0xB041B3B2                // nbranch
 #define IF_HASH                        (hash_t) 0x790405D7                // if
 #define IF_EXIT_HASH                   (hash_t) 0x6D555284                // if;
 #define IF_NOT_HASH                    (hash_t) 0x1A0E810B                // if-not

@@ -20,6 +20,33 @@
 
 :% ^echo off ,;
 
+~( Inlined if )
+:iif ^here @ `0branch ^[`] ,;
+:niif ^here @ `nbranch ^[`] ,;
+:then ^here @ swap cva> ! ,;
+:else ^here @ `branch ^[`]  swap here @ swap cva> ! ,;
+
+~( Infinit loop )
+:begin ^here @ ,;
+:again  ^here @ `branch ^[`] cva> ! ,;
+
+~( do/?loop, for/next )
+:do ~( n -) `I>R ^[`] `I! ^[`] ^here @ ,;
+
+~( :l ^10 ~for ^I@ . ~next ,;
+ -> 9 8 7 6 5 4 3 2 1 0 )
+:for ~( n - ),do `I-- ^[`] ,;
+:next `I@ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
+
+~( :l 10 ~do ^I@ . 13 ~?loop ,;
+ -> 10 11 12 13 )
+:?loop ~( Nmax -) `I@ ^[`] `- ^[`] `I++ ^[`] here @ `nbranch ^[`] cva> ! `R>I ^[`] ,;
+
+~( :l 10 ~do ^I@ . 3 22 ~+?loop ,;
+ -> 10 13 16 19 22 )
+:+?loop ~( Step Nmax) `I@ ^[`] `- ^[`] `swap ^[`] `I+! ^[`] here @ .s bye `nbranch ^[`] cva> ! `R>I ^[`] ,;
+
+
 ~( helper words )
 :2dup ^over over ,;
 :2drop ^drop drop ,;

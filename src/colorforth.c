@@ -703,6 +703,26 @@ execute_(struct state *s, struct entry *entry)
         break;
       }
 
+      case OP_BRANCH:
+      {
+        pc = (struct code*)pc->value;
+        continue;
+      }
+
+      case OP_ZBRANCH:
+      {
+        POP1();
+        if (!p1) { pc = (struct code*)pc->value; continue; }
+        break;
+      }
+
+      case OP_NBRANCH:
+      {
+        POP1();
+        if (p1) { pc = (struct code*)pc->value; continue; }
+        break;
+      }
+
       case OP_IF:
       {
         ENSURE_STACK_MIN(2, break);
@@ -1226,6 +1246,10 @@ colorforth_newstate(void)
   define_primitive(s, EXECUTE_HASH,           ENTRY_NAME("execute"), OP_EXECUTE);
   define_primitive(s, EXECUTE_STAR_HASH,      ENTRY_NAME("execute*"), OP_EXECUTE_STAR);
   define_primitive(s, GET_CVA_HASH,           ENTRY_NAME("cva>"), OP_GET_CVA);
+
+  define_primitive(s, BRANCH_HASH,            ENTRY_NAME("branch"), OP_BRANCH);
+  define_primitive(s, ZBRANCH_HASH,           ENTRY_NAME("0branch"), OP_ZBRANCH);
+  define_primitive(s, NBRANCH_HASH,           ENTRY_NAME("nbranch"), OP_NBRANCH);
 
   define_primitive(s, IF_HASH,                ENTRY_NAME("if"), OP_IF);
   define_primitive(s, IF_EXIT_HASH,           ENTRY_NAME("if;"), OP_IF_EXIT);
