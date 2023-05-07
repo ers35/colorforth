@@ -65,6 +65,10 @@ typedef double number_t;
 // NETWORK
 #define __NETWORK
 
+// SDL
+// uncomment the line below if you want to include SDL words
+// #define __SDL
+
 // Various sizes
 #define STACK_SIZE 30
 #define R_STACK_SIZE 30

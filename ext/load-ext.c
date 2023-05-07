@@ -13,6 +13,7 @@ extern void require_ext_math_fn(struct state *state);
 extern void require_mp_math_fn(struct state *state);
 extern void require_threads_fn(struct state *state);
 extern void require_network_fn(struct state *state);
+extern void require_sdl_fn(struct state *state);
 #endif /* __MINIMAL_BUILD */
 
 void
@@ -38,6 +39,10 @@ load_extensions(struct state *state)
 #endif
 #ifdef __NETWORK
   define_primitive_extension(state, REQUIRE_NETWORK_HASH,     ENTRY_NAME("require-network"), require_network_fn);
+#endif
+
+#ifdef __SDL
+  define_primitive_extension(state, REQUIRE_SDL_HASH,         ENTRY_NAME("require-sdl"), require_sdl_fn);
 #endif
 
 #endif /* __MINIMAL_BUILD */

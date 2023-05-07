@@ -19,7 +19,8 @@ EXT_SRC=ext/os.c \
 	ext/ext-math.c \
 	ext/mp-math.c \
 	ext/threads.c \
-	ext/network.c
+	ext/network.c \
+	ext/sdl.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
@@ -34,6 +35,9 @@ FLAGS=-fPIE -std=gnu99 -O3 -Wall -Werror -Wextra -pedantic \
 
 EXTRA_CLIBS=-lgmp -lpthread
 
+# uncomment the line below if you want to include SDL words
+#SDL_FLAGS=`sdl2-config --cflags --libs` -I.  -lSDL2_image -lSDL2_ttf -lSDL2_mixer -fPIC
+
 optim_cpl:
 	$(eval EXTRA_CFLAGS := -Wl,--build-id=none -Wl,--gc-sections -Wl,-zcommon-page-size=64 -zmax-page-size=4096)
 
@@ -45,7 +49,7 @@ src/lib.cf.h: src/lib.tmpl.cf
 	xxd -i lib.cf src/lib.cf.h
 
 colorforth: Makefile $(SRC) $(EXT_SRC) $(SRC_H)
-	gcc $(FLAGS) $(EXTRA_CFLAGS) -o colorforth $(SRC) $(EXT_SRC) $(EXTRA_CLIBS)
+	gcc $(FLAGS) $(EXTRA_CFLAGS) -o colorforth $(SRC) $(EXT_SRC) $(EXTRA_CLIBS) $(SDL_FLAGS)
 
 colorforth-unsafe: Makefile $(SRC) $(SRC_H)
 	gcc -DUNSAFE_MODE=1 $(FLAGS) $(EXTRA_CFLAGS) -o colorforth-unsafe $(SRC) $(EXT_SRC) $(EXTRA_CLIBS)

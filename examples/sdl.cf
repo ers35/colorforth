@@ -1,0 +1,9 @@
+% require-sdl
+
+:main ^
+   1024 768 0 sdl/init
+   5 sleep
+   sdl/close
+,;
+
+~main bye

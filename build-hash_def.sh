@@ -25,8 +25,8 @@ build_reg() {
 
 OUTFILE=hash_def-tmp.h
 
-echo "Ensure last hash version"
-make
+# echo "Ensure last hash version"
+# make
 
 awk 'BEGIN{p=1} p==1 {print $0} /BEGIN AUTOGEN PART/ {p=0}' src/hash_def.h > $OUTFILE
 

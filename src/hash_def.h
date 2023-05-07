@@ -126,6 +126,7 @@ typedef uint32_t  hash_t;
 #define REQUIRE_MP_MATH_HASH           (hash_t) 0x792EF708                // require-mp-math
 #define REQUIRE_THREADS_HASH           (hash_t) 0xB4207C0B                // require-threads
 #define REQUIRE_NETWORK_HASH           (hash_t) 0xD11CB26C                // require-network
+#define REQUIRE_SDL_HASH               (hash_t) 0x86818FEF                // require-sdl
 
 // ext/math.c
 #define DIV_HASH                       (hash_t) 0x2F0049FD                // /
@@ -187,6 +188,10 @@ typedef uint32_t  hash_t;
 // ext/parser.c
 #define PARSE_HASH                     (hash_t) 0x9555EDEF                // parse
 #define CLEAR_TIB_HASH                 (hash_t) 0xDE5DBC77                // clear-tib
+
+// ext/sdl.c
+#define SDL_INIT_HASH                  (hash_t) 0x92FE07C0                // sdl/init
+#define SDL_CLOSE_HASH                 (hash_t) 0xFAD1E96                 // sdl/close
 
 // ext/threads.c
 #define THREAD__RUN_HASH               (hash_t) 0xE47BB892                // thread/run
