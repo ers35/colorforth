@@ -30,7 +30,7 @@ In order to compute A 4, 1 adapt the stack sizes in conf.h to
 ~\ <A> is redefined to A to allow backward recursion
 'A '<A> ~is
 
-~3 12 A .
+~3 4 A .
 
 bye
 
