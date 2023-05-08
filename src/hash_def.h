@@ -192,6 +192,16 @@ typedef uint32_t  hash_t;
 // ext/sdl.c
 #define SDL_INIT_HASH                  (hash_t) 0x92FE07C0                // sdl/init
 #define SDL_CLOSE_HASH                 (hash_t) 0xFAD1E96                 // sdl/close
+#define SDL_DELAY_HASH                 (hash_t) 0xD811784D                // sdl/delay
+#define SDL_SHOW_CURSOR_HASH           (hash_t) 0x6BD0F784                // sdl/show-cursor
+#define SDL_HIDE_CURSOR_HASH           (hash_t) 0xB3052F5F                // sdl/hide-cursor
+#define SDL_POLL_EVENT_HASH            (hash_t) 0x42D5F536                // sdl/poll-event
+#define SDL_PRESENT_HASH               (hash_t) 0x1B628525                // sdl/present
+#define SDL_KEY_PRESS_HASH             (hash_t) 0x4224F69A                // sdl/key?
+#define SDL_MOUSE_BUTTON_HASH          (hash_t) 0x6755EA17                // sdl/button?
+#define SDL_GET_MOUSE_X_HASH           (hash_t) 0x9E5030C4                // sdl/mouse-x@
+#define SDL_GET_MOUSE_Y_HASH           (hash_t) 0xC452AB2D                // sdl/mouse-y@
+#define SDL_GET_DONE_HASH              (hash_t) 0x7AA8C672                // sdl/done
 
 // ext/threads.c
 #define THREAD__RUN_HASH               (hash_t) 0xE47BB892                // thread/run

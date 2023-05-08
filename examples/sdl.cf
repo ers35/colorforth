@@ -1,9 +1,24 @@
 % require-sdl
 
+:button-pressed
+   ~c" Button " ^pr . ~c" pressed: " ^pr sdl/mouse-x@ . sdl/mouse-y@ . cr ,;
+
+:sdl-loop ^
+   sdl/poll-event
+
+   27 sdl/key? ~iif ^1 sdl/done ! ~then ^
+   1 sdl/button? ~iif ^1 button-pressed ~ then ^
+   2 sdl/button? ~iif ^2 button-pressed ~ then ^
+   3 sdl/button? ~iif ^3 button-pressed ~ then ^
+
+   sdl/done @ `sdl-loop ,if-not*
+,;
+
 :main ^
    1024 768 0 sdl/init
-   5 sleep
-   sdl/close
+   sdl/present
+   sdl-loop
+   .s
 ,;
 
 ~main bye
