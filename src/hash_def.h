@@ -204,6 +204,7 @@ typedef uint32_t  hash_t;
 #define SDL_BACKGROUND_HASH            (hash_t) 0x4A51D2AA                // sdl/background
 #define SDL_OPEN_FONT_HASH             (hash_t) 0x9D24F958                // sdl/open-font
 #define SDL_PUT_TEXT_HASH              (hash_t) 0x25B908D5                // sdl/put-text
+#define SDL_GET_TEXT_SIZE_HASH         (hash_t) 0x3B567CA7                // sdl/text-size@
 
 // ext/threads.c
 #define THREAD__RUN_HASH               (hash_t) 0xE47BB892                // thread/run

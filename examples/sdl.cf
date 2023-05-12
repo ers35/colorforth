@@ -11,7 +11,8 @@
 
 :draw ^
    10 10 100 sdl/background
-   ~c" This is a test" ^100 200  10 R 255 G 10 B  sdl/put-text
+   ~c" This is a test" ^dup sdl/text-size@ .s . . cr
+   100 200  10 R 255 G 10 B  sdl/put-text
    sdl/present ,;
 
 
@@ -21,10 +22,10 @@
    27 sdl/key? ~iif ^1 done ! ~then ^
    100 sdl/key? ~iif ^1 done ! ~then ^
    ~( 1 sdl/button? ~iif ^1 button-pressed ~ then ^
-   2 sdl/button? ~iif ^2 button-pressed ~ then ^
-   3 sdl/button? ~iif ^3 button-pressed ~ then ^ ) ^
+      2 sdl/button? ~iif ^2 button-pressed ~ then ^
+      3 sdl/button? ~iif ^3 button-pressed ~ then ^ )
 
-   done @ `sdl-loop ,if-not*
+   ^done @ `sdl-loop ,if-not*
 ,;
 
 :main ^

@@ -366,35 +366,22 @@ sdl_put_text (struct state *s) {
   }
 }
 
-int sdl_text_width (char *string) {
+void
+sdl_text_size (struct state *s) {
+  POP1();
+  char * string = CFSTRING2C(p1);
+
   SDL_Surface *text;
   SDL_Color fg;
-  int ret = 0;
 
-  text = TTF_RenderText_Solid(font, string, fg);
-
-  if ( text != NULL ) {
-    ret = text->w;
-    SDL_FreeSurface(text);
-  }
-
-  return ret;
-}
-
-
-int sdl_text_height (char *string) {
-  SDL_Surface *text;
-  SDL_Color fg;
-  int ret = 0;
-
-  text = TTF_RenderText_Solid(font, string, fg);
+  text = TTF_RenderUTF8_Solid(font, string, fg);
 
   if ( text != NULL ) {
-    ret = text->h;
+    PUSH2(text->w, text->h);
     SDL_FreeSurface(text);
+  } else {
+    PUSH2(-1, -1);
   }
-
-  return ret;
 }
 
 //,-----
@@ -459,6 +446,7 @@ require_sdl_fn(struct state *state)
 
   define_primitive_extension(state, SDL_OPEN_FONT_HASH,         ENTRY_NAME("sdl/open-font"), sdl_open_font);
   define_primitive_extension(state, SDL_PUT_TEXT_HASH,          ENTRY_NAME("sdl/put-text"), sdl_put_text);
+  define_primitive_extension(state, SDL_GET_TEXT_SIZE_HASH,     ENTRY_NAME("sdl/text-size@"), sdl_text_size);
 
   initialized = 1;
 }
