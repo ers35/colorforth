@@ -60,6 +60,7 @@ extern "C" {
 #define POP1() ENSURE_STACK_MIN(1, return); cell p1=POP()
 #define POP2() ENSURE_STACK_MIN(2, return); cell p1=CELLS[SP], p2=CELLS[SP-1]; SP-=2
 #define POP3() ENSURE_STACK_MIN(3, return); cell p1=CELLS[SP], p2=CELLS[SP-1], p3=CELLS[SP-2]; SP-=3
+#define POP4() ENSURE_STACK_MIN(4, return); cell p1=CELLS[SP], p2=CELLS[SP-1], p3=CELLS[SP-2], p4=CELLS[SP-3]; SP-=4
 
 #define PUSH1(p1) ENSURE_STACK_MAX(1, return); PUSH(p1)
 #define PUSH2(p1, p2) ENSURE_STACK_MAX(2, return); SP+=2; CELLS[SP-1]=p1;  CELLS[SP]=p2

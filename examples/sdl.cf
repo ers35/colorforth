@@ -1,23 +1,37 @@
 % require-sdl
 
+:done ~0 variable ,;
+
+:R ~255 255 * [,] ^* ,;
+:G ^255 * ,;
+:B ^ + + ,;
+
 :button-pressed
    ~c" Button " ^pr . ~c" pressed: " ^pr sdl/mouse-x@ . sdl/mouse-y@ . cr ,;
+
+:draw ^
+   10 10 100 sdl/background
+   ~c" This is a test" ^100 200  10 R 255 G 10 B  sdl/put-text
+   sdl/present ,;
+
 
 :sdl-loop ^
    sdl/poll-event
 
-   27 sdl/key? ~iif ^1 sdl/done ! ~then ^
-   1 sdl/button? ~iif ^1 button-pressed ~ then ^
+   27 sdl/key? ~iif ^1 done ! ~then ^
+   100 sdl/key? ~iif ^1 done ! ~then ^
+   ~( 1 sdl/button? ~iif ^1 button-pressed ~ then ^
    2 sdl/button? ~iif ^2 button-pressed ~ then ^
-   3 sdl/button? ~iif ^3 button-pressed ~ then ^
+   3 sdl/button? ~iif ^3 button-pressed ~ then ^ ) ^
 
-   sdl/done @ `sdl-loop ,if-not*
+   done @ `sdl-loop ,if-not*
 ,;
 
 :main ^
    1024 768 0 sdl/init
-   sdl/present
-   sdl-loop
+   ^0 done !
+   ~c" sdl/font/Vera.ttf" ^18 sdl/open-font .
+   ^draw sdl-loop
    .s
 ,;
 

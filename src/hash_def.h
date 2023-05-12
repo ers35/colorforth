@@ -201,7 +201,9 @@ typedef uint32_t  hash_t;
 #define SDL_MOUSE_BUTTON_HASH          (hash_t) 0x6755EA17                // sdl/button?
 #define SDL_GET_MOUSE_X_HASH           (hash_t) 0x9E5030C4                // sdl/mouse-x@
 #define SDL_GET_MOUSE_Y_HASH           (hash_t) 0xC452AB2D                // sdl/mouse-y@
-#define SDL_GET_DONE_HASH              (hash_t) 0x7AA8C672                // sdl/done
+#define SDL_BACKGROUND_HASH            (hash_t) 0x4A51D2AA                // sdl/background
+#define SDL_OPEN_FONT_HASH             (hash_t) 0x9D24F958                // sdl/open-font
+#define SDL_PUT_TEXT_HASH              (hash_t) 0x25B908D5                // sdl/put-text
 
 // ext/threads.c
 #define THREAD__RUN_HASH               (hash_t) 0xE47BB892                // thread/run

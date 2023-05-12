@@ -19,7 +19,6 @@ static char initialized = 0;
 #define MAX_KEY 300
 #define MAX_SOUND 300
 
-int sdl_done = 0;
 ///* int sdl_mouse_button_1 = 0; */
 ///* int sdl_mouse_button_2 = 0; */
 ///* int sdl_mouse_button_3 = 0; */
@@ -39,128 +38,128 @@ Mix_Chunk * tab_sounds[MAX_SOUND];
 
 SDL_Window * main_screen;
 SDL_Renderer *main_renderer;
-static TTF_Font * font = NULL;
+TTF_Font * font = NULL;
 
 
 // /*===========================================================
-//  *		Open and close functions
+//  *   Open and close functions
 //  ============================================================*/
 void
 sdl_init(struct state *s) {
-//void sdl_init (int width, int height, int fullscreen) {
   POP3();
   int width = p3;
   int height = p2;
   int fullscreen = p1;
 
-	Uint32 videoflags = 0;
-	int i;
+  Uint32 videoflags = 0;
+  int i;
 
-	sdl_done = 0;
+  char *title = "My SDL Windows";
 
-	char *title = "My SDL Windows";
+  if ( IMG_Init(IMG_INIT_PNG) < 0 ) {
+    fprintf(stderr, "Couldn't initialize SDL Image: %s\n", SDL_GetError());
+    exit(1);
+  }
+  atexit(IMG_Quit);
 
-	if ( IMG_Init(IMG_INIT_PNG) < 0 ) {
-		fprintf(stderr, "Couldn't initialize SDL Image: %s\n", SDL_GetError());
-		exit(1);
-	}
-	atexit(IMG_Quit);
+  if ( SDL_Init(SDL_INIT_EVERYTHING) < 0 ) {
+    fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+    exit(1);
+  }
+  atexit(SDL_Quit);
 
-	if ( SDL_Init(SDL_INIT_EVERYTHING) < 0 ) {
-		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
-	atexit(SDL_Quit);
+  if ( TTF_Init() < 0 ) {
+    fprintf(stderr, "Couldn't initialize TTF: %s\n", SDL_GetError());
+    exit(2);
+  }
+  atexit(TTF_Quit);
 
-	if ( TTF_Init() < 0 ) {
-		fprintf(stderr, "Couldn't initialize TTF: %s\n", SDL_GetError());
-		exit(2);
-	}
-	atexit(TTF_Quit);
+  if (fullscreen == 1) {
+    videoflags ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
+  }
 
-	if (fullscreen == 1) {
-		videoflags ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
-	}
+  if ((main_screen = SDL_CreateWindow("Atlast SDL",
+                     SDL_WINDOWPOS_UNDEFINED,
+                     SDL_WINDOWPOS_UNDEFINED,
+                     width, height,
+                     videoflags)) == NULL) {
+    fprintf(stderr, "Couldn't set %dx%d video mode: %s\n", width, height, SDL_GetError());
+    exit(2);
+  }
 
-	if ((main_screen = SDL_CreateWindow("Atlast SDL",
-										 SDL_WINDOWPOS_UNDEFINED,
-										 SDL_WINDOWPOS_UNDEFINED,
-										 width, height,
-										 videoflags)) == NULL) {
-		fprintf(stderr, "Couldn't set %dx%d video mode: %s\n", width, height, SDL_GetError());
-		exit(2);
-	}
+  SDL_SetWindowTitle (main_screen, title);
+  SDL_SetWindowInputFocus(main_screen);
 
-	SDL_SetWindowTitle (main_screen, title);
-	SDL_SetWindowInputFocus(main_screen);
+  if ((main_renderer = SDL_CreateRenderer(main_screen, -1, 0)) == NULL) {
+    fprintf(stderr, "Couldn't create renderer: %s\n", SDL_GetError());
+    exit(2);
+  }
 
-	if ((main_renderer = SDL_CreateRenderer(main_screen, -1, 0)) == NULL) {
-		fprintf(stderr, "Couldn't create renderer: %s\n", SDL_GetError());
-		exit(2);
-	}
+  /* Sound initialisation */
+  if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+      fprintf(stderr,
+          "\nWarning: I could not initialize audio!\n"
+          "The Simple DirectMedia error that occured was:\n"
+          "%s\n\n", SDL_GetError());
+    }
 
-	/* Sound initialisation */
-	if (SDL_Init(SDL_INIT_AUDIO) < 0)
-		{
-			fprintf(stderr,
-					"\nWarning: I could not initialize audio!\n"
-					"The Simple DirectMedia error that occured was:\n"
-					"%s\n\n", SDL_GetError());
-		}
+  /* if (Mix_OpenAudio(22050, AUDIO_S16, 2, 512) < 0) */
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+    {
+      fprintf(stderr,
+          "\nWarning: I could not set up audio for 44100 Hz "
+          "16-bit stereo.\n"
+          "The Simple DirectMedia error that occured was:\n"
+          "%s\n\n", SDL_GetError());
+    }
+  Mix_Volume(-1, 20 * MIX_MAX_VOLUME / 100);
 
-	/* if (Mix_OpenAudio(22050, AUDIO_S16, 2, 512) < 0) */
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
-		{
-			fprintf(stderr,
-					"\nWarning: I could not set up audio for 44100 Hz "
-					"16-bit stereo.\n"
-					"The Simple DirectMedia error that occured was:\n"
-					"%s\n\n", SDL_GetError());
-		}
-	Mix_Volume(-1, 20 * MIX_MAX_VOLUME / 100);
+  // allocate mixing channels
+  Mix_AllocateChannels(100);
 
-	// allocate mixing channels
-	Mix_AllocateChannels(100);
+  for (i = 0; i < MAX_KEY; i++) {
+    tab_keys[i] = 0;
+  }
 
-	for (i = 0; i < MAX_KEY; i++) {
-		tab_keys[i] = 0;
-	}
-
-	for (i = 0; i < 3; i++) {
-		tab_mouse_button[i] = 0;
-	}
+  for (i = 0; i < 3; i++) {
+    tab_mouse_button[i] = 0;
+  }
 }
 
 void sdl_close (struct state *s) {
-	SDL_DestroyRenderer(main_renderer);
-	SDL_DestroyWindow(main_screen);
+  SDL_DestroyRenderer(main_renderer);
+  SDL_DestroyWindow(main_screen);
 
-	if ( !(font == NULL)) {
-		TTF_CloseFont(font);
-		font = NULL;
-	}
+  if ( !(font == NULL)) {
+    TTF_CloseFont(font);
+    font = NULL;
+  }
 
-	Mix_CloseAudio();
+  Mix_CloseAudio();
 
-	IMG_Quit();
-	SDL_Quit();
+  IMG_Quit();
+  SDL_Quit();
 }
 
 void sdl_delay (struct state *s) {
   POP1();
-	SDL_Delay(p1);
+  SDL_Delay(p1);
 }
 
 void sdl_show_cursor (struct state *s) {
-	SDL_ShowCursor (SDL_ENABLE);
+  SDL_ShowCursor (SDL_ENABLE);
 }
 
 void sdl_hide_cursor (struct state *s) {
-	SDL_ShowCursor (SDL_DISABLE);
+  SDL_ShowCursor (SDL_DISABLE);
 }
 
+// /*===========================================================
+//  *   Input functions
+//  ============================================================*/
 void set_tab_keys_from_keysym(int keysym, int value) {
-	switch(keysym) {
+  switch(keysym) {
     case SDLK_ESCAPE:        tab_keys[27] = value; break;
     case SDLK_UP:            tab_keys[28] = value; break;
     case SDLK_DOWN:          tab_keys[29] = value; break;
@@ -186,12 +185,12 @@ void set_tab_keys_from_keysym(int keysym, int value) {
     case SDLK_KP_9:          tab_keys[49] = value; break;
     case SDLK_KP_0:          tab_keys[50] = value; break;
     case SDLK_KP_PERIOD:     tab_keys[51] = value; break;
-	}
+  }
 }
 
 void analyze_event (SDL_Event * event) {
-	switch( event->type ) {
-    case SDL_QUIT : sdl_done = 1; break;
+  switch( event->type ) {
+    case SDL_QUIT : tab_keys[100] = 1; break;
 
     case SDL_MOUSEBUTTONDOWN :
       if (event->button.button == SDL_BUTTON_LEFT) tab_mouse_button[0] = 1;
@@ -226,21 +225,21 @@ void analyze_event (SDL_Event * event) {
 
     default:
       break;
-	}
+  }
 }
 
 void sdl_poll_event (struct state *s) {
-	SDL_Event event;
+  SDL_Event event;
 
-	while(SDL_PollEvent(&event)) {
-		analyze_event(&event);
-	}
+  while(SDL_PollEvent(&event)) {
+    analyze_event(&event);
+  }
 
-	SDL_GetMouseState (&sdl_mouse_x, &sdl_mouse_y);
+  SDL_GetMouseState (&sdl_mouse_x, &sdl_mouse_y);
 }
 
 void sdl_present (struct state *s) {
-	SDL_RenderPresent(main_renderer);
+  SDL_RenderPresent(main_renderer);
 }
 
 
@@ -251,188 +250,193 @@ void sdl_key_press (struct state *s) {
 
 void sdl_mouse_button (struct state *s) {
   POP1();
-	PUSH1(tab_mouse_button[p1 - 1]);
+  PUSH1(tab_mouse_button[p1 - 1]);
 }
 
 void sdl_get_mouse_x (struct state *s) {
-	PUSH1(sdl_mouse_x);
+  PUSH1(sdl_mouse_x);
 }
 
 void sdl_get_mouse_y (struct state *s) {
-	PUSH1(sdl_mouse_y);
+  PUSH1(sdl_mouse_y);
 }
 
-void sdl_background (int red, int green, int blue) {
-	SDL_SetRenderDrawColor(main_renderer, red, green, blue, 255);
-	SDL_RenderClear(main_renderer);
+void sdl_background (struct state *s) {
+  POP3();
+  SDL_SetRenderDrawColor(main_renderer, (int)p3, (int)p2, (int)p1, 255);
+  SDL_RenderClear(main_renderer);
 }
 
+// /*===========================================================
+//  *   Image functions
+//  ============================================================*/
 int sdl_load_image (char * filename) {
-	SDL_Surface * surf = NULL;
+  SDL_Surface * surf = NULL;
 
-	image_count += 1;
-	if (image_count >= MAX_IMAGE) {
-		image_count -= 1;
-		fprintf (stderr, "Sorry can't load more than %d images\n", MAX_IMAGE);
-		return -1;
-	}
+  image_count += 1;
+  if (image_count >= MAX_IMAGE) {
+    image_count -= 1;
+    fprintf (stderr, "Sorry can't load more than %d images\n", MAX_IMAGE);
+    return -1;
+  }
 
-	printf ("In C - Opening: %s as image %d\n", filename, image_count);
+  printf ("In C - Opening: %s as image %d\n", filename, image_count);
 
-	surf = IMG_Load (filename);
-	if (surf == NULL) {
-		image_count -= 1;
-		fprintf(stderr, "Can't load image %s - %s\n", filename, SDL_GetError());
-		return -1;
-	}
+  surf = IMG_Load (filename);
+  if (surf == NULL) {
+    image_count -= 1;
+    fprintf(stderr, "Can't load image %s - %s\n", filename, SDL_GetError());
+    return -1;
+  }
 
-	tab_images[image_count] = SDL_CreateTextureFromSurface(main_renderer, surf);
-	if (tab_images[image_count] == NULL) {
-		image_count -= 1;
-		fprintf(stderr, "Can't load image %s - %s\n", filename, SDL_GetError());
-		return -1;
-	}
-	SDL_FreeSurface(surf);
+  tab_images[image_count] = SDL_CreateTextureFromSurface(main_renderer, surf);
+  if (tab_images[image_count] == NULL) {
+    image_count -= 1;
+    fprintf(stderr, "Can't load image %s - %s\n", filename, SDL_GetError());
+    return -1;
+  }
+  SDL_FreeSurface(surf);
 
-	return image_count;
+  return image_count;
 }
 
 void sdl_put_image (int image, int x, int y) {
-	SDL_Rect dstrect;
-	int w, h;
+  SDL_Rect dstrect;
+  int w, h;
 
-	SDL_QueryTexture(tab_images[image], NULL, NULL, &w, &h);
-	dstrect.x = x; dstrect.y = y;
-	dstrect.w = w; dstrect.h = h;
-	SDL_RenderCopy(main_renderer, tab_images[image], NULL, &dstrect);
+  SDL_QueryTexture(tab_images[image], NULL, NULL, &w, &h);
+  dstrect.x = x; dstrect.y = y;
+  dstrect.w = w; dstrect.h = h;
+  SDL_RenderCopy(main_renderer, tab_images[image], NULL, &dstrect);
 }
 
-//,-----
-//| Font part
-//`-----
-int sdl_open_font (char * filename, int ptsize) {
-	if ( !(font == NULL)) {
-		TTF_CloseFont(font);
-	}
 
-	font = TTF_OpenFont(filename, ptsize);
-	if ( font == NULL ) {
-		fprintf(stderr, "Couldn't load %d pt font from %s: %s\n",
-				ptsize, filename, SDL_GetError());
-		return -1;
-	}
-	TTF_SetFontStyle(font, TTF_STYLE_NORMAL);
+// /*===========================================================
+//  *   Text functions
+//  ============================================================*/
+void
+sdl_open_font (struct state *s) {
+  POP2();
+  char * filename = CFSTRING2C(p2);
+  int ptsize = p1;
 
-	return 0;
+  if ( !(font == NULL)) {
+    TTF_CloseFont(font);
+  }
+
+  font = TTF_OpenFont(filename, ptsize);
+  if ( font == NULL ) {
+    fprintf(stderr, "Couldn't load %d pt font from %s: %s\n",
+        ptsize, filename, SDL_GetError());
+    PUSH1(-1);
+    return;
+  }
+  TTF_SetFontStyle(font, TTF_STYLE_NORMAL);
+
+  PUSH1(0);
 }
 
-void sdl_put_text (char * string, int x, int y, int forecol) {
-	SDL_Color fg;
-	/* SDL_Color bg; */
-	SDL_Surface *text;
-	SDL_Rect dstrect;
-	SDL_Texture *texture;
+void
+sdl_put_text (struct state *s) {
+  POP4();
+  char * string = CFSTRING2C(p4);
+  int x = p3, y = p2;
+  int forecol = p1;
 
-	fg.r = (forecol >> 16) & 0xff;
-	fg.g = (forecol >> 8) & 0xff;
-	fg.b = forecol & 0xff;
+  SDL_Color fg;
+  /* SDL_Color bg; */
+  SDL_Surface *text;
+  SDL_Rect dstrect;
+  SDL_Texture *texture;
 
-	/* text = TTF_RenderText_Shaded(font, string, fg, bg); */
-	text = TTF_RenderText_Solid(font, string, fg);
+  fg.r = (forecol >> 16) & 0xff;
+  fg.g = (forecol >> 8) & 0xff;
+  fg.b = forecol & 0xff;
 
-	if ( text != NULL ) {
-		dstrect.x = x;
-		dstrect.y = y;
-		dstrect.w = text->w;
-		dstrect.h = text->h;
-		//SDL_BlitSurface(text, NULL, main_renderer, &dstrect);
-		texture = SDL_CreateTextureFromSurface(main_renderer, text);
-		//dstrect.x = x; dstrect.y = y;
-		//dstrect.w = w; dstrect.h = h;
-		//printf("From C: x=%d, y=%d, w=%d, h=%d", x, y, w, h);
-		//printf("Load %p\n", tab_images[image]);
-		SDL_RenderCopy(main_renderer, texture, NULL, &dstrect);
-		SDL_FreeSurface(text);
-	}
+  text = TTF_RenderUTF8_Solid(font, string, fg);
 
-	return;
+  if ( text != NULL ) {
+    dstrect.x = x;
+    dstrect.y = y;
+    dstrect.w = text->w;
+    dstrect.h = text->h;
+    texture = SDL_CreateTextureFromSurface(main_renderer, text);
+    SDL_RenderCopy(main_renderer, texture, NULL, &dstrect);
+    SDL_FreeSurface(text);
+  }
 }
 
 int sdl_text_width (char *string) {
-	SDL_Surface *text;
-	SDL_Color fg;
-	int ret = 0;
+  SDL_Surface *text;
+  SDL_Color fg;
+  int ret = 0;
 
-	text = TTF_RenderText_Solid(font, string, fg);
+  text = TTF_RenderText_Solid(font, string, fg);
 
-	if ( text != NULL ) {
-		ret = text->w;
-		SDL_FreeSurface(text);
-	}
+  if ( text != NULL ) {
+    ret = text->w;
+    SDL_FreeSurface(text);
+  }
 
-	return ret;
+  return ret;
 }
 
 
 int sdl_text_height (char *string) {
-	SDL_Surface *text;
-	SDL_Color fg;
-	int ret = 0;
+  SDL_Surface *text;
+  SDL_Color fg;
+  int ret = 0;
 
-	text = TTF_RenderText_Solid(font, string, fg);
+  text = TTF_RenderText_Solid(font, string, fg);
 
-	if ( text != NULL ) {
-		ret = text->h;
-		SDL_FreeSurface(text);
-	}
+  if ( text != NULL ) {
+    ret = text->h;
+    SDL_FreeSurface(text);
+  }
 
-	return ret;
+  return ret;
 }
 
 //,-----
 //| Sound part
 //`-----
 void sdl_play_sound(int snd) {
-	Mix_PlayChannel(-1, tab_sounds[snd], 0);
+  Mix_PlayChannel(-1, tab_sounds[snd], 0);
 }
 
 void sdl_halt_sound() {
-	Mix_HaltChannel(-1);
+  Mix_HaltChannel(-1);
 }
 
 void sdl_set_sound_volume(int percent) {
-	Mix_Volume(-1, percent * MIX_MAX_VOLUME / 100);
+  Mix_Volume(-1, percent * MIX_MAX_VOLUME / 100);
 }
 
 
 int sdl_load_sound (char *filename) {
-	sound_count += 1;
-	if (sound_count >= MAX_SOUND)
-		{
-			fprintf (stderr, "Sorry can't load more than %d sounds\n", MAX_SOUND);
-			sound_count -= 1;
-			return -1;
-		}
+  sound_count += 1;
+  if (sound_count >= MAX_SOUND)
+    {
+      fprintf (stderr, "Sorry can't load more than %d sounds\n", MAX_SOUND);
+      sound_count -= 1;
+      return -1;
+    }
 
-	tab_sounds[sound_count] = Mix_LoadWAV(filename);
-	if (tab_sounds[sound_count] == NULL) {
-		fprintf(stderr,
-				"\nError: I could not load the sound file:\n"
-				"%s\n"
-				"The Simple DirectMedia error that occured was:\n"
-				"%s\n\n", filename, SDL_GetError());
-		sound_count -= 1;
-		return -1;
-	}
-	return sound_count;
+  tab_sounds[sound_count] = Mix_LoadWAV(filename);
+  if (tab_sounds[sound_count] == NULL) {
+    fprintf(stderr,
+        "\nError: I could not load the sound file:\n"
+        "%s\n"
+        "The Simple DirectMedia error that occured was:\n"
+        "%s\n\n", filename, SDL_GetError());
+    sound_count -= 1;
+    return -1;
+  }
+  return sound_count;
 }
 
 unsigned int sdl_get_ticks () {
-	return SDL_GetTicks ();
-}
-
-void sdl_get_done (struct state *s) {
-  PUSH1((cell) &sdl_done);
+  return SDL_GetTicks ();
 }
 
 void
@@ -446,13 +450,15 @@ require_sdl_fn(struct state *state)
   define_primitive_extension(state, SDL_SHOW_CURSOR_HASH,       ENTRY_NAME("sdl/show-cursor"), sdl_show_cursor);
   define_primitive_extension(state, SDL_HIDE_CURSOR_HASH,       ENTRY_NAME("sdl/hide-cursor"), sdl_hide_cursor);
   define_primitive_extension(state, SDL_POLL_EVENT_HASH,        ENTRY_NAME("sdl/poll-event"), sdl_poll_event);
-  define_primitive_extension(state, SDL_PRESENT_HASH,           ENTRY_NAME("sdl/present"), sdl_poll_event);
+  define_primitive_extension(state, SDL_PRESENT_HASH,           ENTRY_NAME("sdl/present"), sdl_present);
   define_primitive_extension(state, SDL_KEY_PRESS_HASH,         ENTRY_NAME("sdl/key?"), sdl_key_press);
   define_primitive_extension(state, SDL_MOUSE_BUTTON_HASH,      ENTRY_NAME("sdl/button?"), sdl_mouse_button);
   define_primitive_extension(state, SDL_GET_MOUSE_X_HASH,       ENTRY_NAME("sdl/mouse-x@"), sdl_get_mouse_x);
   define_primitive_extension(state, SDL_GET_MOUSE_Y_HASH,       ENTRY_NAME("sdl/mouse-y@"), sdl_get_mouse_y);
+  define_primitive_extension(state, SDL_BACKGROUND_HASH,        ENTRY_NAME("sdl/background"), sdl_background);
 
-  define_primitive_extension(state, SDL_GET_DONE_HASH,          ENTRY_NAME("sdl/done"), sdl_get_done);
+  define_primitive_extension(state, SDL_OPEN_FONT_HASH,         ENTRY_NAME("sdl/open-font"), sdl_open_font);
+  define_primitive_extension(state, SDL_PUT_TEXT_HASH,          ENTRY_NAME("sdl/put-text"), sdl_put_text);
 
   initialized = 1;
 }
