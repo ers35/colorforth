@@ -15,7 +15,6 @@ static char initialized = 0;
 
 
 ///* Please, edit this for your project */
-#define MAX_IMAGE 1000
 #define MAX_KEY 300
 #define MAX_SOUND 300
 
@@ -29,9 +28,6 @@ int sdl_mouse_y = 0;
 
 int tab_mouse_button[3];
 int tab_keys[MAX_KEY];
-
-int image_count = -1;
-SDL_Texture * tab_images[MAX_IMAGE];
 
 int sound_count = -1;
 Mix_Chunk * tab_sounds[MAX_SOUND];
@@ -270,44 +266,45 @@ void sdl_background (struct state *s) {
 // /*===========================================================
 //  *   Image functions
 //  ============================================================*/
-int sdl_load_image (char * filename) {
+void
+sdl_load_image (struct state *s) {
+  POP1();
+  char * filename = CFSTRING2C(p1);
   SDL_Surface * surf = NULL;
 
-  image_count += 1;
-  if (image_count >= MAX_IMAGE) {
-    image_count -= 1;
-    fprintf (stderr, "Sorry can't load more than %d images\n", MAX_IMAGE);
-    return -1;
-  }
-
-  printf ("In C - Opening: %s as image %d\n", filename, image_count);
+  printf ("In C - Opening: %s\n", filename);
 
   surf = IMG_Load (filename);
   if (surf == NULL) {
-    image_count -= 1;
     fprintf(stderr, "Can't load image %s - %s\n", filename, SDL_GetError());
-    return -1;
+    PUSH1(-1);
+    return;
   }
 
-  tab_images[image_count] = SDL_CreateTextureFromSurface(main_renderer, surf);
-  if (tab_images[image_count] == NULL) {
-    image_count -= 1;
-    fprintf(stderr, "Can't load image %s - %s\n", filename, SDL_GetError());
-    return -1;
-  }
+  SDL_Texture *texture = SDL_CreateTextureFromSurface(main_renderer, surf);
   SDL_FreeSurface(surf);
 
-  return image_count;
+  if (texture == NULL) {
+    fprintf(stderr, "Can't load image %s - %s\n", filename, SDL_GetError());
+    PUSH1(-1);
+    return;
+  }
+
+  PUSH1((cell) texture);
 }
 
-void sdl_put_image (int image, int x, int y) {
+void
+sdl_put_image (struct state *s) {
+  POP3();
+  int x = p2, y = p1;
+  SDL_Texture * texture = (SDL_Texture *) p3;
   SDL_Rect dstrect;
   int w, h;
 
-  SDL_QueryTexture(tab_images[image], NULL, NULL, &w, &h);
+  SDL_QueryTexture(texture, NULL, NULL, &w, &h);
   dstrect.x = x; dstrect.y = y;
   dstrect.w = w; dstrect.h = h;
-  SDL_RenderCopy(main_renderer, tab_images[image], NULL, &dstrect);
+  SDL_RenderCopy(main_renderer, texture, NULL, &dstrect);
 }
 
 
@@ -447,6 +444,9 @@ require_sdl_fn(struct state *state)
   define_primitive_extension(state, SDL_OPEN_FONT_HASH,         ENTRY_NAME("sdl/open-font"), sdl_open_font);
   define_primitive_extension(state, SDL_PUT_TEXT_HASH,          ENTRY_NAME("sdl/put-text"), sdl_put_text);
   define_primitive_extension(state, SDL_GET_TEXT_SIZE_HASH,     ENTRY_NAME("sdl/text-size@"), sdl_text_size);
+
+  define_primitive_extension(state, SDL_LOAD_IMAGE_HASH,        ENTRY_NAME("sdl/load-image"), sdl_load_image);
+  define_primitive_extension(state, SDL_PUT_IMAGE_HASH,         ENTRY_NAME("sdl/put-image"), sdl_put_image);
 
   initialized = 1;
 }

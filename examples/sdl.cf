@@ -1,6 +1,14 @@
 % require-sdl
 
+~1024 768 0 sdl/init
+
 :done ~0 variable ,;
+
+~" sdl/font/Vera.ttf" 18 sdl/open-font .
+
+:ball ~" sdl/images/ball.png" sdl/load-image constant ,;
+:ball-x ~100 variable ,;
+:ball-y ~50 variable ,;
 
 :R ~255 255 * [,] ^* ,;
 :G ^255 * ,;
@@ -11,29 +19,30 @@
 
 :draw ^
    10 10 100 sdl/background
-   ~c" This is a test" ^dup sdl/text-size@ .s . . cr
-   100 200  10 R 255 G 10 B  sdl/put-text
+
+   ~" This is a test" dup sdl/text-size@ .s . . cr [,]
+   ^100 200  10 R 255 G 10 B  sdl/put-text
+
+   ball ball-x @ ball-y @ sdl/put-image
+
    sdl/present ,;
 
+:move-ball-to ^
+   sdl/mouse-x@ 25 - ball-x ! sdl/mouse-y@ 25 - ball-y !  draw ,;
 
 :sdl-loop ^
    sdl/poll-event
 
    27 sdl/key? ~iif ^1 done ! ~then ^
    100 sdl/key? ~iif ^1 done ! ~then ^
-   ~( 1 sdl/button? ~iif ^1 button-pressed ~ then ^
-      2 sdl/button? ~iif ^2 button-pressed ~ then ^
-      3 sdl/button? ~iif ^3 button-pressed ~ then ^ )
+   1 sdl/button? `move-ball-to ,if ^
+   2 sdl/button? ~iif ^2 button-pressed ~ then ^
+   3 sdl/button? ~iif ^3 button-pressed ~ then ^
 
    ^done @ `sdl-loop ,if-not*
 ,;
 
-:main ^
-   1024 768 0 sdl/init
-   ^0 done !
-   ~c" sdl/font/Vera.ttf" ^18 sdl/open-font .
-   ^draw sdl-loop
-   .s
-,;
 
-~main bye
+~draw sdl-loop
+.s
+~bye
