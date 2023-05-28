@@ -16,21 +16,12 @@ static char initialized = 0;
 
 ///* Please, edit this for your project */
 #define MAX_KEY 300
-#define MAX_SOUND 300
 
-///* int sdl_mouse_button_1 = 0; */
-///* int sdl_mouse_button_2 = 0; */
-///* int sdl_mouse_button_3 = 0; */
-///* int sdl_mouse_button_4 = 0; */
-///* int sdl_mouse_button_5 = 0; */
 int sdl_mouse_x = 0;
 int sdl_mouse_y = 0;
 
 int tab_mouse_button[3];
 int tab_keys[MAX_KEY];
-
-int sound_count = -1;
-Mix_Chunk * tab_sounds[MAX_SOUND];
 
 SDL_Window * main_screen;
 SDL_Renderer *main_renderer;
@@ -92,23 +83,21 @@ sdl_init(struct state *s) {
   }
 
   /* Sound initialisation */
-  if (SDL_Init(SDL_INIT_AUDIO) < 0)
-    {
-      fprintf(stderr,
-          "\nWarning: I could not initialize audio!\n"
-          "The Simple DirectMedia error that occured was:\n"
-          "%s\n\n", SDL_GetError());
-    }
+  if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+    fprintf(stderr,
+            "\nWarning: I could not initialize audio!\n"
+            "The Simple DirectMedia error that occured was:\n"
+            "%s\n\n", SDL_GetError());
+  }
 
   /* if (Mix_OpenAudio(22050, AUDIO_S16, 2, 512) < 0) */
-  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
-    {
-      fprintf(stderr,
-          "\nWarning: I could not set up audio for 44100 Hz "
-          "16-bit stereo.\n"
-          "The Simple DirectMedia error that occured was:\n"
-          "%s\n\n", SDL_GetError());
-    }
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
+    fprintf(stderr,
+            "\nWarning: I could not set up audio for 44100 Hz "
+            "16-bit stereo.\n"
+            "The Simple DirectMedia error that occured was:\n"
+            "%s\n\n", SDL_GetError());
+  }
   Mix_Volume(-1, 20 * MIX_MAX_VOLUME / 100);
 
   // allocate mixing channels
@@ -384,43 +373,45 @@ sdl_text_size (struct state *s) {
 //,-----
 //| Sound part
 //`-----
-void sdl_play_sound(int snd) {
-  Mix_PlayChannel(-1, tab_sounds[snd], 0);
+void
+sdl_play_sound(struct state *s) {
+  POP1();
+  Mix_PlayChannel(-1, (Mix_Chunk *) p1, 0);
 }
 
-void sdl_halt_sound() {
-  Mix_HaltChannel(-1);
+void
+sdl_halt_sound(struct state *s) {
+   Mix_HaltChannel(-1);
+ }
+
+void
+sdl_set_sound_volume(struct state *s) {
+  POP1();
+  Mix_Volume(-1, p1 * MIX_MAX_VOLUME / 100);
 }
 
-void sdl_set_sound_volume(int percent) {
-  Mix_Volume(-1, percent * MIX_MAX_VOLUME / 100);
-}
+void
+sdl_load_sound (struct state *s) {
+  POP1();
+  char * filename = CFSTRING2C(p1);
 
-
-int sdl_load_sound (char *filename) {
-  sound_count += 1;
-  if (sound_count >= MAX_SOUND)
-    {
-      fprintf (stderr, "Sorry can't load more than %d sounds\n", MAX_SOUND);
-      sound_count -= 1;
-      return -1;
-    }
-
-  tab_sounds[sound_count] = Mix_LoadWAV(filename);
-  if (tab_sounds[sound_count] == NULL) {
+  const Mix_Chunk * snd = Mix_LoadWAV(filename);
+  if (snd == NULL) {
     fprintf(stderr,
         "\nError: I could not load the sound file:\n"
         "%s\n"
         "The Simple DirectMedia error that occured was:\n"
-        "%s\n\n", filename, SDL_GetError());
-    sound_count -= 1;
-    return -1;
+            "%s\n\n", filename, SDL_GetError());
+    PUSH1(-1);
+    return;
   }
-  return sound_count;
+
+  PUSH1((cell) snd);
 }
 
-unsigned int sdl_get_ticks () {
-  return SDL_GetTicks ();
+void
+sdl_get_ticks (struct state *s) {
+  PUSH1(SDL_GetTicks ());
 }
 
 void
@@ -447,6 +438,13 @@ require_sdl_fn(struct state *state)
 
   define_primitive_extension(state, SDL_LOAD_IMAGE_HASH,        ENTRY_NAME("sdl/load-image"), sdl_load_image);
   define_primitive_extension(state, SDL_PUT_IMAGE_HASH,         ENTRY_NAME("sdl/put-image"), sdl_put_image);
+
+  define_primitive_extension(state, SDL_PLAY_SOUND_HASH,        ENTRY_NAME("sdl/play-sound"), sdl_play_sound);
+  define_primitive_extension(state, SDL_HALT_SOUND_HASH,        ENTRY_NAME("sdl/halt-sound"), sdl_halt_sound);
+  define_primitive_extension(state, SDL_VOLUME_HASH,            ENTRY_NAME("sdl/volume!"), sdl_set_sound_volume);
+  define_primitive_extension(state, SDL_LOAD_SOUND_HASH,        ENTRY_NAME("sdl/load-sound"), sdl_load_sound);
+
+  define_primitive_extension(state, SDL_GET_TICKS_HASH,         ENTRY_NAME("sdl/ticks@"), sdl_get_ticks);
 
   initialized = 1;
 }

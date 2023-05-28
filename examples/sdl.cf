@@ -1,6 +1,7 @@
 % require-sdl
 
 ~1024 768 0 sdl/init
+1 sdl/volume!
 
 :done ~0 variable ,;
 
@@ -10,11 +11,16 @@
 :ball-x ~100 variable ,;
 :ball-y ~50 variable ,;
 
+:snd/hk ~" sdl/sounds/hk.mp3" sdl/load-sound constant ,;
+:snd/synth ~" sdl/sounds/synth.mp3" sdl/load-sound constant ,;
+
+
 :R ~255 255 * [,] ^* ,;
 :G ^255 * ,;
 :B ^ + + ,;
 
 :button-pressed
+   ^snd/synth sdl/play-sound
    ~c" Button " ^pr . ~c" pressed: " ^pr sdl/mouse-x@ . sdl/mouse-y@ . cr ,;
 
 :draw ^
@@ -28,6 +34,7 @@
    sdl/present ,;
 
 :move-ball-to ^
+   snd/hk sdl/play-sound
    sdl/mouse-x@ 25 - ball-x ! sdl/mouse-y@ 25 - ball-y !  draw ,;
 
 :sdl-loop ^

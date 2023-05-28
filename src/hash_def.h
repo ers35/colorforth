@@ -207,6 +207,11 @@ typedef uint32_t  hash_t;
 #define SDL_GET_TEXT_SIZE_HASH         (hash_t) 0x3B567CA7                // sdl/text-size@
 #define SDL_LOAD_IMAGE_HASH            (hash_t) 0xA30EA3E2                // sdl/load-image
 #define SDL_PUT_IMAGE_HASH             (hash_t) 0x3DFA782B                // sdl/put-image
+#define SDL_PLAY_SOUND_HASH            (hash_t) 0x8EFAE1EA                // sdl/play-sound
+#define SDL_HALT_SOUND_HASH            (hash_t) 0xB451120F                // sdl/halt-sound
+#define SDL_VOLUME_HASH                (hash_t) 0xCCB3E567                // sdl/volume!
+#define SDL_LOAD_SOUND_HASH            (hash_t) 0x3F337FC                 // sdl/load-sound
+#define SDL_GET_TICKS_HASH             (hash_t) 0xA0C11FC                 // sdl/ticks@
 
 // ext/threads.c
 #define THREAD__RUN_HASH               (hash_t) 0xE47BB892                // thread/run
