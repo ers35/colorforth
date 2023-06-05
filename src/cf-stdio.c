@@ -40,7 +40,7 @@ void cf_printf(struct state *s, const char* format, ...)
   va_end (arg);
 }
 
-void cf_fflush()
+void cf_fflush(void)
 {
   fflush(stdout);
 }

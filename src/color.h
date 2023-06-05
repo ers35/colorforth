@@ -14,8 +14,8 @@
 #ifdef __ECHO_COLOR
 
 extern void echo_color(struct state *state, int c, char *color);
-extern void init_terminal();
-extern void reset_terminal();
+extern void init_terminal(void);
+extern void reset_terminal(void);
 #else
 #define echo_color(state, c, color)
 #define init_terminal()

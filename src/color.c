@@ -30,7 +30,7 @@ echo_color(struct state *s, int c, char *color)
 }
 
 void
-init_terminal()
+init_terminal(void)
 {
   struct termios new_tio;
   tcgetattr(STDIN_FILENO,&old_tio);
@@ -40,7 +40,7 @@ init_terminal()
 }
 
 void
-reset_terminal()
+reset_terminal(void)
 {
   tcsetattr(STDIN_FILENO,TCSANOW,&old_tio);
   printf("%s", COLOR_CLEAR);

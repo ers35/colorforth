@@ -13,7 +13,9 @@ extern void require_ext_math_fn(struct state *state);
 extern void require_mp_math_fn(struct state *state);
 extern void require_threads_fn(struct state *state);
 extern void require_network_fn(struct state *state);
+#ifdef __SDL
 extern void require_sdl_fn(struct state *state);
+#endif /* __SDL */
 #endif /* __MINIMAL_BUILD */
 
 void

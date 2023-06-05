@@ -17,7 +17,7 @@ extern int cf_getchar(struct state *s);
 
 extern void cf_printf(struct state *s, const char* format, ...);
 
-extern void cf_fflush();
+extern void cf_fflush(void);
 
 #ifdef __cplusplus
 }

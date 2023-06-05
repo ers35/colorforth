@@ -19,8 +19,8 @@ EXT_SRC=ext/os.c \
 	ext/ext-math.c \
 	ext/mp-math.c \
 	ext/threads.c \
-	ext/network.c \
-	ext/sdl.c
+	ext/network.c #\
+#	ext/sdl.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
