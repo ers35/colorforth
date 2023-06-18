@@ -18,13 +18,13 @@ extern void display_clash_found(struct state *s, char clash_found);
 struct prefix_map prefix_map[MAX_PREFIX];
 
 #define define_register(N)                                                     \
-  case OP_##N##_STORE: { ENSURE_STACK_MIN(1, break);  N = POP(); break; }      \
-  case OP_##N##_LOAD: { ENSURE_STACK_MAX(1, break);   PUSH(N); break; }        \
-  case OP_##N##_ADD: { ENSURE_STACK_MIN(1, break);    N += POP(); break; }     \
+  case OP_##N##_STORE: { ENSURE_STACK_MIN(1);  N = POP(); break; }      \
+  case OP_##N##_LOAD: { ENSURE_STACK_MAX(1);   PUSH(N); break; }        \
+  case OP_##N##_ADD: { ENSURE_STACK_MIN(1);    N += POP(); break; }     \
   case OP_##N##_INC: { N += 1; break; }                                        \
   case OP_##N##_DEC: { N -= 1; break; }                                        \
-  case OP_##N##_R_POP: { ENSURE_R_STACK_MIN(1, break); N = R_POP(); break; }   \
-  case OP_##N##_R_PUSH: { ENSURE_R_STACK_MAX(1, break); R_PUSH(N); break; }
+  case OP_##N##_R_POP: { ENSURE_R_STACK_MIN(1); N = R_POP(); break; }   \
+  case OP_##N##_R_PUSH: { ENSURE_R_STACK_MAX(1); R_PUSH(N); break; }
 
 #define define_register_primitive(N)                                    \
   define_primitive(s, REG_##N##_LOAD_HASH,        ENTRY_NAME(#N"@"), OP_##N##_LOAD); \
@@ -187,8 +187,6 @@ compile(struct state *s)
   }
 }
 
-#define END break
-
 void
 execute_(struct state *s, struct entry *entry)
 {
@@ -199,7 +197,7 @@ execute_(struct state *s, struct entry *entry)
     HEAP(0, opcode_t) = (opcode_t) entry->opcode;
   }
 
-  ENSURE_R_STACK_MAX(1, return);
+  ENSURE_R_STACK_MAX(1);
   R_PUSH(0);
 
 // #ifdef __USE_REGISTER
@@ -218,7 +216,7 @@ execute_(struct state *s, struct entry *entry)
     {
       case OP_RETURN:
       {
-        ENSURE_R_STACK_MIN(1, END);
+        ENSURE_R_STACK_MIN(1);
         cell offset = R_POP();
         if (offset == 0) {
           // cf_printf(s, "   %s(done) <-\n", entry->name);
@@ -255,7 +253,7 @@ execute(struct state *s)
     cell n = 0;
     if (tib_to_number(s, &n))
     {
-      ENSURE_STACK_MAX(1, return);
+      ENSURE_STACK_MAX(1);
       PUSH(n);
     }
     else

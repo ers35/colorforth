@@ -174,20 +174,20 @@ extern void *cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned 
 #define STORE(value, type) { PUT(value, type); s->here += sizeof(type); }
 
 #ifndef UNSAFE_MODE
-#define ENSURE_STACK_MIN_GEN(x, sp, msg, action) if (sp < x - 1) { cf_printf(NULL, msg); action; }
-#define ENSURE_STACK_MAX_GEN(x, sp, lim, msg, action) if (sp > lim - x) { cf_printf(NULL, msg);  action; }
+#define ENSURE_STACK_MIN_GEN(x, sp, msg) if (sp < x - 1) { cf_printf(NULL, msg); return; }
+#define ENSURE_STACK_MAX_GEN(x, sp, lim, msg) if (sp > lim - x) { cf_printf(NULL, msg);  return; }
 
-#define ENSURE_STACK_MIN(x, action) ENSURE_STACK_MIN_GEN(x, SP, "ES<!\n", action)
-#define ENSURE_STACK_MAX(x, action) ENSURE_STACK_MAX_GEN(x, SP, LIM, "ES>!\n", action)
+#define ENSURE_STACK_MIN(x) ENSURE_STACK_MIN_GEN(x, SP, "ES<!\n")
+#define ENSURE_STACK_MAX(x) ENSURE_STACK_MAX_GEN(x, SP, LIM, "ES>!\n")
 
-#define ENSURE_R_STACK_MIN(x, action) ENSURE_STACK_MIN_GEN(x, R_SP, "ERS<!\n", action)
-#define ENSURE_R_STACK_MAX(x, action) ENSURE_STACK_MAX_GEN(x, R_SP, R_LIM, "ERS>!\n", action)
+#define ENSURE_R_STACK_MIN(x) ENSURE_STACK_MIN_GEN(x, R_SP, "ERS<!\n")
+#define ENSURE_R_STACK_MAX(x) ENSURE_STACK_MAX_GEN(x, R_SP, R_LIM, "ERS>!\n")
 #else
-#define ENSURE_STACK_MIN(x, action)
-#define ENSURE_STACK_MAX(x, action)
+#define ENSURE_STACK_MIN(x)
+#define ENSURE_STACK_MAX(x)
 
-#define ENSURE_STACK_MIN(x, action)
-#define ENSURE_STACK_MAX(x, action)
+#define ENSURE_STACK_MIN(x)
+#define ENSURE_STACK_MAX(x)
 #endif
 
 #define POP() CELLS[SP]; SP -= 1
@@ -196,14 +196,14 @@ extern void *cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned 
 #define R_POP() R_CELLS[R_SP]; R_SP -= 1
 #define R_PUSH(x) R_SP += 1; R_CELLS[R_SP] = (x)
 
-#define POP1() ENSURE_STACK_MIN(1, return); cell p1=POP()
-#define POP2() ENSURE_STACK_MIN(2, return); cell p1=CELLS[SP], p2=CELLS[SP-1]; SP-=2
-#define POP3() ENSURE_STACK_MIN(3, return); cell p1=CELLS[SP], p2=CELLS[SP-1], p3=CELLS[SP-2]; SP-=3
-#define POP4() ENSURE_STACK_MIN(4, return); cell p1=CELLS[SP], p2=CELLS[SP-1], p3=CELLS[SP-2], p4=CELLS[SP-3]; SP-=4
+#define POP1() ENSURE_STACK_MIN(1); cell p1=POP()
+#define POP2() ENSURE_STACK_MIN(2); cell p1=CELLS[SP], p2=CELLS[SP-1]; SP-=2
+#define POP3() ENSURE_STACK_MIN(3); cell p1=CELLS[SP], p2=CELLS[SP-1], p3=CELLS[SP-2]; SP-=3
+#define POP4() ENSURE_STACK_MIN(4); cell p1=CELLS[SP], p2=CELLS[SP-1], p3=CELLS[SP-2], p4=CELLS[SP-3]; SP-=4
 
-#define PUSH1(p1) ENSURE_STACK_MAX(1, return); PUSH(p1)
-#define PUSH2(p1, p2) ENSURE_STACK_MAX(2, return); SP+=2; CELLS[SP-1]=p1;  CELLS[SP]=p2
-#define PUSH3(p1, p2, p3) ENSURE_STACK_MAX(3, return); SP+=3; CELLS[SP-2]=p1; CELLS[SP-1]=p2; CELLS[SP]=p3
+#define PUSH1(p1) ENSURE_STACK_MAX(1); PUSH(p1)
+#define PUSH2(p1, p2) ENSURE_STACK_MAX(2); SP+=2; CELLS[SP-1]=p1;  CELLS[SP]=p2
+#define PUSH3(p1, p2, p3) ENSURE_STACK_MAX(3); SP+=3; CELLS[SP-2]=p1; CELLS[SP-1]=p2; CELLS[SP]=p3
 
 
 #define define_register_OP(N) OP_##N##_LOAD, OP_##N##_STORE, OP_##N##_ADD, \
