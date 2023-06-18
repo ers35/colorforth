@@ -6,21 +6,25 @@ default: colorforth
 
 SRC=src/main.c src/colorforth.c \
 	src/cf-stdio.c \
-	src/color.c \
-	src/lib.c \
-	ext/load-ext.c \
-	ext/io.c \
-	ext/parser.c
-
-EXT_SRC=ext/os.c \
-	ext/dict.c \
-	ext/time.c \
-	ext/math.c \
-	ext/ext-math.c \
-	ext/mp-math.c \
-	ext/threads.c \
-	ext/network.c #\
+	src/color.c #\
+#	src/lib.c \
+#	ext/load-ext.c \
+#	ext/io.c \
+#	ext/parser.c
+#
+#EXT_SRC=ext/os.c \
+#	ext/dict.c \
+#	ext/time.c \
+#	ext/math.c \
+#	ext/ext-math.c \
+#	ext/mp-math.c \
+#	ext/threads.c \
+#	ext/network.c \
 #	ext/sdl.c
+
+INCLUDED_SRC=src/utils.c \
+	src/core-words.c \
+	src/define-core.c
 
 SRC_H=src/colorforth.h \
 	conf.h \
@@ -48,7 +52,7 @@ src/lib.cf.h: src/lib.tmpl.cf
 	cp src/lib.tmpl.cf lib.cf
 	xxd -i lib.cf src/lib.cf.h
 
-colorforth: Makefile $(SRC) $(EXT_SRC) $(SRC_H)
+colorforth: Makefile $(SRC) $(INCLUDED_SRC) $(EXT_SRC) $(SRC_H)
 	gcc $(FLAGS) $(EXTRA_CFLAGS) -o colorforth $(SRC) $(EXT_SRC) $(EXTRA_CLIBS) $(SDL_FLAGS)
 
 colorforth-unsafe: Makefile $(SRC) $(SRC_H)
