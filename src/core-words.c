@@ -1,29 +1,29 @@
 // The author disclaims copyright to this source code.
 
-//       case OP_R_PUSH:
-//       {
-//         ENSURE_STACK_MIN(1); ENSURE_R_STACK_MAX(1);
-//         const cell n = POP();
-//         R_PUSH(n);
-//         break;
-//       }
-//
-//       case OP_R_POP:
-//       {
-//         ENSURE_R_STACK_MIN(1); ENSURE_STACK_MAX(1);
-//         const cell n = R_POP();
-//         PUSH(n);
-//         break;
-//       }
-//
-//       case OP_R_FETCH:
-//       {
-//         ENSURE_R_STACK_MIN(1);
-//         ENSURE_STACK_MAX(1);
-//         PUSH(R_CELLS[R_SP]);
-//         break;
-//       }
-//
+case OP_R_PUSH:
+{
+  ENSURE_STACK_MIN(1); ENSURE_R_STACK_MAX(1);
+  const cell n = POP();
+  R_PUSH(n);
+  break;
+}
+
+case OP_R_POP:
+{
+  ENSURE_R_STACK_MIN(1); ENSURE_STACK_MAX(1);
+  const cell n = R_POP();
+  PUSH(n);
+  break;
+}
+
+case OP_R_FETCH:
+{
+  ENSURE_R_STACK_MIN(1);
+  ENSURE_STACK_MAX(1);
+  PUSH(R_CELLS[R_SP]);
+  break;
+}
+
 // #ifdef __USE_REGISTER
 //       define_register(A);
 //       define_register(B);
@@ -31,67 +31,67 @@
 //       define_register(I);
 //       define_register(J);
 // #endif
-//
-//       case OP_DUP:
-//       {
-//         ENSURE_STACK_MIN(1);
-//         ENSURE_STACK_MAX(1);
-//         PUSH(CELLS[SP - 1]);
-//         break;
-//       }
-//
-//       case OP_DROP:
-//       {
-//         ENSURE_STACK_MIN(1);
-//         SP -= 1;
-//         break;
-//       }
-//
-//       case OP_SWAP:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         const cell n = CELLS[SP];
-//         CELLS[SP] = CELLS[SP - 1];
-//         CELLS[SP - 1] = n;
-//         break;
-//       }
-//
-//       case OP_OVER:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         ENSURE_STACK_MAX(1);
-//         PUSH(CELLS[SP - 2]);
-//         break;
-//       }
-//
-//       case OP_ROT:
-//       {
-//         ENSURE_STACK_MIN(3);
-//         const cell n = CELLS[SP - 2];
-//         CELLS[SP - 2] = CELLS[SP - 1];
-//         CELLS[SP - 1] = CELLS[SP];
-//         CELLS[SP] = n;
-//         break;
-//       }
-//
-//       case OP_MINUS_ROT:
-//       {
-//         ENSURE_STACK_MIN(3);
-//         const cell n = CELLS[SP];
-//         CELLS[SP] = CELLS[SP - 1];
-//         CELLS[SP - 1] = CELLS[SP - 2];
-//         CELLS[SP - 2] = n;
-//         break;
-//       }
-//
-//       case OP_NIP:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         SP -= 1;
-//         CELLS[SP] = CELLS[SP + 1];
-//         break;
-//       }
-//
+
+case OP_DUP:
+{
+  ENSURE_STACK_MIN(1);
+  ENSURE_STACK_MAX(1);
+  PUSH(CELLS[SP - 1]);
+  break;
+}
+
+case OP_DROP:
+{
+  ENSURE_STACK_MIN(1);
+  SP -= 1;
+  break;
+}
+
+case OP_SWAP:
+{
+  ENSURE_STACK_MIN(2);
+  const cell n = CELLS[SP];
+  CELLS[SP] = CELLS[SP - 1];
+  CELLS[SP - 1] = n;
+  break;
+}
+
+case OP_OVER:
+{
+  ENSURE_STACK_MIN(2);
+  ENSURE_STACK_MAX(1);
+  PUSH(CELLS[SP - 2]);
+  break;
+}
+
+case OP_ROT:
+{
+  ENSURE_STACK_MIN(3);
+  const cell n = CELLS[SP - 2];
+  CELLS[SP - 2] = CELLS[SP - 1];
+  CELLS[SP - 1] = CELLS[SP];
+  CELLS[SP] = n;
+  break;
+}
+
+case OP_MINUS_ROT:
+{
+  ENSURE_STACK_MIN(3);
+  const cell n = CELLS[SP];
+  CELLS[SP] = CELLS[SP - 1];
+  CELLS[SP - 1] = CELLS[SP - 2];
+  CELLS[SP - 2] = n;
+  break;
+}
+
+case OP_NIP:
+{
+  ENSURE_STACK_MIN(2);
+  SP -= 1;
+  CELLS[SP] = CELLS[SP + 1];
+  break;
+}
+
 //       case OP_LOAD:
 //       {
 //         ENSURE_STACK_MIN(1);
@@ -148,7 +148,7 @@ case OP_TAIL_CALL:
 //       }
 
 case OP_NUMBER:
-// case OP_TICK_NUMBER:
+case OP_TICK_NUMBER:
 {
   ENSURE_STACK_MAX(1);
   SP += 1;
@@ -166,38 +166,38 @@ case OP_ADD:
   break;
 }
 
-//       case OP_SUB:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         SP -= 1;
-//         CELLS[SP] = CELLS[SP] - CELLS[SP + 1];
-//         break;
-//       }
-//
-//       case OP_MUL:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         SP -= 1;
-//         CELLS[SP] = CELLS[SP] * CELLS[SP + 1];
-//         break;
-//       }
-//
-//       case OP_EQUAL:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         SP -= 1;
-//         CELLS[SP] = CELLS[SP] == CELLS[SP + 1];
-//         break;
-//       }
-//
-//       case OP_LESS:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         SP -= 1;
-//         CELLS[SP] = CELLS[SP] < CELLS[SP + 1];
-//         break;
-//       }
-//
+case OP_SUB:
+{
+  ENSURE_STACK_MIN(2);
+  SP -= 1;
+  CELLS[SP] = CELLS[SP] - CELLS[SP + 1];
+  break;
+}
+
+case OP_MUL:
+{
+  ENSURE_STACK_MIN(2);
+  SP -= 1;
+  CELLS[SP] = CELLS[SP] * CELLS[SP + 1];
+  break;
+}
+
+case OP_EQUAL:
+{
+  ENSURE_STACK_MIN(2);
+  SP -= 1;
+  CELLS[SP] = CELLS[SP] == CELLS[SP + 1];
+  break;
+}
+
+case OP_LESS:
+{
+  ENSURE_STACK_MIN(2);
+  SP -= 1;
+  CELLS[SP] = CELLS[SP] < CELLS[SP + 1];
+  break;
+}
+
 //       case OP_BRANCH:
 //       {
 //         pc = (struct code*)pc->value;
@@ -217,132 +217,162 @@ case OP_ADD:
 //         if (p1) { pc = (struct code*)pc->value; continue; }
 //         break;
 //       }
+
+// Conditions: p2=flag p1=offset
+case OP_IF:
+{
+  ENSURE_STACK_MIN(2);
+  POP2();
+
+  pc += sizeof(opcode_t);
+
+  if (p2) {
+    R_PUSH(pc);
+    pc = p1;
+  }
+  continue;
+}
+
+case OP_IF_EXIT:
+{
+  ENSURE_STACK_MIN(2);
+  POP2();
+
+  pc += sizeof(opcode_t);
+
+  if (p2) {
+    R_PUSH(pc);
+    pc = p1;
+    R_SP -= 1;
+  }
+  continue;
+}
+
+case OP_IF_NOT:
+{
+  ENSURE_STACK_MIN(2);
+  POP2();
+
+  pc += sizeof(opcode_t);
+
+  if (p2 == 0) {
+    R_PUSH(pc);
+    pc = p1;
+  }
+  continue;
+}
+
+case OP_IF_NOT_EXIT:
+{
+  ENSURE_STACK_MIN(2);
+  POP2();
+
+  pc += sizeof(opcode_t);
+
+  if (p2 == 0) {
+    R_PUSH(pc);
+    pc = p1;
+    R_SP -= 1;
+  }
+  continue;
+}
+
+// case OP_IF_NOT:
+// {
+//   ENSURE_STACK_MIN(2);
+//   struct entry *entry_ = (struct entry*)POP();
+//   const cell f = POP();
 //
-//       case OP_IF:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
+//   if (f == 0) {
+//     R_PUSH((cell)pc);
+//     pc = entry_->code - 1;
+//   }
 //
-//         if (f) {
-//           R_PUSH((cell)pc);
-//           pc = entry_->code - 1;
-//         }
+//   break;
+// }
 //
-//         break;
-//       }
+// case OP_IF_NOT_EXIT:
+// {
+//   ENSURE_STACK_MIN(2);
+//   struct entry *entry_ = (struct entry*)POP();
+//   const cell f = POP();
 //
-//       case OP_IF_EXIT:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
+//   if (f == 0) {
+//     R_PUSH((cell)pc);
+//     pc = entry_->code - 1;
+//     R_SP -= 1;
+//   }
 //
-//         if (f) {
-//           R_PUSH((cell)pc);
-//           pc = entry_->code - 1;
-//           R_SP -= 1;
-//         }
+//   break;
+// }
 //
-//         break;
-//       }
+// case OP_IF_STAR:
+// {
+//   ENSURE_STACK_MIN(2);
+//   struct entry *entry_ = (struct entry*)POP();
+//   const cell f = POP();
 //
-//       case OP_IF_NOT:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
+//   if (f) pc = entry_->code - 1;
 //
-//         if (f == 0) {
-//           R_PUSH((cell)pc);
-//           pc = entry_->code - 1;
-//         }
+//   break;
+// }
 //
-//         break;
-//       }
+// case OP_IF_STAR_EXIT:
+// {
+//   ENSURE_STACK_MIN(2);
+//   struct entry *entry_ = (struct entry*)POP();
+//   const cell f = POP();
 //
-//       case OP_IF_NOT_EXIT:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
+//   if (f) {
+//     pc = entry_->code - 1;
+//     R_SP -= 1;
+//   }
 //
-//         if (f == 0) {
-//           R_PUSH((cell)pc);
-//           pc = entry_->code - 1;
-//           R_SP -= 1;
-//         }
+//   break;
+// }
 //
-//         break;
-//       }
+// case OP_IF_NOT_STAR:
+// {
+//   ENSURE_STACK_MIN(2);
+//   struct entry *entry_ = (struct entry*)POP();
+//   const cell f = POP();
 //
-//       case OP_IF_STAR:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
+//   if (f == 0) pc = entry_->code - 1;
 //
-//         if (f) pc = entry_->code - 1;
+//   break;
+// }
 //
-//         break;
-//       }
+// case OP_IF_NOT_STAR_EXIT:
+// {
+//   ENSURE_STACK_MIN(2);
+//   struct entry *entry_ = (struct entry*)POP();
+//   const cell f = POP();
 //
-//       case OP_IF_STAR_EXIT:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
+//   if (f == 0) {
+//     pc = entry_->code - 1;
+//     R_SP -= 1;
+//   }
 //
-//         if (f) {
-//           pc = entry_->code - 1;
-//           R_SP -= 1;
-//         }
+//   break;
+// }
 //
-//         break;
-//       }
+// case OP_IF_ELSE:
+// {
+//   ENSURE_STACK_MIN(3);
+//   struct entry *entry_false_ = (struct entry*)POP();
+//   struct entry *entry_true_ = (struct entry*)POP();
+//   const cell f = POP();
 //
-//       case OP_IF_NOT_STAR:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
+//   R_PUSH((cell)pc);
+//   if (f) {
+//     pc = entry_true_->code - 1;
+//   }
+//   else {
+//     pc = entry_false_->code - 1;
+//   }
 //
-//         if (f == 0) pc = entry_->code - 1;
-//
-//         break;
-//       }
-//
-//       case OP_IF_NOT_STAR_EXIT:
-//       {
-//         ENSURE_STACK_MIN(2);
-//         struct entry *entry_ = (struct entry*)POP();
-//         const cell f = POP();
-//
-//         if (f == 0) {
-//           pc = entry_->code - 1;
-//           R_SP -= 1;
-//         }
-//
-//         break;
-//       }
-//
-//       case OP_IF_ELSE:
-//       {
-//         ENSURE_STACK_MIN(3);
-//         struct entry *entry_false_ = (struct entry*)POP();
-//         struct entry *entry_true_ = (struct entry*)POP();
-//         const cell f = POP();
-//
-//         R_PUSH((cell)pc);
-//         if (f) {
-//           pc = entry_true_->code - 1;
-//         }
-//         else {
-//           pc = entry_false_->code - 1;
-//         }
-//
-//         break;
-//       }
+//   break;
+// }
 
 case OP_EMIT:
 {

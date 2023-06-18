@@ -114,19 +114,8 @@ define(struct state *s)
 #endif
 
   entry->offset = s->here;
+  printf("\ndefine: %s offset=%ld\n", entry->name, entry->offset);
 }
-
-// inline void
-// compile_code(struct state *s, cell code, cell value)
-// {
-//   ((cell *)s->heap)[s->here] = code;
-//   s->here += 1;
-//   // *((cell *) s->heap + s->here * sizeof(cell)) = code;
-//   // s->here += 1;
-//
-//   ((cell *)s->heap)[s->here] = value;
-//   s->here += 1;
-// }
 
 static void
 compile_entry(struct state *s, struct entry *entry)
@@ -159,7 +148,6 @@ compile_entry(struct state *s, struct entry *entry)
 static void
 compile_literal(struct state *s, cell n)
 {
-  //compile_code(s, OP_NUMBER, n);
   STORE(OP_NUMBER, opcode_t);
   STORE(n, cell);
 }
@@ -262,6 +250,32 @@ execute(struct state *s)
       return;
     }
   }
+}
+
+static void
+tick(struct state *s)
+{
+  struct entry *entry = find_entry(s, &s->dict);
+  if (!entry) {
+    unknow_word(s);
+    return;
+  }
+
+  ENSURE_STACK_MAX(1);
+  PUSH(entry->offset);
+}
+
+static void
+compile_tick(struct state *s)
+{
+  struct entry *entry = find_entry(s, &s->dict);
+  if (!entry) {
+    unknow_word(s);
+    return;
+  }
+
+  STORE(OP_TICK_NUMBER, opcode_t);
+  STORE(entry->offset, cell);
 }
 
 void

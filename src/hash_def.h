@@ -20,6 +20,7 @@ typedef hash_t opcode_t;
 #define OP_CALL                      (opcode_t) 0xF85D926E                // __OP_CALL
 #define OP_TAIL_CALL                 (opcode_t) 0x1A03DDDD                // __OP_TAIL_CALL
 #define OP_NUMBER                    (opcode_t) 0xA2AB56D7                // __OP_NUMBER
+#define OP_TICK_NUMBER               (opcode_t) 0x544A7A21                // __OP_TICK_NUMBER
 
 // <-- BEGIN AUTOGEN PART -->
 
