@@ -55,8 +55,8 @@ define_primitive(s, ENTRY_NAME("if-not;"), OP_IF_NOT_EXIT);
 //define_primitive(s, ENTRY_NAME("if*;"), OP_IF_STAR_EXIT);
 //define_primitive(s, ENTRY_NAME("if-not*"), OP_IF_NOT_STAR);
 //define_primitive(s, ENTRY_NAME("if-not*;"), OP_IF_NOT_STAR_EXIT);
-//
-//define_primitive(s, ENTRY_NAME("if-else"), OP_IF_ELSE);
+
+define_primitive(s, ENTRY_NAME("if-else"), OP_IF_ELSE);
 
 define_primitive(s, ENTRY_NAME(".s"), OP_DOT_S);
 

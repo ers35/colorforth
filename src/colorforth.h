@@ -174,7 +174,7 @@ extern void *cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned 
 #define PUT(value, type) { HEAP(s->here, type) = (type) (value); }
 #define STORE(value, type) { PUT(value, type); s->here += sizeof(type); }
 
-#define ENTRY(index) &s->dict.entries[(index)]
+#define ENTRY(index) (&s->dict.entries[(index)])
 
 #ifndef UNSAFE_MODE
 #define ENSURE_STACK_MIN_GEN(x, sp, msg) if (sp < x - 1) { cf_printf(NULL, msg); return; }

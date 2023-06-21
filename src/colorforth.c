@@ -119,16 +119,17 @@ define(struct state *s)
 }
 
 static void
-compile_entry(struct state *s, struct entry *entry)
+compile_entry(struct state *s, cell entry_index)
 {
+  struct entry* entry = ENTRY(entry_index);
   if (entry->isCore == 1) {
     STORE(entry->opcode, opcode_t);
-  } else if (entry == ENTRY(s->dict.latest)) {
+  } else if (entry_index == s->dict.latest) {
     STORE(OP_TAIL_CALL, opcode_t);
-    STORE(entry->offset, cell);
+    STORE(entry_index, cell);
   } else {
     STORE(OP_CALL, opcode_t);
-    STORE(entry->offset, cell);
+    STORE(entry_index, cell);
   }
 }
 
@@ -159,7 +160,7 @@ compile(struct state *s)
   cell entry_index = find_entry(s, &s->dict);
   if (entry_index != -1)
   {
-    compile_entry(s, ENTRY(entry_index));
+    compile_entry(s, entry_index);
   }
   else
   {
@@ -258,10 +259,8 @@ tick(struct state *s)
     return;
   }
 
-  struct entry* entry = ENTRY(entry_index);
-
   ENSURE_STACK_MAX(1);
-  PUSH(entry->offset);
+  PUSH(entry_index);
 }
 
 static void
@@ -273,10 +272,8 @@ compile_tick(struct state *s)
     return;
   }
 
-  struct entry *entry = ENTRY(entry_index);
-
   STORE(OP_TICK_NUMBER, opcode_t);
-  STORE(entry->offset, cell);
+  STORE(entry_index, cell);
 }
 
 void

@@ -129,14 +129,14 @@ case OP_CALL:
   pc += sizeof(opcode_t);
   ENSURE_STACK_MAX(1);
   R_PUSH(pc + sizeof(cell));
-  pc = HEAP(pc, cell);
+  pc = ENTRY(HEAP(pc, cell))->offset;
   continue;
 }
 
 case OP_TAIL_CALL:
 {
   pc += sizeof(opcode_t);
-  pc = HEAP(pc, cell);
+  pc = ENTRY(HEAP(pc, cell))->offset;
   continue;
 }
 
@@ -228,7 +228,7 @@ case OP_IF:
 
   if (p2) {
     R_PUSH(pc);
-    pc = p1;
+    pc = ENTRY(p1)->offset;
   }
   continue;
 }
@@ -242,7 +242,7 @@ case OP_IF_EXIT:
 
   if (p2) {
     R_PUSH(pc);
-    pc = p1;
+    pc = ENTRY(p1)->offset;
     R_SP -= 1;
   }
   continue;
@@ -257,7 +257,7 @@ case OP_IF_NOT:
 
   if (p2 == 0) {
     R_PUSH(pc);
-    pc = p1;
+    pc = ENTRY(p1)->offset;
   }
   continue;
 }
@@ -271,9 +271,21 @@ case OP_IF_NOT_EXIT:
 
   if (p2 == 0) {
     R_PUSH(pc);
-    pc = p1;
+    pc = ENTRY(p1)->offset;
     R_SP -= 1;
   }
+  continue;
+}
+
+// Conditions: p3=flag p2=true_offset p1=false_offset
+case OP_IF_ELSE:
+{
+  ENSURE_STACK_MIN(3);
+  POP3();
+
+  pc += sizeof(opcode_t);
+  R_PUSH(pc);
+  pc = p3 ? ENTRY(p2)->offset : ENTRY(p1)->offset;
   continue;
 }
 
