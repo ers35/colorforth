@@ -57,12 +57,12 @@ define_primitive(struct state *s, char name[] __attribute__((unused)), hash_t ha
 
   entry->opcode = hashed_name;
 
-#ifdef __KEEP_ENTRY_NAMES
-  if (!entry->opcode)
-  {
-    entry->opcode = hash(name);
-  }
+  entry->isCore = 1;
+  entry->offset = s->here;
+  STORE(entry->opcode, opcode_t);
+  STORE(OP_RETURN, opcode_t);
 
+#ifdef __KEEP_ENTRY_NAMES
   entry->name_len = strlen(NON_NULL(name));
   entry->name = cf_calloc(s, 1, entry->name_len, PRIMITIVE_ERROR);
   memcpy(entry->name, NON_NULL(name), entry->name_len);
@@ -83,9 +83,6 @@ define_primitive(struct state *s, char name[] __attribute__((unused)), hash_t ha
   cf_printf(s, "%-20lX %lX\n", entry->opcode, hashed_name);
 #endif
 #endif
-
-  // The opcode will be overwritten at execution time
-  entry->offset = 0;
 }
 
 /**
@@ -114,13 +111,14 @@ define(struct state *s)
 #endif
 
   entry->offset = s->here;
+  entry->isCore = 0;
   printf("\ndefine: %s offset=%ld\n", entry->name, entry->offset);
 }
 
 static void
 compile_entry(struct state *s, struct entry *entry)
 {
-  if (entry->offset == 0) {
+  if (entry->isCore == 1) {
     STORE(entry->opcode, opcode_t);
   } else if (entry == &s->dict.entries[s->dict.latest]) {
     STORE(OP_TAIL_CALL, opcode_t);
@@ -181,12 +179,8 @@ execute_(struct state *s, struct entry *entry)
   // cf_printf(s, "-> %s offset=%d\n", entry->name, entry->offset);
   cell pc = entry->offset;
 
-  if (entry->offset == 0) {
-    HEAP(0, opcode_t) = (opcode_t) entry->opcode;
-  }
-
   ENSURE_R_STACK_MAX(1);
-  R_PUSH(0);
+  R_PUSH(-1);
 
 // #ifdef __USE_REGISTER
 //   register cell A = 0;
@@ -206,7 +200,7 @@ execute_(struct state *s, struct entry *entry)
       {
         ENSURE_R_STACK_MIN(1);
         cell offset = R_POP();
-        if (offset == 0) {
+        if (offset == -1) {
           // cf_printf(s, "   %s(done) <-\n", entry->name);
           return ;
         }
