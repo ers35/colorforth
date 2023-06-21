@@ -140,7 +140,7 @@ words(struct state *s)
   cf_printf(s, "\n");
 }
 
-struct entry*
+cell
 find_entry(struct state *s, struct dictionary *dict)
 {
   s->tib.buf[s->tib.len] = '\0';
@@ -150,23 +150,23 @@ find_entry(struct state *s, struct dictionary *dict)
   {
     if (dict->entries[i].opcode == tib_opcode)
     {
-      return &dict->entries[i];
+      return i;
     }
   }
-  return NULL;
+  return -1;
 }
 
-struct entry*
+cell
 find_entry_by_hash(struct dictionary *dict, hash_t opcode)
 {
   for (int i = dict->latest; i >= 0; i--)
   {
     if (dict->entries[i].opcode == opcode)
     {
-      return &dict->entries[i];
+      return i;
     }
   }
-  return NULL;
+  return -1;
 }
 
 // struct entry*

@@ -42,9 +42,12 @@ struct prefix_map prefix_map[MAX_PREFIX];
 static void
 define_primitive(struct state *s, char name[] __attribute__((unused)), hash_t hashed_name)
 {
-  struct entry *found_entry = find_entry_by_hash(&s->dict, hashed_name);
-  if (found_entry)
+  cell entry_index = find_entry_by_hash(&s->dict, hashed_name);
+
+  if (entry_index != -1)
   {
+    struct entry *found_entry = ENTRY(entry_index);
+
 #ifdef __KEEP_ENTRY_NAMES
     cf_printf(s, "'%s' clash with '%s'\n", name, found_entry->name);
 #endif /* __KEEP_ENTRY_NAMES */
@@ -53,7 +56,7 @@ define_primitive(struct state *s, char name[] __attribute__((unused)), hash_t ha
   }
 
   s->dict.latest++;
-  struct entry *entry = &s->dict.entries[s->dict.latest];
+  struct entry *entry = ENTRY(s->dict.latest);
 
   entry->opcode = hashed_name;
 
@@ -120,7 +123,7 @@ compile_entry(struct state *s, struct entry *entry)
 {
   if (entry->isCore == 1) {
     STORE(entry->opcode, opcode_t);
-  } else if (entry == &s->dict.entries[s->dict.latest]) {
+  } else if (entry == ENTRY(s->dict.latest)) {
     STORE(OP_TAIL_CALL, opcode_t);
     STORE(entry->offset, cell);
   } else {
@@ -153,10 +156,10 @@ compile_literal(struct state *s, cell n)
 static void
 compile(struct state *s)
 {
-  struct entry *entry = find_entry(s, &s->dict);
-  if (entry)
+  cell entry_index = find_entry(s, &s->dict);
+  if (entry_index != -1)
   {
-    compile_entry(s, entry);
+    compile_entry(s, ENTRY(entry_index));
   }
   else
   {
@@ -224,10 +227,10 @@ execute_(struct state *s, struct entry *entry)
 void
 execute(struct state *s)
 {
-  struct entry *entry = find_entry(s, &s->dict);
-  if (entry)
+  cell entry_index = find_entry(s, &s->dict);
+  if (entry_index != -1)
   {
-    execute_(s, entry);
+    execute_(s, ENTRY(entry_index));
   }
   else
   {
@@ -249,11 +252,13 @@ execute(struct state *s)
 static void
 tick(struct state *s)
 {
-  struct entry *entry = find_entry(s, &s->dict);
-  if (!entry) {
+  cell entry_index = find_entry(s, &s->dict);
+  if (entry_index == -1) {
     unknow_word(s);
     return;
   }
+
+  struct entry* entry = ENTRY(entry_index);
 
   ENSURE_STACK_MAX(1);
   PUSH(entry->offset);
@@ -262,11 +267,13 @@ tick(struct state *s)
 static void
 compile_tick(struct state *s)
 {
-  struct entry *entry = find_entry(s, &s->dict);
-  if (!entry) {
+  cell entry_index = find_entry(s, &s->dict);
+  if (entry_index == -1) {
     unknow_word(s);
     return;
   }
+
+  struct entry *entry = ENTRY(entry_index);
 
   STORE(OP_TICK_NUMBER, opcode_t);
   STORE(entry->offset, cell);

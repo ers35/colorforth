@@ -134,7 +134,7 @@ extern void cf_print_cell(struct state *state, cell cell);
 extern void push(struct stack *stack, const cell n);
 extern cell pop(struct stack *stack);
 
-extern struct entry* find_entry(struct state *state, struct dictionary *dict);
+extern cell find_entry(struct state *state, struct dictionary *dict);
 //extern struct entry* find_entry_by_code(struct dictionary *dict, struct code *code);
 //extern struct entry* find_entry_by_fn(struct dictionary *dict, struct code *code);
 extern void unknow_word (struct state *s);
@@ -173,6 +173,8 @@ extern void *cf_calloc(struct state *state, size_t nmemb, size_t size, unsigned 
 #define HEAP(offset, type) *((type *) (s->heap + (offset)))
 #define PUT(value, type) { HEAP(s->here, type) = (type) (value); }
 #define STORE(value, type) { PUT(value, type); s->here += sizeof(type); }
+
+#define ENTRY(index) &s->dict.entries[(index)]
 
 #ifndef UNSAFE_MODE
 #define ENSURE_STACK_MIN_GEN(x, sp, msg) if (sp < x - 1) { cf_printf(NULL, msg); return; }
