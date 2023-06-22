@@ -60,7 +60,7 @@ define_primitive(struct state *s, char name[] __attribute__((unused)), hash_t ha
 
   entry->opcode = hashed_name;
 
-  entry->isCore = 1;
+  entry->mode = CORE;
   entry->offset = s->here;
   STORE(entry->opcode, opcode_t);
   STORE(OP_RETURN, opcode_t);
@@ -114,7 +114,7 @@ define(struct state *s)
 #endif
 
   entry->offset = s->here;
-  entry->isCore = 0;
+  entry->mode = CALL;
   printf("\ndefine: %s offset=%ld\n", entry->name, entry->offset);
 }
 
@@ -122,7 +122,7 @@ static void
 compile_entry(struct state *s, cell entry_index)
 {
   struct entry* entry = ENTRY(entry_index);
-  if (entry->isCore == 1) {
+  if (entry->mode == CORE) {
     STORE(entry->opcode, opcode_t);
   } else if (entry_index == s->dict.latest) {
     STORE(OP_TAIL_CALL, opcode_t);

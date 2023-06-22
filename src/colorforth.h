@@ -30,11 +30,17 @@ struct tib
   size_t len;
 };
 
+enum entry_mode {
+  CORE,
+  CALL,
+  HIDDEN
+};
+
 struct entry;
 struct entry
 {
   opcode_t opcode;
-  uint8_t isCore;
+  enum entry_mode mode;
 #ifdef __KEEP_ENTRY_NAMES
   char *name;
   size_t name_len;
