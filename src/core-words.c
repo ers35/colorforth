@@ -233,6 +233,18 @@ case OP_IF:
   continue;
 }
 
+// Tail call optimized if (to be used with the latest entry)
+case OP_IF_STAR:
+{
+  ENSURE_STACK_MIN(2);
+  POP2();
+
+  pc += sizeof(opcode_t);
+
+  if (p2) pc = ENTRY(p1)->offset;
+  continue;
+}
+
 case OP_IF_EXIT:
 {
   ENSURE_STACK_MIN(2);
@@ -262,6 +274,18 @@ case OP_IF_NOT:
   continue;
 }
 
+// Tail call optimized if-not
+case OP_IF_NOT_STAR:
+{
+  ENSURE_STACK_MIN(2);
+  POP2();
+
+  pc += sizeof(opcode_t);
+
+  if (p2 == 0) pc = ENTRY(p1)->offset;
+  continue;
+}
+
 case OP_IF_NOT_EXIT:
 {
   ENSURE_STACK_MIN(2);
@@ -288,103 +312,6 @@ case OP_IF_ELSE:
   pc = p3 ? ENTRY(p2)->offset : ENTRY(p1)->offset;
   continue;
 }
-
-// case OP_IF_NOT:
-// {
-//   ENSURE_STACK_MIN(2);
-//   struct entry *entry_ = (struct entry*)POP();
-//   const cell f = POP();
-//
-//   if (f == 0) {
-//     R_PUSH((cell)pc);
-//     pc = entry_->code - 1;
-//   }
-//
-//   break;
-// }
-//
-// case OP_IF_NOT_EXIT:
-// {
-//   ENSURE_STACK_MIN(2);
-//   struct entry *entry_ = (struct entry*)POP();
-//   const cell f = POP();
-//
-//   if (f == 0) {
-//     R_PUSH((cell)pc);
-//     pc = entry_->code - 1;
-//     R_SP -= 1;
-//   }
-//
-//   break;
-// }
-//
-// case OP_IF_STAR:
-// {
-//   ENSURE_STACK_MIN(2);
-//   struct entry *entry_ = (struct entry*)POP();
-//   const cell f = POP();
-//
-//   if (f) pc = entry_->code - 1;
-//
-//   break;
-// }
-//
-// case OP_IF_STAR_EXIT:
-// {
-//   ENSURE_STACK_MIN(2);
-//   struct entry *entry_ = (struct entry*)POP();
-//   const cell f = POP();
-//
-//   if (f) {
-//     pc = entry_->code - 1;
-//     R_SP -= 1;
-//   }
-//
-//   break;
-// }
-//
-// case OP_IF_NOT_STAR:
-// {
-//   ENSURE_STACK_MIN(2);
-//   struct entry *entry_ = (struct entry*)POP();
-//   const cell f = POP();
-//
-//   if (f == 0) pc = entry_->code - 1;
-//
-//   break;
-// }
-//
-// case OP_IF_NOT_STAR_EXIT:
-// {
-//   ENSURE_STACK_MIN(2);
-//   struct entry *entry_ = (struct entry*)POP();
-//   const cell f = POP();
-//
-//   if (f == 0) {
-//     pc = entry_->code - 1;
-//     R_SP -= 1;
-//   }
-//
-//   break;
-// }
-//
-// case OP_IF_ELSE:
-// {
-//   ENSURE_STACK_MIN(3);
-//   struct entry *entry_false_ = (struct entry*)POP();
-//   struct entry *entry_true_ = (struct entry*)POP();
-//   const cell f = POP();
-//
-//   R_PUSH((cell)pc);
-//   if (f) {
-//     pc = entry_true_->code - 1;
-//   }
-//   else {
-//     pc = entry_false_->code - 1;
-//   }
-//
-//   break;
-// }
 
 case OP_EMIT:
 {

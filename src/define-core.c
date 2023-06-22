@@ -47,14 +47,11 @@ define_primitive(s, ENTRY_NAME("emit"), OP_EMIT);
 // define_primitive(s, ENTRY_NAME("nbranch"), OP_NBRANCH);
 
 define_primitive(s, ENTRY_NAME("if"), OP_IF);
+define_primitive(s, ENTRY_NAME("if*"), OP_IF_STAR);
 define_primitive(s, ENTRY_NAME("if;"), OP_IF_EXIT);
 define_primitive(s, ENTRY_NAME("if-not"), OP_IF_NOT);
+define_primitive(s, ENTRY_NAME("if-not*"), OP_IF_NOT_STAR);
 define_primitive(s, ENTRY_NAME("if-not;"), OP_IF_NOT_EXIT);
-
-//define_primitive(s, ENTRY_NAME("if*"), OP_IF_STAR);
-//define_primitive(s, ENTRY_NAME("if*;"), OP_IF_STAR_EXIT);
-//define_primitive(s, ENTRY_NAME("if-not*"), OP_IF_NOT_STAR);
-//define_primitive(s, ENTRY_NAME("if-not*;"), OP_IF_NOT_STAR_EXIT);
 
 define_primitive(s, ENTRY_NAME("if-else"), OP_IF_ELSE);
 

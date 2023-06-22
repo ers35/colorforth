@@ -62,13 +62,11 @@ typedef hash_t opcode_t;
 #define OP_ZBRANCH                   (opcode_t) 0x84502A20                // 0branch
 #define OP_NBRANCH                   (opcode_t) 0xB041B3B2                // nbranch
 #define OP_IF                        (opcode_t) 0x790405D7                // if
+#define OP_IF_STAR                   (opcode_t) 0x7E556D47                // if*
 #define OP_IF_EXIT                   (opcode_t) 0x6D555284                // if;
 #define OP_IF_NOT                    (opcode_t) 0x1A0E810B                // if-not
-#define OP_IF_NOT_EXIT               (opcode_t) 0x34D55E90                // if-not;
-#define OP_IF_STAR                   (opcode_t) 0x7E556D47                // if*
-#define OP_IF_EXIT_STAR              (opcode_t) 0x5C7B5A34                // if*;
 #define OP_IF_NOT_STAR               (opcode_t) 0x25D546F3                // if-not*
-#define OP_IF_NOT_EXIT_STAR          (opcode_t) 0x56BE6CD8                // if-not*;
+#define OP_IF_NOT_EXIT               (opcode_t) 0x34D55E90                // if-not;
 #define OP_IF_ELSE                   (opcode_t) 0xD59EAA1B                // if-else
 #define OP_DOT_S                     (opcode_t) 0x83717F5B                // .s
 #define OP_RETURN                    (opcode_t) 0x3B005CE1                // ;
