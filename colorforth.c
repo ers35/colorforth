@@ -273,7 +273,7 @@ execute_(struct state *s, struct entry *entry)
       {
         const cell n1 = pop(s);
         const cell n2 = pop(s);
-        push(s, n1 - n2);
+        push(s, n2 - n1);
         break;
       }
       
